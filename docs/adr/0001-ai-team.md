@@ -4,9 +4,10 @@ Oct 28, 2026 · @broplz
 
 ## Статус
 
-Proposed — комплект собран по образцу BROzen BROwser (ADR-0012 там) и прогнан на этом репо:
-`check.sh`, `test.sh`, `kvcheck.py`, `vanilla_diff.py`, хуки. После первого реального цикла на
-задачах фазы 0–1 статус меняется на Accepted.
+Accepted — 29.10.2026, после первого цикла: 0001, 0002, 0004, 0005 прошли конвейер (0003 — вручную),
+$8.43 за 33 сессии. Поправки по итогам цикла: autocommit исключает `.claude/` (a4a79a0); в dontAsk
+агентам — по одной команде, без составных; лимиты сессий не менялись (2ebe52a).
+Известная проблема: конфликт таск-файла при merge после unblock.
 
 - Область: `.claude/` (agents, hooks, skills, settings), `CLAUDE.md`, `scripts/agents/`, `tools/`,
   `tests/`, `tasks/`, `docs/reports/`, `.github/workflows/ci.yml`.
