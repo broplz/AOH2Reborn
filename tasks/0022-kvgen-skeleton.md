@@ -1,7 +1,7 @@
 ---
 id: 0022
 title: tools/kvgen.py skeleton — YAML source + template, --check against the committed boss wrapper entries
-status: blocked
+status: ready
 epic: p0
 prefix: p0
 kind: code
@@ -14,13 +14,13 @@ allowed_paths:
   - tools/kvgen.py
   - tools/kvgen_templates/boss_wrapper.kv
   - kv-src/boss_wrappers.yaml
-  - tools/fixtures/kvgen/
+  - tools/fixtures/kvgen/**
 checks: kv
 tests: []
 needs_approval: false
 returns: 0
 sessions: 1
-blocked_reason: guard_paths hook rejects files inside tools/fixtures/kvgen/ (allowed_paths entry needs tools/fixtures/kvgen/**); DoD 2 fixtures cannot be written
+blocked_reason: 
 reviewed_sha: 
 qa_sha: 
 ---
@@ -75,6 +75,10 @@ decision (docs/reports/decisions-needed.md, 2026-10-29), and so is the migration
 - The KV file has 21k lines. Use Grep with head_limit, or Read with offset/limit ≤ 400. Never read it whole.
 - Out of scope: writing into scripts/npc, `#base` includes, marker regions, check.sh integration
   (a later task after the owner decides where the output goes), and the 0014 telegraph base.
+- Re-spec 2026-10-29 (teamlead): allowed_paths entry fixed to `tools/fixtures/kvgen/**` (guard_paths
+  matches globs; a trailing `/` is a literal path). Nothing else changes. N = 55 is accepted: 56 generic_*
+  wrappers minus the excluded `boss_legion_commander_gods_rebuke_wrapper` (listed as `# excluded:` in the
+  YAML). Session 2 = the fixture list in ## Handoff, then --self-test and the DoD run.
 
 ## Handoff
 Session 1 (developer-hard), commit 5f6b015. Blocked by a hook: `guard_paths.py` reads the
