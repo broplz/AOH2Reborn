@@ -1,18 +1,14 @@
-
 item_aghanim_consumable = class({})
 
-
 function item_aghanim_consumable:GetIntrinsicModifierName()
-    return "modifier_item_aghanim_consumable"
+	return "modifier_item_aghanim_consumable"
 end
-
 
 LinkLuaModifier("modifier_item_aghanim_consumable", "items/item_aghanim_consumable.lua", LUA_MODIFIER_MOTION_NONE)
 modifier_item_aghanim_consumable = class({})
 
-
 function modifier_item_aghanim_consumable:IsHidden()
-    return true
+	return true
 end
 
 function modifier_item_aghanim_consumable:IsPurgable()
@@ -22,17 +18,14 @@ end
 function modifier_item_aghanim_consumable:OnCreated()
 	local parent = self:GetParent()
 	if parent:IsRealHero() then
-		parent:AddNewModifier(parent, nil, "modifier_item_aghanim_permanent", {duration = -1})
+		parent:AddNewModifier(parent, nil, "modifier_item_aghanim_permanent", { duration = -1 })
 		self:GetAbility():Destroy()
 		self:Destroy()
 	end
 end
 
-
-
 LinkLuaModifier("modifier_item_aghanim_permanent", "items/item_aghanim_consumable.lua", LUA_MODIFIER_MOTION_NONE)
 modifier_item_aghanim_permanent = class({})
-
 
 function modifier_item_aghanim_permanent:IsHidden()
 	return false

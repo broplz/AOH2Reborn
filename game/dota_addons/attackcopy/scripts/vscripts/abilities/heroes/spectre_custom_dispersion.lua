@@ -2,14 +2,21 @@
 	Date: August 27, 2016
 ]]
 
-LinkLuaModifier("modifier_spectre_custom_dispersion", "abilities/heroes/spectre_custom_dispersion.lua", LUA_MODIFIER_MOTION_NONE )
-LinkLuaModifier("modifier_spectre_custom_dispersion_illusion", "abilities/heroes/spectre_custom_dispersion.lua", LUA_MODIFIER_MOTION_NONE )
+LinkLuaModifier(
+	"modifier_spectre_custom_dispersion",
+	"abilities/heroes/spectre_custom_dispersion.lua",
+	LUA_MODIFIER_MOTION_NONE
+)
+LinkLuaModifier(
+	"modifier_spectre_custom_dispersion_illusion",
+	"abilities/heroes/spectre_custom_dispersion.lua",
+	LUA_MODIFIER_MOTION_NONE
+)
 
 spectre_custom_dispersion = class({})
 
-
 function spectre_custom_dispersion:GetIntrinsicModifierName()
-    return "modifier_spectre_custom_dispersion"
+	return "modifier_spectre_custom_dispersion"
 end
 
 function spectre_custom_dispersion:OnUpgrade()
@@ -39,9 +46,15 @@ end
 
 function spectre_custom_dispersion:CreatePermanentIllusion()
 	local caster = self:GetCaster()
-	if not IsServer() then return end
-	local illusions = CreateIllusions(caster, caster, {duration = -1, outgoing_damage = self:GetSpecialValueFor("damage_outgoing") - 100, incoming_damage = self:GetSpecialValueFor("damage_incoming") - 100}, 1, 50, true, true )
-	for _,illusion in ipairs(illusions) do
+	if not IsServer() then
+		return
+	end
+	local illusions = CreateIllusions(caster, caster, {
+		duration = -1,
+		outgoing_damage = self:GetSpecialValueFor("damage_outgoing") - 100,
+		incoming_damage = self:GetSpecialValueFor("damage_incoming") - 100,
+	}, 1, 50, true, true)
+	for _, illusion in ipairs(illusions) do
 		illusion:AddNewModifier(caster, self, "modifier_spectre_custom_dispersion_illusion", {})
 	end
 end
@@ -68,11 +81,11 @@ function modifier_spectre_custom_dispersion_illusion:DeclareFunctions()
 end
 
 function modifier_spectre_custom_dispersion_illusion:GetModifierMoveSpeedBonus_Percentage()
-    return 25
+	return 25
 end
 
 function modifier_spectre_custom_dispersion_illusion:GetModifierIgnoreMovespeedLimit()
-    return 1
+	return 1
 end
 
 function modifier_spectre_custom_dispersion_illusion:CheckState()
@@ -89,12 +102,9 @@ if IsServer() then
 	end
 
 	function modifier_spectre_custom_dispersion_illusion:OnDestroy()
-		Timers:CreateTimer(
-			self.delay, 
-			function()
-				self.ability:CreatePermanentIllusion()
-			end
-		)
+		Timers:CreateTimer(self.delay, function()
+			self.ability:CreatePermanentIllusion()
+		end)
 	end
 end
 
@@ -122,7 +132,7 @@ end
 
 function modifier_spectre_custom_dispersion:DeclareFunctions()
 	local funcs = {
-		MODIFIER_EVENT_ON_TAKEDAMAGE
+		MODIFIER_EVENT_ON_TAKEDAMAGE,
 	}
 	return funcs
 end
@@ -146,7 +156,7 @@ end
 	Date: August 27, 2016
 ]]
 if IsServer() then
-	function modifier_spectre_custom_dispersion:OnTakeDamage (event)
+	function modifier_spectre_custom_dispersion:OnTakeDamage(event)
 		if event.unit == self.parent then
 			if event.damage_flags ~= 16 then
 				local post_damage = event.damage
@@ -160,13 +170,13 @@ if IsServer() then
 					local particle_name = ""
 
 					local distance = (vUnit - vparent):Length2D()
-					
-					--Within 300 radius		
+
+					--Within 300 radius
 					if distance <= self.min_radius then
 						reflect_damage = original_damage * self.damage_reflect_pct
 						particle_name = "particles/units/heroes/hero_spectre/spectre_dispersion.vpcf"
 						if self.parent:IsAlive() then
-							self.parent:SetHealth(self.parent:GetHealth() + (post_damage * self.damage_reflect_pct) )
+							self.parent:SetHealth(self.parent:GetHealth() + (post_damage * self.damage_reflect_pct))
 						end
 					--Between 301 and 475 radius
 					else
@@ -174,14 +184,14 @@ if IsServer() then
 						reflect_damage = original_damage * ratio
 						particle_name = "particles/units/heroes/hero_spectre/spectre_dispersion_b_fallback_mid.vpcf"
 						if self.parent:IsAlive() then
-							self.parent:SetHealth(self.parent:GetHealth() + (post_damage * ratio) )
+							self.parent:SetHealth(self.parent:GetHealth() + (post_damage * ratio))
 						end
 					end
-					
-					local particle = ParticleManager:CreateParticle( particle_name, PATTACH_POINT_FOLLOW, self.parent )
+
+					local particle = ParticleManager:CreateParticle(particle_name, PATTACH_POINT_FOLLOW, self.parent)
 					ParticleManager:SetParticleControl(particle, 0, vparent)
 					ParticleManager:SetParticleControl(particle, 1, vUnit)
-					ParticleManager:SetParticleControl(particle, 2, vparent)	
+					ParticleManager:SetParticleControl(particle, 2, vparent)
 					ApplyDamage({
 						ability = self.ability,
 						attacker = self.parent,
@@ -190,11 +200,9 @@ if IsServer() then
 						damage_flags = DOTA_DAMAGE_FLAG_REFLECTION,
 						victim = unit,
 					})
-
 				end
 			end
 		end
-
 	end
 
 	function modifier_spectre_custom_dispersion:OnIntervalThink()

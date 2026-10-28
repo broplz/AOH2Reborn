@@ -6,9 +6,11 @@ function aura_initiate(keys)
 	end
 end
 
-
-
-LinkLuaModifier("modifier_meepo_custom_clone_buff", "abilities/heroes/meepo_custom_clone_buff.lua", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier(
+	"modifier_meepo_custom_clone_buff",
+	"abilities/heroes/meepo_custom_clone_buff.lua",
+	LUA_MODIFIER_MOTION_NONE
+)
 modifier_meepo_custom_clone_buff = class({})
 
 --------------------------------------------------------------------------------
@@ -25,8 +27,6 @@ function modifier_meepo_custom_clone_buff:IsPurgable()
 	return false
 end
 
-
-
 --------------------------------------------------------------------------------
 -- Declare Functions
 function modifier_meepo_custom_clone_buff:DeclareFunctions()
@@ -36,12 +36,9 @@ function modifier_meepo_custom_clone_buff:DeclareFunctions()
 	}
 end
 
-
-
 function modifier_meepo_custom_clone_buff:OnCreated()
 	local ability = self:GetAbility()
 	local caster = ability:GetCaster()
 	local parent = self:GetParent()
 	meepo_copy_items(caster, parent)
-	
 end

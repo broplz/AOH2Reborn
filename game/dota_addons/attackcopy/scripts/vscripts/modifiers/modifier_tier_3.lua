@@ -6,27 +6,27 @@ LinkLuaModifier("modifier_skill_flames_counter", "modifiers/modifier_tier_3.lua"
 modifier_skill_trident = class({})
 
 function modifier_skill_trident:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_skill_trident:IsHidden()
-    return true
+	return true
 end
 
 function modifier_skill_trident:IsDebuff()
-    return false
+	return false
 end
 
 function modifier_skill_trident:RemoveOnDeath()
-    return false
+	return false
 end
 
 function modifier_skill_trident:AllowIllusionDuplicate()
-    return false
+	return false
 end
 
 function modifier_skill_trident:GetTexture()
-    return "modifier_skill_trident"
+	return "modifier_skill_trident"
 end
 if IsServer() then
 	function modifier_skill_trident:OnCreated()
@@ -50,29 +50,28 @@ end
 modifier_skill_transfusion = class({})
 
 function modifier_skill_transfusion:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_skill_transfusion:IsHidden()
-    return true
+	return true
 end
 
 function modifier_skill_transfusion:IsDebuff()
-    return false
+	return false
 end
 
 function modifier_skill_transfusion:RemoveOnDeath()
-    return false
+	return false
 end
 
 function modifier_skill_transfusion:AllowIllusionDuplicate()
-    return true
+	return true
 end
 
 function modifier_skill_transfusion:GetTexture()
-    return "modifier_skill_transfusion"
+	return "modifier_skill_transfusion"
 end
-
 
 if IsServer() then
 	function modifier_skill_transfusion:OnCreated()
@@ -96,60 +95,59 @@ end
 modifier_skill_dashdamage = class({})
 
 function modifier_skill_dashdamage:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_skill_dashdamage:IsHidden()
-    return true
+	return true
 end
 
 function modifier_skill_dashdamage:IsDebuff()
-    return false
+	return false
 end
 
 function modifier_skill_dashdamage:RemoveOnDeath()
-    return false
+	return false
 end
 
 function modifier_skill_dashdamage:AllowIllusionDuplicate()
-    return true
+	return true
 end
 
 function modifier_skill_dashdamage:GetTexture()
-    return "modifier_skill_dashdamage"
+	return "modifier_skill_dashdamage"
 end
 
-
 function modifier_skill_dashdamage:GetTexture()
-    return "modifier_skill_dashdamage"
+	return "modifier_skill_dashdamage"
 end
 
 modifier_skill_flames = class({})
 
 function modifier_skill_flames:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_skill_trident:IsHidden()
-    return true
+	return true
 end
 
 function modifier_skill_flames:RemoveOnDeath()
-    return false
+	return false
 end
 
 function modifier_skill_flames:AllowIllusionDuplicate()
-    return true
+	return true
 end
 
 function modifier_skill_flames:GetTexture()
-    return "modifier_skill_flames"
+	return "modifier_skill_flames"
 end
 
 function modifier_skill_flames:DeclareFunctions()
-    return {
+	return {
 		MODIFIER_EVENT_ON_ATTACKED,
-    }
+	}
 end
 
 if IsServer() then
@@ -169,11 +167,12 @@ function modifier_skill_flames:OnAttacked(keys)
 		local damage_victim = victim
 		if self.parent == victim then
 			damage_victim = attacker
-			self.parent:AddNewModifier(self.parent, nil, "modifier_skill_flames_counter", {duration = 12})
+			self.parent:AddNewModifier(self.parent, nil, "modifier_skill_flames_counter", { duration = 12 })
 		else
-			self.parent:AddNewModifier(self.parent, nil, "modifier_skill_flames_counter", {duration = 8})
+			self.parent:AddNewModifier(self.parent, nil, "modifier_skill_flames_counter", { duration = 8 })
 		end
-		local fx = ParticleManager:CreateParticle("particles/custom/skill_flames.vpcf", PATTACH_POINT_FOLLOW, self.parent)
+		local fx =
+			ParticleManager:CreateParticle("particles/custom/skill_flames.vpcf", PATTACH_POINT_FOLLOW, self.parent)
 		ParticleManager:SetParticleControlEnt(
 			fx,
 			3,
@@ -188,7 +187,7 @@ function modifier_skill_flames:OnAttacked(keys)
 			value = self:GetStackCount() * 3,
 			color = Vector(100, 95, 237),
 			type = "spell",
-			pos = 6
+			pos = 6,
 		})
 		ApplyDamage({
 			attacker = self.parent,
@@ -196,35 +195,33 @@ function modifier_skill_flames:OnAttacked(keys)
 			ability = self.ability,
 			damage_type = DAMAGE_TYPE_MAGICAL,
 			damage = self:GetStackCount() * 3,
-			damage_flags = DOTA_DAMAGE_FLAG_REFLECTION
+			damage_flags = DOTA_DAMAGE_FLAG_REFLECTION,
 		})
 	end
 end
 
-function modifier_skill_flames:OnDestroy()
-end
-
+function modifier_skill_flames:OnDestroy() end
 
 modifier_skill_flames_counter = class({})
 
 function modifier_skill_flames_counter:GetAttributes()
-    return MODIFIER_ATTRIBUTE_MULTIPLE
+	return MODIFIER_ATTRIBUTE_MULTIPLE
 end
 
 function modifier_skill_flames_counter:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_skill_flames_counter:IsDebuff()
-    return false
+	return false
 end
 
 function modifier_skill_flames_counter:IsHidden()
-    return true
+	return true
 end
 
 function modifier_skill_flames_counter:RemoveOnDeath()
-    return false
+	return false
 end
 if IsServer() then
 	function modifier_skill_flames_counter:OnDestroy()

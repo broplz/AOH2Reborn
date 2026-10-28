@@ -3,13 +3,13 @@ require("lib/popup")
 item_custom_ballista = class({})
 
 function item_custom_ballista:GetIntrinsicModifierName()
-    return "modifier_item_custom_ballista"
+	return "modifier_item_custom_ballista"
 end
 
 LinkLuaModifier("modifier_item_custom_ballista", "items/item_custom_ballista.lua", LUA_MODIFIER_MOTION_NONE)
 modifier_item_custom_ballista = class({})
 function modifier_item_custom_ballista:IsHidden()
-    return true
+	return true
 end
 
 function modifier_item_custom_ballista:IsPurgable()
@@ -27,7 +27,7 @@ if IsServer() then
 		self.parent:RemoveModifierByName("modifier_item_custom_ballista_buff")
 		self.parent:AddNewModifier(self.parent, self.ability, "modifier_item_custom_ballista_buff", {})
 	end
-	
+
 	function modifier_item_custom_ballista:OnDestroy()
 		self.parent:RemoveModifierByName("modifier_item_custom_ballista_buff")
 	end
@@ -36,7 +36,7 @@ LinkLuaModifier("modifier_item_custom_ballista_buff", "items/item_custom_ballist
 modifier_item_custom_ballista_buff = class({})
 
 function modifier_item_custom_ballista_buff:IsHidden()
-    return true
+	return true
 end
 
 function modifier_item_custom_ballista_buff:IsPurgable()
@@ -48,40 +48,38 @@ function modifier_item_custom_ballista_buff:RemoveOnDeath()
 end
 
 function modifier_item_custom_ballista_buff:GetAttributes()
-    return MODIFIER_ATTRIBUTE_MULTIPLE
+	return MODIFIER_ATTRIBUTE_MULTIPLE
 end
 
-
 function modifier_item_custom_ballista_buff:DeclareFunctions()
-    return {
-        MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
+	return {
+		MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
 		MODIFIER_PROPERTY_STATS_STRENGTH_BONUS,
 		MODIFIER_PROPERTY_STATS_AGILITY_BONUS,
 		MODIFIER_PROPERTY_STATS_INTELLECT_BONUS,
 		MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT,
 		MODIFIER_EVENT_ON_ATTACK_LANDED,
-    }
+	}
 end
 
-
 function modifier_item_custom_ballista_buff:GetModifierAttackRangeBonus()
-    return self:GetStackCount()
+	return self:GetStackCount()
 end
 
 function modifier_item_custom_ballista_buff:GetModifierBonusStats_Strength()
-    return self:GetAbility():GetSpecialValueFor("bonus_strength")
+	return self:GetAbility():GetSpecialValueFor("bonus_strength")
 end
 
 function modifier_item_custom_ballista_buff:GetModifierBonusStats_Agility()
-    return self:GetAbility():GetSpecialValueFor("bonus_agility")
+	return self:GetAbility():GetSpecialValueFor("bonus_agility")
 end
 
 function modifier_item_custom_ballista_buff:GetModifierBonusStats_Intellect()
-    return self:GetAbility():GetSpecialValueFor("bonus_intellect")
+	return self:GetAbility():GetSpecialValueFor("bonus_intellect")
 end
 
 function modifier_item_custom_ballista_buff:GetModifierConstantHealthRegen()
-    return self:GetAbility():GetSpecialValueFor("bonus_health_regen")
+	return self:GetAbility():GetSpecialValueFor("bonus_health_regen")
 end
 
 if IsServer() then
@@ -96,9 +94,9 @@ if IsServer() then
 		self:SetStackCount(range)
 	end
 	function modifier_item_custom_ballista_buff:OnAttackLanded(keys)
-        local attacker = keys.attacker
+		local attacker = keys.attacker
 		local target = keys.target
-        if attacker == self.parent and not attacker:IsNull() then
+		if attacker == self.parent and not attacker:IsNull() then
 			ApplyDamage({
 				ability = self.ability,
 				attacker = attacker,
@@ -112,7 +110,7 @@ if IsServer() then
 				value = self.bonus_damage,
 				color = Vector(183, 47, 234),
 				type = "spell",
-				pos = 6
+				pos = 6,
 			})
 		end
 	end

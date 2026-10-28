@@ -15,8 +15,7 @@ function frost_expansion(keys)
 		y = range * math.cos(math.rad(c)) + caster_pos.y
 		local point_loc = Vector(x, y, 0)
 		local forwardVector = (point_loc - caster_pos):Normalized()
-		local projTable = 
-		{
+		local projTable = {
 			EffectName = particle,
 			Ability = ability,
 			vSpawnOrigin = caster_pos + forwardVector * 100,
@@ -29,7 +28,7 @@ function frost_expansion(keys)
 			bReplaceExisiting = false,
 			iUnitTargetTeam = DOTA_UNIT_TARGET_TEAM_ENEMY,
 			iUnitTargetFlags = DOTA_UNIT_TARGET_FLAGS_NONE,
-			iUnitTargetType = ability:GetAbilityTargetType()
+			iUnitTargetType = ability:GetAbilityTargetType(),
 		}
 		local projID = ProjectileManager:CreateLinearProjectile(projTable)
 		i = i + 1
@@ -45,26 +44,35 @@ function projectile_hit(keys)
 	local speed = ability:GetLevelSpecialValueFor("speed", (ability:GetLevel() - 1))
 	local damage_pct = ability:GetLevelSpecialValueFor("damage_pct", (ability:GetLevel() - 1)) * 0.01
 	local particle = "particles/econ/items/lich/frozen_chains_ti6/lich_frozenchains_frostnova_d.vpcf"
-		
+
 	local damage_table = {
 		attacker = caster,
 		victim = target,
 		damage_type = ability:GetAbilityDamageType(),
 		damage = target:GetMaxHealth() * damage_pct,
-		ability = ability
+		ability = ability,
 	}
 	ApplyDamage(damage_table)
-	
-	local units = FindUnitsInRadius(target:GetTeam(), target_pos, nil, bounce_range, DOTA_UNIT_TARGET_TEAM_FRIENDLY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, FIND_ANY_ORDER, false)
+
+	local units = FindUnitsInRadius(
+		target:GetTeam(),
+		target_pos,
+		nil,
+		bounce_range,
+		DOTA_UNIT_TARGET_TEAM_FRIENDLY,
+		DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC,
+		0,
+		FIND_ANY_ORDER,
+		false
+	)
 	local next_target = nil
-	for k,u in pairs(units) do 
+	for k, u in pairs(units) do
 		if u ~= target and not next_target then
 			next_target = u
 		end
 	end
 	if next_target then
-		local info = 
-		{
+		local info = {
 			Target = next_target,
 			Source = target,
 			Ability = ability,
@@ -74,10 +82,8 @@ function projectile_hit(keys)
 			iMoveSpeed = speed,
 			iVisionRadius = vision_radius,
 			iVisionTeamNumber = caster:GetTeamNumber(),
-			iSourceAttachment = DOTA_PROJECTILE_ATTACHMENT_HITLOCATION
+			iSourceAttachment = DOTA_PROJECTILE_ATTACHMENT_HITLOCATION,
 		}
-		ProjectileManager:CreateTrackingProjectile( info )
+		ProjectileManager:CreateTrackingProjectile(info)
 	end
 end
-	
-	

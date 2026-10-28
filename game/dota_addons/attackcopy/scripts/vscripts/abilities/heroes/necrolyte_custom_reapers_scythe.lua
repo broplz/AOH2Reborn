@@ -3,7 +3,7 @@ require("lib/refresh")
 	Date: 06.01.2015.
 	Deals damage depending on missing hp
 	If the target dies then it increases the respawn time]]
-function ReapersScythe( keys )
+function ReapersScythe(keys)
 	local caster = keys.caster
 	local target = keys.target
 	local ability = keys.ability
@@ -33,6 +33,15 @@ function ReapersScythe( keys )
 				end
 			end
 		end
-		refresh_items(caster, {item_maiar_pendant = true, item_custom_fusion_rune = true, item_conduit = true, item_custom_refresher = true, item_plain_ring = true, item_helm_of_the_undying = true, item_echo_wand = true, item_custom_ex_machina = true})
+		refresh_items(caster, {
+			item_maiar_pendant = true,
+			item_custom_fusion_rune = true,
+			item_conduit = true,
+			item_custom_refresher = true,
+			item_plain_ring = true,
+			item_helm_of_the_undying = true,
+			item_echo_wand = true,
+			item_custom_ex_machina = true,
+		})
 	end
 end

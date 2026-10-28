@@ -3,7 +3,7 @@ require("lib/my")
 custom_refund = class({})
 
 function custom_refund:GetIntrinsicModifierName()
-    return "modifier_custom_refund"
+	return "modifier_custom_refund"
 end
 tower_custom_refund = class(custom_refund)
 rax_custom_refund = class(custom_refund)
@@ -11,12 +11,12 @@ LinkLuaModifier("modifier_custom_refund", "abilities/other/custom_refund.lua", L
 modifier_custom_refund = class({})
 
 function modifier_custom_refund:IsHidden()
-    return true
+	return true
 end
 function modifier_custom_refund:DeclareFunctions()
-    return {
-        MODIFIER_EVENT_ON_DEATH,
-    }
+	return {
+		MODIFIER_EVENT_ON_DEATH,
+	}
 end
 if IsServer() then
 	function modifier_custom_refund:OnCreated(keys)
@@ -29,9 +29,10 @@ if IsServer() then
 		self.radius = self.ability:GetSpecialValueFor("radius")
 		self:StartIntervalThink(self.tick_interval)
 	end
-	
+
 	function modifier_custom_refund:OnIntervalThink()
-		local units = FindUnitsInRadius(self.team,
+		local units = FindUnitsInRadius(
+			self.team,
 			self.parent:GetAbsOrigin(),
 			nil,
 			self.radius,
@@ -39,9 +40,11 @@ if IsServer() then
 			DOTA_UNIT_TARGET_HERO,
 			DOTA_UNIT_TARGET_FLAG_NONE,
 			FIND_ANY_ORDER,
-			false)
+			false
+		)
 		if #units > 0 then
-			ApplyDamage({victim = self.parent,
+			ApplyDamage({
+				victim = self.parent,
 				attacker = self.parent,
 				damage = self.parent:GetMaxHealth() * self.damage_taken_pct,
 				damage_type = DAMAGE_TYPE_PURE,
@@ -49,12 +52,11 @@ if IsServer() then
 				nil,
 			})
 		end
-    end
-	
+	end
+
 	function modifier_custom_refund:OnDeath(keys)
 		if self.parent == keys.unit then
 			self.parent:GetOwner():ModifyGold(self:GetAbility():GetSpecialValueFor("refund"), true, 0)
 		end
 	end
-
 end

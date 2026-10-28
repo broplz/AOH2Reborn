@@ -4,18 +4,18 @@
 modifier_boss = class({})
 
 function modifier_boss:IsBuff()
-    return true
+	return true
 end
 function modifier_boss:IsHidden()
-    return false
+	return false
 end
 
 function modifier_boss:GetTexture()
-    return "earth_spirit_rolling_boulder"
+	return "earth_spirit_rolling_boulder"
 end
 
 function modifier_boss:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_boss:DeclareFunctions()
@@ -25,7 +25,6 @@ function modifier_boss:DeclareFunctions()
 	}
 	return funcs
 end
-
 
 function modifier_boss:GetModifierDamageOutgoing_Percentage()
 	return self:GetStackCount()
@@ -42,17 +41,17 @@ if IsServer() then
 		self.open_ticket = 0
 		self.lockout = false
 	end
-	
+
 	function modifier_boss:RequestTicket()
 		local ticket = self.available_ticket
 		self.available_ticket = self.available_ticket + 1
 		return ticket
 	end
-	
+
 	function modifier_boss:GetOpenTicket()
 		return self.open_ticket
 	end
-	
+
 	function modifier_boss:QueryTicket(key)
 		if key == self.open_ticket and not self.lockout == true then
 			return true
@@ -60,20 +59,19 @@ if IsServer() then
 			return false
 		end
 	end
-	
+
 	function modifier_boss:ReleaseTicket()
 		self.open_ticket = self.open_ticket + 1
 	end
-	
+
 	function modifier_boss:Lockout()
 		self.lockout = true
 	end
 	function modifier_boss:ReleaseLockout()
 		self.lockout = false
 	end
-	
+
 	function modifier_boss:OnIntervalThink()
 		self:IncrementStackCount()
 	end
-
 end

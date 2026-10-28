@@ -1,4 +1,3 @@
-
 boss_phantom_lancer_spiritlance = class({})
 
 function boss_phantom_lancer_spiritlance:OnSpellStart()
@@ -10,35 +9,35 @@ function boss_phantom_lancer_spiritlance:OnSpellStart()
 	local projectile_name = "particles/custom/boss/boss_phantom_lancer_spear.vpcf"
 	local projectile_speed = self:GetSpecialValueFor("speed")
 	local projectile_distance = self:GetSpecialValueFor("range")
-	
+
 	local projectile_start_radius = self:GetSpecialValueFor("width")
 	local projectile_vision = self:GetSpecialValueFor("vision")
 	local damage = self:GetSpecialValueFor("damage")
-	
-	local projectile_direction = (Vector(point.x-origin.x, point.y-origin.y,0)):Normalized()
+
+	local projectile_direction = (Vector(point.x - origin.x, point.y - origin.y, 0)):Normalized()
 	self.has_hit = false
 	-- logic
 	local info = {
 		Source = caster,
 		Ability = self,
 		vSpawnOrigin = caster:GetOrigin() + Vector(0, 0, 150),
-		
-	    bDeleteOnHit = true,
-	    
-	    iUnitTargetTeam = DOTA_UNIT_TARGET_TEAM_ENEMY,
-	    iUnitTargetFlags = DOTA_UNIT_TARGET_FLAG_NONE,
-	    iUnitTargetType = DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC,
-	    
-	    EffectName = projectile_name,
-	    fDistance = projectile_distance,
-	    fStartRadius = projectile_start_radius,
-	    fEndRadius = projectile_start_radius,
+
+		bDeleteOnHit = true,
+
+		iUnitTargetTeam = DOTA_UNIT_TARGET_TEAM_ENEMY,
+		iUnitTargetFlags = DOTA_UNIT_TARGET_FLAG_NONE,
+		iUnitTargetType = DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC,
+
+		EffectName = projectile_name,
+		fDistance = projectile_distance,
+		fStartRadius = projectile_start_radius,
+		fEndRadius = projectile_start_radius,
 		vVelocity = projectile_direction * projectile_speed,
-	
+
 		bHasFrontalCone = false,
 		bReplaceExisting = false,
 		fExpireTime = GameRules:GetGameTime() + 10.0,
-		
+
 		bProvidesVision = true,
 		iVisionRadius = projectile_vision,
 		iVisionTeamNumber = caster:GetTeamNumber(),
@@ -53,7 +52,7 @@ function boss_phantom_lancer_spiritlance:OnSpellStart()
 			max_stun = max_stun,
 
 			damage = damage,
-		}
+		},
 	}
 	local projectile = ProjectileManager:CreateLinearProjectile(info)
 	local sound_cast = "Hero_TemplarAssassin.Trap"
@@ -63,7 +62,9 @@ end
 --------------------------------------------------------------------------------
 -- Projectile
 function boss_phantom_lancer_spiritlance:OnProjectileHit_ExtraData(hTarget, vLocation, extraData)
-	if hTarget==nil then return end
+	if hTarget == nil then
+		return
+	end
 	local caster = self:GetCaster()
 	self.has_hit = true
 	local damageTable = {
@@ -79,8 +80,7 @@ function boss_phantom_lancer_spiritlance:OnProjectileHit_ExtraData(hTarget, vLoc
 	omnislash:OnSpellStart()
 	AddFOWViewer(self:GetCaster():GetTeamNumber(), vLocation, 500, 3, false)
 	local sound_cast = "Hero_TemplarAssassin.Trap.Explode"
-	EmitSoundOn( sound_cast, hTarget )
+	EmitSoundOn(sound_cast, hTarget)
 
 	return true
 end
-

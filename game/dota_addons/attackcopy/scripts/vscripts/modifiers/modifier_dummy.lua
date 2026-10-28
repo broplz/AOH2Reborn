@@ -1,14 +1,11 @@
-
 modifier_dummy = class({})
 
-
 function modifier_dummy:IsHidden()
-    return true
+	return true
 end
 
-
 function modifier_dummy:IsPurgable()
-    return false
+	return false
 end
 function modifier_dummy:CheckState()
 	local state = {
@@ -24,4 +21,3 @@ function modifier_dummy:CheckState()
 
 	return state
 end
-

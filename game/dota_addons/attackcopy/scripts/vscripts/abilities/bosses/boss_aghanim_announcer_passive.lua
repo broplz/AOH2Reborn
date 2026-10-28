@@ -1,7 +1,10 @@
-
 boss_aghanim_announcer_passive = class({})
 
-LinkLuaModifier( "modifier_aghanim_announcer_passive", "abilities/bosses/boss_aghanim_announcer_passive", LUA_MODIFIER_MOTION_NONE )
+LinkLuaModifier(
+	"modifier_aghanim_announcer_passive",
+	"abilities/bosses/boss_aghanim_announcer_passive",
+	LUA_MODIFIER_MOTION_NONE
+)
 
 --------------------------------------------------------------------------------
 
@@ -15,8 +18,8 @@ modifier_aghanim_announcer_passive = class({})
 
 ----------------------------------------
 
-function modifier_aghanim_announcer_passive:OnCreated( kv )
-	print( "modifier_aghanim_announcer_passive" )
+function modifier_aghanim_announcer_passive:OnCreated(kv)
+	print("modifier_aghanim_announcer_passive")
 end
 
 --------------------------------------------------------------------------------
@@ -35,16 +38,16 @@ end
 
 function modifier_aghanim_announcer_passive:CheckState()
 	local state = {}
-	if IsServer()  then
-		state[ MODIFIER_STATE_INVULNERABLE ] = true
-		state[ MODIFIER_STATE_MAGIC_IMMUNE ] = true
-		state[ MODIFIER_STATE_UNSELECTABLE ] = true
-		state[ MODIFIER_STATE_NOT_ON_MINIMAP ] = true
-		state[ MODIFIER_STATE_NO_UNIT_COLLISION ] = true
-		state[ MODIFIER_STATE_NO_HEALTH_BAR ] = true
-		state[ MODIFIER_STATE_DISARMED ] = true
-		state[ MODIFIER_STATE_ROOTED ] = true
-		state[ MODIFIER_STATE_ATTACK_IMMUNE ] = true
+	if IsServer() then
+		state[MODIFIER_STATE_INVULNERABLE] = true
+		state[MODIFIER_STATE_MAGIC_IMMUNE] = true
+		state[MODIFIER_STATE_UNSELECTABLE] = true
+		state[MODIFIER_STATE_NOT_ON_MINIMAP] = true
+		state[MODIFIER_STATE_NO_UNIT_COLLISION] = true
+		state[MODIFIER_STATE_NO_HEALTH_BAR] = true
+		state[MODIFIER_STATE_DISARMED] = true
+		state[MODIFIER_STATE_ROOTED] = true
+		state[MODIFIER_STATE_ATTACK_IMMUNE] = true
 	end
 
 	return state

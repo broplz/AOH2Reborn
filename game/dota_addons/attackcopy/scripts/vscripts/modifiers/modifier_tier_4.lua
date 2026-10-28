@@ -1,4 +1,3 @@
-
 LinkLuaModifier("modifier_skill_noevil", "modifiers/modifier_tier_4.lua", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_skill_jack", "modifiers/modifier_tier_4.lua", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_skill_cardio", "modifiers/modifier_tier_4.lua", LUA_MODIFIER_MOTION_NONE)
@@ -7,23 +6,23 @@ require("lib/data")
 modifier_skill_noevil = class({})
 
 function modifier_skill_noevil:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_skill_noevil:IsDebuff()
-    return false
+	return false
 end
 
 function modifier_skill_noevil:RemoveOnDeath()
-    return false
+	return false
 end
 
 function modifier_skill_noevil:AllowIllusionDuplicate()
-    return false
+	return false
 end
 
 function modifier_skill_noevil:GetTexture()
-    return "modifier_skill_noevil"
+	return "modifier_skill_noevil"
 end
 
 function modifier_skill_noevil:DeclareFunctions()
@@ -43,7 +42,7 @@ if IsServer() then
 		self.playerID = self.parent:GetPlayerOwnerID()
 		local player_damage = player_data_get_value(self.playerID, "bossDamage")
 		local total = 1
-		for i= 0, 4 do
+		for i = 0, 4 do
 			total = total + player_data_get_value(i, "bossDamage")
 		end
 		self:SetStackCount(math.floor((1 - (player_damage / total)) * 40))
@@ -52,36 +51,34 @@ if IsServer() then
 	function modifier_skill_noevil:OnIntervalThink()
 		local player_damage = player_data_get_value(self.playerID, "bossDamage")
 		local total = 1
-		for i= 0, 4 do
+		for i = 0, 4 do
 			total = total + player_data_get_value(i, "bossDamage")
 		end
 		self:SetStackCount(math.floor(((1 - (player_damage / total)) * 40)))
 	end
-	function modifier_skill_noevil:OnDestroy()
-		
-	end
+	function modifier_skill_noevil:OnDestroy() end
 end
 
 modifier_skill_jack = class({})
 
 function modifier_skill_jack:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_skill_jack:IsDebuff()
-    return false
+	return false
 end
 
 function modifier_skill_jack:RemoveOnDeath()
-    return false
+	return false
 end
 
 function modifier_skill_jack:AllowIllusionDuplicate()
-    return true
+	return true
 end
 
 function modifier_skill_jack:GetTexture()
-    return "modifier_skill_jack"
+	return "modifier_skill_jack"
 end
 
 function modifier_skill_jack:DeclareFunctions()
@@ -92,7 +89,7 @@ function modifier_skill_jack:DeclareFunctions()
 end
 
 function modifier_skill_jack:GetModifierBaseAttack_BonusDamage()
-    return self:GetStackCount()
+	return self:GetStackCount()
 end
 
 if IsServer() then
@@ -105,7 +102,7 @@ if IsServer() then
 		elseif attribute == 1 then
 			total = parent:GetStrength() + parent:GetIntellect()
 		else
-			total = parent:GetStrength() + parent:GetAgility() 
+			total = parent:GetStrength() + parent:GetAgility()
 		end
 		self:SetStackCount(total * 0.5)
 		self:StartIntervalThink(0.33)
@@ -122,43 +119,54 @@ if IsServer() then
 			total = parent:GetStrength() + parent:GetAgility()
 		end
 		self:SetStackCount(total * 0.5)
-
 	end
 end
 
 modifier_skill_cardio = class({})
 
 function modifier_skill_cardio:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_skill_cardio:IsHidden()
-    return true
+	return true
 end
 
 function modifier_skill_cardio:IsDebuff()
-    return false
+	return false
 end
 
 function modifier_skill_cardio:RemoveOnDeath()
-    return false
+	return false
 end
 
 function modifier_skill_cardio:AllowIllusionDuplicate()
-    return false
+	return false
 end
 
 function modifier_skill_cardio:GetTexture()
-    return "modifier_skill_cardio"
+	return "modifier_skill_cardio"
 end
 if IsServer() then
 	function modifier_skill_cardio:OnCreated()
 		local parent = self:GetParent()
-		self.fx = ParticleManager:CreateParticleForPlayer("particles/custom/marathon_circle.vpcf", PATTACH_ABSORIGIN, parent, parent:GetPlayerOwner())
-		ParticleManager:SetParticleControlEnt(self.fx, 0, parent, PATTACH_ABSORIGIN_FOLLOW, "follow_origin", parent:GetAbsOrigin(), true)
+		self.fx = ParticleManager:CreateParticleForPlayer(
+			"particles/custom/marathon_circle.vpcf",
+			PATTACH_ABSORIGIN,
+			parent,
+			parent:GetPlayerOwner()
+		)
+		ParticleManager:SetParticleControlEnt(
+			self.fx,
+			0,
+			parent,
+			PATTACH_ABSORIGIN_FOLLOW,
+			"follow_origin",
+			parent:GetAbsOrigin(),
+			true
+		)
 	end
 	function modifier_skill_cardio:OnDestroy()
-		
 		ParticleManager:DestroyParticle(self.fx, true)
 		ParticleManager:ReleaseParticleIndex(self.fx)
 	end
@@ -166,33 +174,33 @@ end
 modifier_skill_bloodmana = class({})
 
 function modifier_skill_bloodmana:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_skill_bloodmana:IsHidden()
-    return true
+	return true
 end
 
 function modifier_skill_bloodmana:IsDebuff()
-    return false
+	return false
 end
 
 function modifier_skill_bloodmana:RemoveOnDeath()
-    return false
+	return false
 end
 
 function modifier_skill_bloodmana:AllowIllusionDuplicate()
-    return true
+	return true
 end
 
 function modifier_skill_bloodmana:GetTexture()
-    return "modifier_skill_bloodmana"
+	return "modifier_skill_bloodmana"
 end
 
 function modifier_skill_bloodmana:DeclareFunctions()
-    return {
+	return {
 		MODIFIER_PROPERTY_SPELLS_REQUIRE_HP,
-    }
+	}
 end
 
 function modifier_skill_bloodmana:GetModifierSpellsRequireHP()

@@ -8,11 +8,11 @@ LinkLuaModifier("modifier_bonus_secondary_controller", "modifiers/modifier_bonus
 modifier_bonus_primary_controller = class({})
 
 function modifier_bonus_primary_controller:IsHidden()
-    return true
+	return true
 end
 
 function modifier_bonus_primary_controller:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_bonus_primary_controller:RemoveOnDeath()
@@ -24,7 +24,8 @@ if IsServer() then
 		self.parent = self:GetParent()
 		self.strength_modifier = self.parent:AddNewModifier(self.parent, nil, "modifier_bonus_strength_controller", {})
 		self.agility_modifier = self.parent:AddNewModifier(self.parent, nil, "modifier_bonus_agility_controller", {})
-		self.intellect_modifier = self.parent:AddNewModifier(self.parent, nil, "modifier_bonus_intellect_controller", {})
+		self.intellect_modifier =
+			self.parent:AddNewModifier(self.parent, nil, "modifier_bonus_intellect_controller", {})
 		self.current_attribute = self.parent:GetPrimaryAttribute()
 		self.current_stacks = self:GetStackCount()
 		if self.current_attribute == 0 then
@@ -79,13 +80,12 @@ end
 
 modifier_bonus_primary_token = class({})
 
-
 function modifier_bonus_primary_token:IsHidden()
-    return true
+	return true
 end
 
 function modifier_bonus_primary_token:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_bonus_primary_token:RemoveOnDeath()
@@ -93,7 +93,7 @@ function modifier_bonus_primary_token:RemoveOnDeath()
 end
 
 function modifier_bonus_primary_token:GetAttributes()
-    return MODIFIER_ATTRIBUTE_MULTIPLE
+	return MODIFIER_ATTRIBUTE_MULTIPLE
 end
 
 if IsServer() then
@@ -110,28 +110,27 @@ if IsServer() then
 	end
 end
 
-
 modifier_bonus_secondary_controller = class({})
 
 function modifier_bonus_secondary_controller:IsHidden()
-    return true
+	return true
 end
 
 function modifier_bonus_secondary_controller:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_bonus_secondary_controller:RemoveOnDeath()
 	return false
 end
 
-
 if IsServer() then
 	function modifier_bonus_secondary_controller:OnCreated(keys)
 		self.parent = self:GetParent()
 		self.strength_modifier = self.parent:AddNewModifier(self.parent, nil, "modifier_bonus_strength_controller", {})
 		self.agility_modifier = self.parent:AddNewModifier(self.parent, nil, "modifier_bonus_agility_controller", {})
-		self.intellect_modifier = self.parent:AddNewModifier(self.parent, nil, "modifier_bonus_intellect_controller", {})
+		self.intellect_modifier =
+			self.parent:AddNewModifier(self.parent, nil, "modifier_bonus_intellect_controller", {})
 		self.current_attribute = self.parent:GetPrimaryAttribute()
 		self.current_stacks = self:GetStackCount()
 		if self.current_attribute == 0 then
@@ -200,13 +199,12 @@ end
 
 modifier_bonus_secondary_token = class({})
 
-
 function modifier_bonus_secondary_token:IsHidden()
-    return true
+	return true
 end
 
 function modifier_bonus_secondary_token:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_bonus_secondary_token:RemoveOnDeath()
@@ -214,7 +212,7 @@ function modifier_bonus_secondary_token:RemoveOnDeath()
 end
 
 function modifier_bonus_secondary_token:GetAttributes()
-    return MODIFIER_ATTRIBUTE_MULTIPLE
+	return MODIFIER_ATTRIBUTE_MULTIPLE
 end
 
 if IsServer() then
@@ -231,19 +229,18 @@ if IsServer() then
 	end
 end
 
-
 modifier_bonus_all_token = class({})
 
 function modifier_bonus_all_token:IsHidden()
-    return true
+	return true
 end
 
 function modifier_bonus_all_token:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_bonus_all_token:GetAttributes()
-    return MODIFIER_ATTRIBUTE_MULTIPLE
+	return MODIFIER_ATTRIBUTE_MULTIPLE
 end
 
 function modifier_bonus_all_token:RemoveOnDeath()
@@ -255,7 +252,8 @@ if IsServer() then
 		self.parent = self:GetParent()
 		self.strength_modifier = self.parent:AddNewModifier(self.parent, nil, "modifier_bonus_strength_controller", {})
 		self.agility_modifier = self.parent:AddNewModifier(self.parent, nil, "modifier_bonus_agility_controller", {})
-		self.intellect_modifier = self.parent:AddNewModifier(self.parent, nil, "modifier_bonus_intellect_controller", {})
+		self.intellect_modifier =
+			self.parent:AddNewModifier(self.parent, nil, "modifier_bonus_intellect_controller", {})
 		self.bonus = keys.bonus
 		self.strength_modifier:ModifyStacks(self.bonus)
 		self.agility_modifier:ModifyStacks(self.bonus)
@@ -274,20 +272,18 @@ if IsServer() then
 	end
 end
 
-
 modifier_bonus_agility_token = class({})
 
-
 function modifier_bonus_agility_token:IsHidden()
-    return true
+	return true
 end
 
 function modifier_bonus_agility_token:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_bonus_agility_token:GetAttributes()
-    return MODIFIER_ATTRIBUTE_MULTIPLE
+	return MODIFIER_ATTRIBUTE_MULTIPLE
 end
 
 if IsServer() then
@@ -304,20 +300,18 @@ if IsServer() then
 	end
 end
 
-
 modifier_bonus_strength_token = class({})
 
-
 function modifier_bonus_strength_token:IsHidden()
-    return true
+	return true
 end
 
 function modifier_bonus_strength_token:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_bonus_strength_token:GetAttributes()
-    return MODIFIER_ATTRIBUTE_MULTIPLE
+	return MODIFIER_ATTRIBUTE_MULTIPLE
 end
 
 if IsServer() then
@@ -334,21 +328,18 @@ if IsServer() then
 	end
 end
 
-
-
 modifier_bonus_intellect_token = class({})
 
-
 function modifier_bonus_intellect_token:IsHidden()
-    return true
+	return true
 end
 
 function modifier_bonus_intellect_token:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_bonus_intellect_token:GetAttributes()
-    return MODIFIER_ATTRIBUTE_MULTIPLE
+	return MODIFIER_ATTRIBUTE_MULTIPLE
 end
 
 if IsServer() then
@@ -367,15 +358,15 @@ end
 modifier_bonus_attackspeed_token = class({})
 
 function modifier_bonus_attackspeed_token:IsHidden()
-    return true
+	return true
 end
 
 function modifier_bonus_attackspeed_token:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_bonus_attackspeed_token:GetAttributes()
-    return MODIFIER_ATTRIBUTE_MULTIPLE
+	return MODIFIER_ATTRIBUTE_MULTIPLE
 end
 
 if IsServer() then

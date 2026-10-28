@@ -1,12 +1,11 @@
 modifier_bonus_strength_controller = class({})
 
-
 function modifier_bonus_strength_controller:IsHidden()
-    return true
+	return true
 end
 
 function modifier_bonus_strength_controller:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_bonus_strength_controller:RemoveOnDeath()
@@ -15,7 +14,7 @@ end
 
 function modifier_bonus_strength_controller:DeclareFunctions()
 	local funcs = {
-		MODIFIER_PROPERTY_STATS_STRENGTH_BONUS
+		MODIFIER_PROPERTY_STATS_STRENGTH_BONUS,
 	}
 	return funcs
 end
@@ -23,7 +22,6 @@ end
 function modifier_bonus_strength_controller:GetModifierBonusStats_Strength()
 	return self:GetStackCount()
 end
-
 
 if IsServer() then
 	function modifier_bonus_strength_controller:OnCreated(keys)
@@ -37,7 +35,7 @@ if IsServer() then
 		end
 		self.bonus = self.bonus + stacks
 	end
-	
+
 	function modifier_bonus_strength_controller:OnIntervalThink()
 		if self.bonus == 0 then
 			self:SetStackCount(0)
@@ -50,16 +48,16 @@ end
 modifier_bonus_agility_controller = class({})
 
 function modifier_bonus_agility_controller:IsHidden()
-    return true
+	return true
 end
 
 function modifier_bonus_agility_controller:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_bonus_agility_controller:DeclareFunctions()
 	local funcs = {
-		MODIFIER_PROPERTY_STATS_AGILITY_BONUS
+		MODIFIER_PROPERTY_STATS_AGILITY_BONUS,
 	}
 	return funcs
 end
@@ -84,7 +82,7 @@ if IsServer() then
 		end
 		self.bonus = self.bonus + stacks
 	end
-	
+
 	function modifier_bonus_agility_controller:OnIntervalThink()
 		if self.bonus == 0 then
 			self:SetStackCount(0)
@@ -97,11 +95,11 @@ end
 modifier_bonus_intellect_controller = class({})
 
 function modifier_bonus_intellect_controller:IsHidden()
-    return true
+	return true
 end
 
 function modifier_bonus_intellect_controller:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_bonus_intellect_controller:RemoveOnDeath()
@@ -110,7 +108,7 @@ end
 
 function modifier_bonus_intellect_controller:DeclareFunctions()
 	local funcs = {
-		MODIFIER_PROPERTY_STATS_INTELLECT_BONUS
+		MODIFIER_PROPERTY_STATS_INTELLECT_BONUS,
 	}
 	return funcs
 end
@@ -118,7 +116,6 @@ end
 function modifier_bonus_intellect_controller:GetModifierBonusStats_Intellect()
 	return self:GetStackCount()
 end
-
 
 if IsServer() then
 	function modifier_bonus_intellect_controller:OnCreated(keys)
@@ -132,7 +129,7 @@ if IsServer() then
 		end
 		self.bonus = self.bonus + stacks
 	end
-	
+
 	function modifier_bonus_intellect_controller:OnIntervalThink()
 		if self.bonus == 0 then
 			self:SetStackCount(0)
@@ -144,13 +141,12 @@ end
 
 modifier_bonus_attackspeed_controller = class({})
 
-
 function modifier_bonus_attackspeed_controller:IsHidden()
-    return true
+	return true
 end
 
 function modifier_bonus_attackspeed_controller:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_bonus_attackspeed_controller:RemoveOnDeath()
@@ -180,7 +176,7 @@ if IsServer() then
 		end
 		self.bonus = self.bonus + stacks
 	end
-	
+
 	function modifier_bonus_attackspeed_controller:OnIntervalThink()
 		if self.bonus == 0 then
 			self:SetStackCount(0)

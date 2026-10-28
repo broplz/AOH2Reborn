@@ -2,7 +2,6 @@ require("lib/timers")
 
 custom_terrorblade_behavior = class({})
 
-
 function custom_terrorblade_behavior:OnSpellStart()
 	local caster = self:GetCaster()
 	local metamorphosis = caster:FindAbilityByName("custom_metamorphosis")

@@ -2,14 +2,9 @@ require("AOHSpawner")
 require("lib/my")
 require("lib/notifications")
 
-
-
-
 if AOHGameRound == nil then
 	AOHGameRound = class({})
 end
-
-
 
 function AOHGameRound:ReadConfiguration(kv, gameMode, roundNumber)
 	self._gameMode = gameMode
@@ -24,7 +19,7 @@ function AOHGameRound:ReadConfiguration(kv, gameMode, roundNumber)
 		if type(v) == "table" and v.NPCName then
 			local spawner = AOHSpawner()
 			spawner:ReadConfiguration(k, v, self, gameMode.modifier_total[2])
-			self._vSpawners[ k ] = spawner
+			self._vSpawners[k] = spawner
 		end
 	end
 
@@ -33,21 +28,25 @@ function AOHGameRound:ReadConfiguration(kv, gameMode, roundNumber)
 	end
 end
 
-
 function AOHGameRound:Precache()
 	for _, spawner in pairs(self._vSpawners) do
 		spawner:Precache()
 	end
 end
 
-
 function AOHGameRound:Begin(goldRatio, expRatio)
-
 	local title = "#Round" .. self._nRoundNumber
 	local sub_title = "Round " .. self._nRoundNumber
-	Notifications:TopToAll({text=sub_title, duration=6, style={color = "grey", ["font-family"]="GOUDY TRAJAN MEDIUM", ["font-size"]="40px"}})
-	Notifications:TopToAll({text=title, duration=6, style={["font-family"]="GOUDY TRAJAN MEDIUM", ["font-size"]="90px", ["margin-top"] = "-20px"}})
-	
+	Notifications:TopToAll({
+		text = sub_title,
+		duration = 6,
+		style = { color = "grey", ["font-family"] = "GOUDY TRAJAN MEDIUM", ["font-size"] = "40px" },
+	})
+	Notifications:TopToAll({
+		text = title,
+		duration = 6,
+		style = { ["font-family"] = "GOUDY TRAJAN MEDIUM", ["font-size"] = "90px", ["margin-top"] = "-20px" },
+	})
 
 	self._vEnemiesRemaining = {}
 	self._vEventHandles = {
@@ -56,12 +55,12 @@ function AOHGameRound:Begin(goldRatio, expRatio)
 	}
 
 	self._vPlayerStats = {}
-	for nPlayerID = 0, DOTA_MAX_TEAM_PLAYERS-1 do
-		self._vPlayerStats[ nPlayerID ] = {
+	for nPlayerID = 0, DOTA_MAX_TEAM_PLAYERS - 1 do
+		self._vPlayerStats[nPlayerID] = {
 			nCreepsKilled = 0,
 			nGoldBagsCollected = 0,
 			nPriorRoundDeaths = PlayerResource:GetDeaths(nPlayerID),
-			nPlayersResurrected = 0
+			nPlayersResurrected = 0,
 		}
 	end
 
@@ -75,9 +74,7 @@ function AOHGameRound:Begin(goldRatio, expRatio)
 		self._nCoreUnitsTotal = self._nCoreUnitsTotal + spawner:GetTotalUnitsToSpawn()
 	end
 	self._nCoreUnitsKilled = 0
-	
 end
-
 
 function AOHGameRound:End()
 	for _, eID in pairs(self._vEventHandles) do
@@ -85,18 +82,31 @@ function AOHGameRound:End()
 	end
 	self._vEventHandles = {}
 
-	for _, unit in pairs(FindUnitsInRadius(DOTA_TEAM_BADGUYS, Vector(0, 0, 0), nil, FIND_UNITS_EVERYWHERE, DOTA_UNIT_TARGET_TEAM_FRIENDLY, DOTA_UNIT_TARGET_ALL, DOTA_UNIT_TARGET_FLAG_NONE, FIND_ANY_ORDER, false)) do
+	for _, unit in
+		pairs(
+			FindUnitsInRadius(
+				DOTA_TEAM_BADGUYS,
+				Vector(0, 0, 0),
+				nil,
+				FIND_UNITS_EVERYWHERE,
+				DOTA_UNIT_TARGET_TEAM_FRIENDLY,
+				DOTA_UNIT_TARGET_ALL,
+				DOTA_UNIT_TARGET_FLAG_NONE,
+				FIND_ANY_ORDER,
+				false
+			)
+		)
+	do
 		if not unit:IsTower() then
 			unit:ForceKill(false)
 			UTIL_Remove(unit)
 		end
 	end
 
-	for _,spawner in pairs(self._vSpawners) do
+	for _, spawner in pairs(self._vSpawners) do
 		spawner:End()
 	end
 end
-
 
 function AOHGameRound:Think()
 	for _, spawner in pairs(self._vSpawners) do
@@ -104,11 +114,9 @@ function AOHGameRound:Think()
 	end
 end
 
-
 function AOHGameRound:ChooseRandomSpawnInfo()
 	return self._gameMode:ChooseRandomSpawnInfo()
 end
-
 
 function AOHGameRound:IsFinished()
 	for _, spawner in pairs(self._vSpawners) do
@@ -128,7 +136,6 @@ function AOHGameRound:IsFinished()
 	return false
 end
 
-
 function AOHGameRound:GetXPPerCoreUnit()
 	if self._nCoreUnitsTotal == 0 then
 		return 0
@@ -137,26 +144,32 @@ function AOHGameRound:GetXPPerCoreUnit()
 	end
 end
 
-
 function AOHGameRound:OnNPCSpawned(event)
 	local spawnedUnit = EntIndexToHScript(event.entindex)
-	if not spawnedUnit or spawnedUnit:IsPhantom() or spawnedUnit:GetClassname() == "npc_dota_thinker" or spawnedUnit:GetUnitName() == "" or spawnedUnit:IsIllusion() then
+	if
+		not spawnedUnit
+		or spawnedUnit:IsPhantom()
+		or spawnedUnit:GetClassname() == "npc_dota_thinker"
+		or spawnedUnit:GetUnitName() == ""
+		or spawnedUnit:IsIllusion()
+	then
 		return
 	end
-	if spawnedUnit:GetUnitLabel() == "temp_unit" or spawnedUnit:GetUnitLabel() == "pharaoh_ok" or spawnedUnit:GetUnitName() == "npc_dota_invisible_vision_source" then
+	if
+		spawnedUnit:GetUnitLabel() == "temp_unit"
+		or spawnedUnit:GetUnitLabel() == "pharaoh_ok"
+		or spawnedUnit:GetUnitName() == "npc_dota_invisible_vision_source"
+	then
 		return
 	end
 
 	if spawnedUnit:GetTeamNumber() == DOTA_TEAM_BADGUYS then
-	
 		spawnedUnit:SetMustReachEachGoalEntity(true)
 		table.insert(self._vEnemiesRemaining, spawnedUnit)
 		spawnedUnit:SetDeathXP(0)
 		spawnedUnit.unitName = spawnedUnit:GetUnitName()
-		
 	end
 end
-
 
 function AOHGameRound:OnEntityKilled(event)
 	local killedUnit = EntIndexToHScript(event.entindex_killed)
@@ -169,7 +182,7 @@ function AOHGameRound:OnEntityKilled(event)
 			table.remove(self._vEnemiesRemaining, i)
 			break
 		end
-	end	
+	end
 	if killedUnit.Holdout_IsCore then
 		self._nCoreUnitsKilled = self._nCoreUnitsKilled + 1
 		self:_CheckForGoldBagDrop(killedUnit)
@@ -179,36 +192,32 @@ function AOHGameRound:OnEntityKilled(event)
 	local attackerUnit = EntIndexToHScript(event.entindex_attacker or -1)
 	if attackerUnit then
 		local playerID = attackerUnit:GetPlayerOwnerID()
-		local playerStats = self._vPlayerStats[ playerID ]
+		local playerStats = self._vPlayerStats[playerID]
 		if playerStats then
 			playerStats.nCreepsKilled = playerStats.nCreepsKilled + 1
 		end
 	end
-
 end
-
 
 function AOHGameRound:OnHoldoutReviveComplete(event)
 	local castingHero = EntIndexToHScript(event.caster)
 	if castingHero then
 		local nPlayerID = castingHero:GetPlayerOwnerID()
-		local playerStats = self._vPlayerStats[ nPlayerID ]
+		local playerStats = self._vPlayerStats[nPlayerID]
 		if playerStats then
 			playerStats.nPlayersResurrected = playerStats.nPlayersResurrected + 1
 		end
 	end
 end
 
-
 function AOHGameRound:OnItemPickedUp(event)
 	if event.itemname == "item_bag_of_gold" then
-		local playerStats = self._vPlayerStats[ event.PlayerID ]
+		local playerStats = self._vPlayerStats[event.PlayerID]
 		if playerStats then
 			playerStats.nGoldBagsCollected = playerStats.nGoldBagsCollected + 1
 		end
 	end
 end
-
 
 function AOHGameRound:_CheckForGoldBagDrop(killedUnit)
 	if self._nGoldRemainingInRound <= 0 then
@@ -226,11 +235,12 @@ function AOHGameRound:_CheckForGoldBagDrop(killedUnit)
 				nGoldToDrop = self._nGoldRemainingInRound
 			else
 				nGoldToDrop = math.floor(self._nGoldRemainingInRound / self._nGoldBagsRemaining)
-				nCurrentGoldDrop = math.max(1, RandomInt(nGoldToDrop - self._nBagVariance, nGoldToDrop + self._nBagVariance ))
+				nCurrentGoldDrop =
+					math.max(1, RandomInt(nGoldToDrop - self._nBagVariance, nGoldToDrop + self._nBagVariance))
 			end
 		end
 	end
-	
+
 	nGoldToDrop = math.min(nGoldToDrop, self._nGoldRemainingInRound)
 	if nGoldToDrop <= 0 then
 		return
@@ -245,7 +255,7 @@ function AOHGameRound:_CheckForGoldBagDrop(killedUnit)
 			value = nGoldToDrop / AOHGameMode.player_count,
 			color = Vector(200, 195, 47),
 			type = "goldbounty",
-			pos = 0
+			pos = 0,
 		})
 		ParticleManager:SetParticleControl(fx, 1, v:GetAbsOrigin())
 	end

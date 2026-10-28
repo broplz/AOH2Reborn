@@ -1,5 +1,5 @@
 --team_number unused
-function aoe_line_particle(owner, duration, start_point, end_point, start_radius, end_radius, team_number)	
+function aoe_line_particle(owner, duration, start_point, end_point, start_radius, end_radius, team_number)
 	local fx = ParticleManager:CreateParticle("particles/custom/line_aoe_warning.vpcf", PATTACH_WORLDORIGIN, owner)
 	ParticleManager:SetParticleControl(fx, 0, start_point)
 	ParticleManager:SetParticleControl(fx, 1, start_point)
@@ -10,7 +10,7 @@ function aoe_line_particle(owner, duration, start_point, end_point, start_radius
 	return fx
 end
 
-function aoe_particle(owner, duration, point, radius, team_number)	
+function aoe_particle(owner, duration, point, radius, team_number)
 	local fx = ParticleManager:CreateParticle("particles/custom/aoe_warning.vpcf", PATTACH_WORLDORIGIN, owner)
 	ParticleManager:SetParticleControl(fx, 0, point)
 	ParticleManager:SetParticleControl(fx, 1, Vector(radius, 1, 1))

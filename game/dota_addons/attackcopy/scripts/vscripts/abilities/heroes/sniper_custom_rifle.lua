@@ -4,9 +4,8 @@ function on_attack(keys)
 	local manacost = keys.Manacost
 
 	if caster:GetMana() >= manacost then
-    	caster:SpendMana(manacost, ability)
+		caster:SpendMana(manacost, ability)
 	else
-        ability:ToggleAbility()
-   	end
+		ability:ToggleAbility()
+	end
 end
-

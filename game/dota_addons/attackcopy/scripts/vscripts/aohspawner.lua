@@ -1,10 +1,8 @@
 require("lib/my")
 
-
 if AOHSpawner == nil then
 	AOHSpawner = class({})
 end
-
 
 function AOHSpawner:ReadConfiguration(name, kv, gameRound, double)
 	self._gameRound = gameRound
@@ -24,34 +22,40 @@ function AOHSpawner:ReadConfiguration(name, kv, gameRound, double)
 	self._flSpawnInterval = tonumber(kv.SpawnInterval or 0)
 end
 
-
 function AOHSpawner:PostLoad(spawnerList)
 	self._waitForUnit = spawnerList[self._szWaitForUnit]
 	if self._szWaitForUnit ~= "" and not self._waitForUnit then
-		debug_print(self._szName .. " has a wait for unit " .. self._szWaitForUnit .. " that is missing from the round data.")
+		debug_print(
+			self._szName .. " has a wait for unit " .. self._szWaitForUnit .. " that is missing from the round data."
+		)
 	elseif self._waitForUnit then
 		table.insert(self._waitForUnit._dependentSpawners, self)
 	end
 
 	self._groupWithUnit = spawnerList[self._szGroupWithUnit]
 	if self._szGroupWithUnit ~= "" and not self._groupWithUnit then
-		debug_print (self._szName .. " has a group with unit " .. self._szGroupWithUnit .. " that is missing from the round data.")
+		debug_print(
+			self._szName
+				.. " has a group with unit "
+				.. self._szGroupWithUnit
+				.. " that is missing from the round data."
+		)
 	elseif self._groupWithUnit then
 		table.insert(self._groupWithUnit._dependentSpawners, self)
 	end
 end
 
-
 function AOHSpawner:Precache()
-	PrecacheUnitByNameAsync(self._szNPCClassName, function(sg) self._sg = sg end)
+	PrecacheUnitByNameAsync(self._szNPCClassName, function(sg)
+		self._sg = sg
+	end)
 end
-
 
 function AOHSpawner:Begin()
 	self._nUnitsSpawnedThisRound = 0
 	self._nChampionsSpawnedThisRound = 0
 	self._nUnitsCurrentlyAlive = 0
-	
+
 	self._vecSpawnLocation = nil
 
 	self._entWaypoint = nil
@@ -69,7 +73,6 @@ function AOHSpawner:Begin()
 	end
 end
 
-
 function AOHSpawner:End()
 	if self._sg ~= nil then
 		UnloadSpawnGroupByHandle(self._sg)
@@ -80,7 +83,6 @@ function AOHSpawner:End()
 		self._sgChampion = nil
 	end
 end
-
 
 function AOHSpawner:ParentSpawned(parentSpawner)
 	if parentSpawner == self._groupWithUnit then
@@ -93,15 +95,14 @@ function AOHSpawner:ParentSpawned(parentSpawner)
 	end
 end
 
-
 function AOHSpawner:Think()
 	if not self._flNextSpawnTime then
 		return
 	end
-	
+
 	if GameRules:GetGameTime() >= self._flNextSpawnTime then
 		self:_DoSpawn()
-		for _,s in pairs(self._dependentSpawners) do
+		for _, s in pairs(self._dependentSpawners) do
 			s:ParentSpawned(self)
 		end
 
@@ -113,16 +114,13 @@ function AOHSpawner:Think()
 	end
 end
 
-
 function AOHSpawner:GetTotalUnitsToSpawn()
 	return self._nTotalUnitsToSpawn
 end
 
-
 function AOHSpawner:IsFinishedSpawning()
 	return (self._nTotalUnitsToSpawn <= self._nUnitsSpawnedThisRound) or (self._groupWithUnit ~= nil)
 end
-
 
 function AOHSpawner:_GetSpawnLocation()
 	if self._groupWithUnit then
@@ -132,7 +130,6 @@ function AOHSpawner:_GetSpawnLocation()
 	end
 end
 
-
 function AOHSpawner:_GetSpawnWaypoint()
 	if self._groupWithUnit then
 		return self._groupWithUnit:_GetSpawnWaypoint()
@@ -140,7 +137,6 @@ function AOHSpawner:_GetSpawnWaypoint()
 		return self._entWaypoint
 	end
 end
-
 
 function AOHSpawner:_UpdateRandomSpawn()
 	self._vecSpawnLocation = Vector(0, 0, 0)
@@ -151,7 +147,7 @@ function AOHSpawner:_UpdateRandomSpawn()
 		debug_print(string.format("Failed to get random spawn info for spawner %s.", self._szName))
 		return
 	end
-	
+
 	local entSpawner = Entities:FindByName(nil, spawnInfo.szSpawnerName)
 	if not entSpawner then
 		debug_print(string.format("Failed to find spawner named %s for %s.", spawnInfo.szSpawnerName, self._szName))
@@ -159,14 +155,14 @@ function AOHSpawner:_UpdateRandomSpawn()
 	end
 	self._vecSpawnLocation = entSpawner:GetAbsOrigin()
 
-
 	self._entWaypoint = Entities:FindByName(nil, spawnInfo.szFirstWaypoint)
 	if not self._entWaypoint then
-		debug_print(string.format("Failed to find a waypoint named %s for %s.", spawnInfo.szFirstWaypoint, self._szName))
+		debug_print(
+			string.format("Failed to find a waypoint named %s for %s.", spawnInfo.szFirstWaypoint, self._szName)
+		)
 		return
 	end
 end
-
 
 function AOHSpawner:_DoSpawn()
 	local nUnitsToSpawn = math.min(self._nUnitsPerSpawn, self._nTotalUnitsToSpawn - self._nUnitsSpawnedThisRound)
@@ -177,16 +173,13 @@ function AOHSpawner:_DoSpawn()
 		debug_print(string.format("Started spawning %s at %.2f", self._szName, GameRules:GetGameTime()))
 	end
 
-
 	self:_UpdateRandomSpawn()
 
-
 	local vBaseSpawnLocation = self:_GetSpawnLocation()
-	if not vBaseSpawnLocation then 
-		return 
+	if not vBaseSpawnLocation then
+		return
 	end
-	for iUnit = 1,nUnitsToSpawn do
-
+	for iUnit = 1, nUnitsToSpawn do
 		local vSpawnLocation = vBaseSpawnLocation + RandomVector(RandomFloat(-200, 200))
 		local xp = self._gameRound:GetXPPerCoreUnit()
 		if _G.AOHGameMode.modifier_total[2] == 1 then
@@ -206,6 +199,5 @@ function AOHSpawner:_DoSpawn()
 			entUnit.Holdout_IsCore = true
 			entUnit:SetDeathXP(xp)
 		end
-		
 	end
 end

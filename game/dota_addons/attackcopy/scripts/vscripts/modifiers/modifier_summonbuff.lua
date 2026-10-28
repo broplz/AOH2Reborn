@@ -1,8 +1,7 @@
 modifier_summonbuff = class({})
 
-
 function modifier_summonbuff:GetTexture()
-    return "summonbuff"
+	return "summonbuff"
 end
 
 function modifier_summonbuff:IsPurgable()
@@ -10,13 +9,10 @@ function modifier_summonbuff:IsPurgable()
 end
 
 function modifier_summonbuff:GetTexture()
-    return "pharaoh_crown"
+	return "pharaoh_crown"
 end
 
- 
 if IsServer() then
-
-
 	function modifier_summonbuff:OnCreated(keys)
 		self.caster = PlayerResource:GetSelectedHeroEntity(keys.id)
 		if self.caster then
@@ -40,7 +36,9 @@ if IsServer() then
 			end
 			if self.is_hero then
 				local tempHealth = self.parent:GetHealthPercent()
-				self.parent:SetMaxHealth(self.parent_health + (self.parent_health * (self.caster:GetMaxHealth() / self.health)))
+				self.parent:SetMaxHealth(
+					self.parent_health + (self.parent_health * (self.caster:GetMaxHealth() / self.health))
+				)
 				self.parent:SetHealth(self.parent:GetMaxHealth() * tempHealth * 0.01)
 			else
 				self.healthmodifier = self.parent:AddNewModifier(self.parent, nil, "modifier_summonbuff_health", {})
@@ -50,10 +48,18 @@ if IsServer() then
 			self.armormodifier:SetStackCount(self.caster:GetPhysicalArmorValue(false) * self.armor)
 			self.damagemodifier = self.parent:AddNewModifier(self.caster, nil, "modifier_summonbuff_damage", {})
 			local caster_base_damage = (self.caster:GetBaseDamageMax() + self.caster:GetBaseDamageMin()) / 2
-			self.damagemodifier:SetStackCount(self.parent_damage * (((caster_base_damage) + (self.caster:GetAverageTrueAttackDamage(self.caster) - caster_base_damage) * 0.4)  / self.damage))
+			self.damagemodifier:SetStackCount(
+				self.parent_damage
+					* (
+						(
+							caster_base_damage
+							+ (self.caster:GetAverageTrueAttackDamage(self.caster) - caster_base_damage) * 0.4
+						) / self.damage
+					)
+			)
 			self.regenmodifier = self.parent:AddNewModifier(self.caster, nil, "modifier_summonbuff_regen", {})
 			self.regenmodifier:SetStackCount(self.parent_regen * (self.caster:GetMaxHealth() / self.health))
-			self.parent:AddNewModifier(self.caster, self.ability, "modifier_summonbuff_super_armor", {duration = 3.0})
+			self.parent:AddNewModifier(self.caster, self.ability, "modifier_summonbuff_super_armor", { duration = 3.0 })
 			self:StartIntervalThink(0.66)
 		end
 	end
@@ -78,111 +84,119 @@ if IsServer() then
 		end
 		self.armormodifier:SetStackCount(self.caster:GetPhysicalArmorValue(false) * self.armor)
 		local caster_base_damage = (self.caster:GetBaseDamageMax() + self.caster:GetBaseDamageMin()) / 2
-		self.damagemodifier:SetStackCount(self.parent_damage * (((caster_base_damage) + (self.caster:GetAverageTrueAttackDamage(self.caster) - caster_base_damage) * 0.4)  / self.damage))
+		self.damagemodifier:SetStackCount(
+			self.parent_damage
+				* (
+					(
+						caster_base_damage
+						+ (self.caster:GetAverageTrueAttackDamage(self.caster) - caster_base_damage) * 0.4
+					) / self.damage
+				)
+		)
 		self.regenmodifier:SetStackCount(self.parent_regen * (caster_max_health / self.health))
 	end
 end
 LinkLuaModifier("modifier_summonbuff_health", "modifiers/modifier_summonbuff.lua", LUA_MODIFIER_MOTION_NONE)
 modifier_summonbuff_health = class({})
 function modifier_summonbuff_health:IsBuff()
-    return true
+	return true
 end
 function modifier_summonbuff_health:IsHidden()
-    return true
+	return true
 end
 function modifier_summonbuff_health:IsPurgable()
-    return false
+	return false
 end
 function modifier_summonbuff_health:DeclareFunctions()
-    return {
-        MODIFIER_PROPERTY_EXTRA_HEALTH_BONUS,
-    }
+	return {
+		MODIFIER_PROPERTY_EXTRA_HEALTH_BONUS,
+	}
 end
 function modifier_summonbuff_health:GetModifierExtraHealthBonus()
-    return self:GetStackCount()
+	return self:GetStackCount()
 end
 LinkLuaModifier("modifier_summonbuff_damage", "modifiers/modifier_summonbuff.lua", LUA_MODIFIER_MOTION_NONE)
 modifier_summonbuff_damage = class({})
 function modifier_summonbuff_damage:IsBuff()
-    return true
+	return true
 end
 function modifier_summonbuff_damage:IsHidden()
-    return true
+	return true
 end
 function modifier_summonbuff_damage:IsPurgable()
-    return false
+	return false
 end
 function modifier_summonbuff_damage:DeclareFunctions()
-    return {
-        MODIFIER_PROPERTY_BASEATTACK_BONUSDAMAGE,
-    }
+	return {
+		MODIFIER_PROPERTY_BASEATTACK_BONUSDAMAGE,
+	}
 end
 function modifier_summonbuff_damage:GetModifierBaseAttack_BonusDamage()
-    return self:GetStackCount()
+	return self:GetStackCount()
 end
 LinkLuaModifier("modifier_summonbuff_armor", "modifiers/modifier_summonbuff.lua", LUA_MODIFIER_MOTION_NONE)
 modifier_summonbuff_armor = class({})
 function modifier_summonbuff_armor:IsBuff()
-    return true
+	return true
 end
 function modifier_summonbuff_armor:IsHidden()
-    return true
+	return true
 end
 function modifier_summonbuff_armor:IsPurgable()
-    return false
+	return false
 end
 function modifier_summonbuff_armor:DeclareFunctions()
-    return {
-        MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
+	return {
+		MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
 		MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS,
-    }
+	}
 end
 function modifier_summonbuff_armor:GetModifierPhysicalArmorBonus()
-    return self:GetStackCount()
+	return self:GetStackCount()
 end
 function modifier_summonbuff_armor:GetModifierMagicalResistanceBonus()
-    return 25
+	return 25
 end
 LinkLuaModifier("modifier_summonbuff_regen", "modifiers/modifier_summonbuff.lua", LUA_MODIFIER_MOTION_NONE)
 modifier_summonbuff_regen = class({})
 function modifier_summonbuff_regen:IsBuff()
-    return true
+	return true
 end
 function modifier_summonbuff_regen:IsHidden()
-    return true
+	return true
 end
 function modifier_summonbuff_regen:IsPurgable()
-    return false
+	return false
 end
 function modifier_summonbuff_regen:DeclareFunctions()
-    return {
-        MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT,
+	return {
+		MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT,
 		MODIFIER_PROPERTY_HEALTH_REGEN_PERCENTAGE,
-    }
+	}
 end
 function modifier_summonbuff_regen:GetModifierConstantHealthRegen()
-    return self:GetStackCount()
+	return self:GetStackCount()
 end
 function modifier_summonbuff_regen:GetModifierHealthRegenPercentage()
-    return 1.5
+	return 1.5
 end
 
 LinkLuaModifier("modifier_summonbuff_super_armor", "modifiers/modifier_summonbuff.lua", LUA_MODIFIER_MOTION_NONE)
 modifier_summonbuff_super_armor = class({})
 function modifier_summonbuff_super_armor:IsBuff()
-    return true
+	return true
 end
-function modifier_summonbuff_super_armor:IsHidden() 
+function modifier_summonbuff_super_armor:IsHidden()
 	return true
 end
 function modifier_summonbuff_super_armor:IsPurgable()
-    return false
+	return false
 end
 function modifier_summonbuff_super_armor:DeclareFunctions()
-    return {
-        MODIFIER_PROPERTY_INCOMING_DAMAGE_PERCENTAGE,
-    }
+	return {
+		MODIFIER_PROPERTY_INCOMING_DAMAGE_PERCENTAGE,
+	}
 end
 function modifier_summonbuff_super_armor:GetModifierIncomingDamage_Percentage()
-    return -75;
+	return -75
 end

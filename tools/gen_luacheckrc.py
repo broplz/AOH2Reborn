@@ -73,7 +73,7 @@ def main():
            "-- Do not edit by hand: rerun the generator after a Dota patch and commit the result.",
            "std = 'luajit'", "max_line_length = 160", "codes = true",
            "-- Dota VScript is Lua 5.1 without `goto`; keep the checks strict where it is cheap.",
-           "ignore = {", "  '212', -- unused argument (keys/self in handlers)", "  '631', -- line too long: stylua handles layout", "}",
+           "ignore = {", "  '212', -- unused argument (keys/self in handlers)", "  '631', -- line too long: stylua handles layout", "  '582', -- error-prone negation (not x == y): 5 legacy sites, fixed in task 0004; drop with it", "}",
            "exclude_files = { 'tools/vanilla/**', 'logs/**', 'game/dota_addons/attackcopy/scripts/vscripts/statcollection/**' }",
            "read_globals = {"]
     out += [f"  '{n}'," for n in sorted(names)]

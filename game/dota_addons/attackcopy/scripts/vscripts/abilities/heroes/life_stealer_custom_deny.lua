@@ -1,58 +1,55 @@
-
-
 life_stealer_custom_deny = class({})
 
-
 function life_stealer_custom_deny:GetIntrinsicModifierName()
-    return "modifier_life_stealer_custom_deny"
+	return "modifier_life_stealer_custom_deny"
 end
 
-
-
-LinkLuaModifier("modifier_life_stealer_custom_deny", "abilities/heroes/life_stealer_custom_deny.lua", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier(
+	"modifier_life_stealer_custom_deny",
+	"abilities/heroes/life_stealer_custom_deny.lua",
+	LUA_MODIFIER_MOTION_NONE
+)
 
 modifier_life_stealer_custom_deny = class({})
 
-
 function modifier_life_stealer_custom_deny:IsHidden()
-    return true
+	return true
 end
-
-
 
 if IsServer() then
-    function modifier_life_stealer_custom_deny:DeclareFunctions()
-        return {
-            MODIFIER_EVENT_ON_ATTACK_LANDED
-        }
-    end
+	function modifier_life_stealer_custom_deny:DeclareFunctions()
+		return {
+			MODIFIER_EVENT_ON_ATTACK_LANDED,
+		}
+	end
 
+	function modifier_life_stealer_custom_deny:OnAttackLanded(keys)
+		local ability = self:GetAbility()
+		local attacker = keys.attacker
+		local target = keys.target
 
-    function modifier_life_stealer_custom_deny:OnAttackLanded(keys)
-        local ability = self:GetAbility()
-        local attacker = keys.attacker
-        local target = keys.target
-    
-        if attacker == self:GetParent() and attacker:IsOpposingTeam(target:GetTeam()) then
+		if attacker == self:GetParent() and attacker:IsOpposingTeam(target:GetTeam()) then
+			if
+				not target:HasModifier("modifier_life_stealer_custom_deny_debuff") and not self:GetParent():IsIllusion()
+			then
+				target:AddNewModifier(attacker, ability, "modifier_life_stealer_custom_deny_debuff", {})
+			end
 
-
-            if not target:HasModifier("modifier_life_stealer_custom_deny_debuff") and not self:GetParent():IsIllusion() then
-                target:AddNewModifier(attacker, ability, "modifier_life_stealer_custom_deny_debuff", {})
-            end
-
-            target:FindModifierByName("modifier_life_stealer_custom_deny_debuff"):IncrementStackCount()
-        end
-    end
+			target:FindModifierByName("modifier_life_stealer_custom_deny_debuff"):IncrementStackCount()
+		end
+	end
 end
 
-
-
-LinkLuaModifier("modifier_life_stealer_custom_deny_debuff", "abilities/heroes/life_stealer_custom_deny.lua", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier(
+	"modifier_life_stealer_custom_deny_debuff",
+	"abilities/heroes/life_stealer_custom_deny.lua",
+	LUA_MODIFIER_MOTION_NONE
+)
 modifier_life_stealer_custom_deny_debuff = class({})
 
 function modifier_life_stealer_custom_deny_debuff:DeclareFunctions()
 	return {
-		MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT
+		MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT,
 	}
 end
 function modifier_life_stealer_custom_deny_debuff:IsPurgable()

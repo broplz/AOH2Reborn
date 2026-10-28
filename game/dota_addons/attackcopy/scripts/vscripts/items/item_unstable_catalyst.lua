@@ -1,12 +1,10 @@
 item_unstable_catalyst = class({})
 
-function item_unstable_catalyst:OnSpellStart()
-	end
-	
+function item_unstable_catalyst:OnSpellStart() end
+
 function item_unstable_catalyst:GetIntrinsicModifierName()
 	return "modifier_item_unstable_catalyst"
 end
-
 
 LinkLuaModifier("modifier_item_unstable_catalyst", "items/item_unstable_catalyst.lua", LUA_MODIFIER_MOTION_NONE)
 modifier_item_unstable_catalyst = class({})

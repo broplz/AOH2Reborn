@@ -1,20 +1,19 @@
-
 modifier_hard_mode_boss = class({})
 
 function modifier_hard_mode_boss:IsBuff()
-    return true
+	return true
 end
 
 function modifier_hard_mode_boss:IsHidden()
-    return false
+	return false
 end
 
 function modifier_hard_mode_boss:GetTexture()
-    return "hard_mode"
+	return "hard_mode"
 end
 
 function modifier_hard_mode_boss:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_hard_mode_boss:DeclareFunctions()

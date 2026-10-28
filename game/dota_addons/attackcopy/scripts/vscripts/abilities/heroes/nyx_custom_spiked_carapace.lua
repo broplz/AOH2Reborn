@@ -1,10 +1,9 @@
-
 --[[
 	Author: kritth
 	Date: 10.01.2015.
 	Reflect damage
 ]]
-function spiked_carapace_reflect( keys )
+function spiked_carapace_reflect(keys)
 	-- Variables
 	local ability = keys.ability
 	local caster = keys.caster
@@ -22,15 +21,14 @@ function spiked_carapace_reflect( keys )
 		end
 		local damage = damageTaken * damageReflect
 
-
 		ApplyDamage({
 			ability = ability,
 			attacker = caster,
 			damage = damage,
 			damage_type = ability:GetAbilityDamageType(),
-			victim = attacker
+			victim = attacker,
 		})
-		keys.ability:ApplyDataDrivenModifier( caster, attacker, "modifier_spiked_carapaced_stun_datadriven", { } )
+		keys.ability:ApplyDataDrivenModifier(caster, attacker, "modifier_spiked_carapaced_stun_datadriven", {})
 
 		caster:Heal(damageTaken * damageReduce * 0.01, caster)
 		caster:RemoveModifierByName("modifier_spiked_carapace_buff_datadriven")

@@ -1,8 +1,6 @@
 require("lib/my")
 
-
 custom_revenge_behavior = class({})
-
 
 function custom_revenge_behavior:GetIntrinsicModifierName()
 	if not self:GetCaster():IsIllusion() then
@@ -10,16 +8,12 @@ function custom_revenge_behavior:GetIntrinsicModifierName()
 	end
 end
 
-
-
-
 LinkLuaModifier("modifier_custom_revenge_behavior", "bosses/custom_revenge_behavior.lua", LUA_MODIFIER_MOTION_NONE)
 
 modifier_custom_revenge_behavior = class({})
 
-
 function modifier_custom_revenge_behavior:IsHidden()
-    return true
+	return true
 end
 function modifier_custom_revenge_behavior:IsPurgable()
 	return false
@@ -45,7 +39,7 @@ if IsServer() then
 		self.disable_regen = self.ability:GetSpecialValueFor("disable_regen")
 		self.mana_regen_percent = 0
 		self.isDisabled = false
-		
+
 		self:StartIntervalThink(self.interval)
 	end
 	function modifier_custom_revenge_behavior:OnIntervalThink()
@@ -57,7 +51,7 @@ if IsServer() then
 		end
 		if self.parent:IsStunned() or self.parent:IsSilenced() or self.parent:IsDisarmed() then
 			self.mana_regen_percent = self.mana_regen_percent + self.disable_regen
-		end 	
+		end
 		if self.parent:GetManaPercent() > 98 then
 			self.parent:Purge(false, true, false, true, false)
 			self:getPissed()
@@ -72,9 +66,7 @@ if IsServer() then
 	end
 
 	function modifier_custom_revenge_behavior:getPissed()
-			self.revengeAbility:EndCooldown()
-			self.parent:Heal(self.parent:GetMaxHealth() * 0.03, nil)
+		self.revengeAbility:EndCooldown()
+		self.parent:Heal(self.parent:GetMaxHealth() * 0.03, nil)
 	end
 end
-
-

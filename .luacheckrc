@@ -7,6 +7,7 @@ codes = true
 ignore = {
   '212', -- unused argument (keys/self in handlers)
   '631', -- line too long: stylua handles layout
+  '582', -- error-prone negation (not x == y): 5 legacy sites, fixed in task 0004; drop with it
 }
 exclude_files = { 'tools/vanilla/**', 'logs/**', 'game/dota_addons/attackcopy/scripts/vscripts/statcollection/**' }
 read_globals = {

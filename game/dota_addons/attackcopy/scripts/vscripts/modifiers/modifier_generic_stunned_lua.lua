@@ -14,7 +14,7 @@ end
 
 function modifier_generic_stunned_lua:CheckState()
 	local state = {
-	[MODIFIER_STATE_STUNNED] = true,
+		[MODIFIER_STATE_STUNNED] = true,
 	}
 
 	return state
@@ -30,7 +30,7 @@ function modifier_generic_stunned_lua:DeclareFunctions()
 	return funcs
 end
 
-function modifier_generic_stunned_lua:GetOverrideAnimation( params )
+function modifier_generic_stunned_lua:GetOverrideAnimation(params)
 	return ACT_DOTA_DISABLED
 end
 

@@ -1,4 +1,3 @@
-
 require("lib/my")
 require("lib/ai")
 

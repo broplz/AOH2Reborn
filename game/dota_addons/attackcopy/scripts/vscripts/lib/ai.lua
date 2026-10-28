@@ -1,7 +1,6 @@
 -- Lib wrote by me.
 require("lib/my")
 
-
 function ai_all_heroes()
 	local heroes = {}
 
@@ -16,7 +15,6 @@ function ai_all_heroes()
 
 	return heroes
 end
-
 
 function ai_alive_heroes()
 	local heroes_alive = {}
@@ -33,13 +31,11 @@ function ai_alive_heroes()
 	return heroes_alive
 end
 
-
 function ai_random_alive_hero()
 	return random_from_table(ai_alive_heroes())
 end
 
 function ai_weakest_alive_hero_current()
-
 	local function get_weakest(hero1, hero2)
 		if hero1:GetHealth() > hero2:GetHealth() then
 			return hero2
@@ -67,7 +63,6 @@ function ai_weakest_alive_hero_current()
 end
 
 function ai_weakest_alive_hero()
-
 	local function get_weakest(hero1, hero2)
 		if hero1:GetMaxHealth() > hero2:GetMaxHealth() then
 			return hero2
@@ -93,4 +88,3 @@ function ai_weakest_alive_hero()
 
 	return weakest
 end
-

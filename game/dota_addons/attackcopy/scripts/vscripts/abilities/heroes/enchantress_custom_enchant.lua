@@ -1,6 +1,14 @@
 enchantress_custom_enchant = class({})
-LinkLuaModifier( "modifier_enchantress_enchant_lua", "abilities/heroes/enchantress_custom_enchant.lua", LUA_MODIFIER_MOTION_NONE )
-LinkLuaModifier( "modifier_enchantress_enchant_lua_slow", "abilities/heroes/enchantress_custom_enchant.lua", LUA_MODIFIER_MOTION_NONE )
+LinkLuaModifier(
+	"modifier_enchantress_enchant_lua",
+	"abilities/heroes/enchantress_custom_enchant.lua",
+	LUA_MODIFIER_MOTION_NONE
+)
+LinkLuaModifier(
+	"modifier_enchantress_enchant_lua_slow",
+	"abilities/heroes/enchantress_custom_enchant.lua",
+	LUA_MODIFIER_MOTION_NONE
+)
 LinkLuaModifier("modifier_summonbuff", "modifiers/modifier_summonbuff.lua", LUA_MODIFIER_MOTION_NONE)
 
 function enchantress_custom_enchant:OnUpgrade()
@@ -17,7 +25,7 @@ function enchantress_custom_enchant:OnSpellStart()
 	local bonus_damage = self:GetSpecialValueFor("enchant_damage")
 	local talent = caster:FindAbilityByName("special_bonus_unique_enchantress_1")
 	if talent and talent:GetLevel() > 0 then
-		has_talent = true	
+		has_talent = true
 	end
 	-- add modifier based on target
 	if target:IsConsideredHero() then
@@ -30,38 +38,38 @@ function enchantress_custom_enchant:OnSpellStart()
 		)
 
 		-- dispel target
-		target:Purge( true, false, false, false, false )
+		target:Purge(true, false, false, false, false)
 
 		-- play effects
 		local sound_cast = "Hero_Enchantress.EnchantHero"
-		EmitSoundOn( sound_cast, target )
+		EmitSoundOn(sound_cast, target)
 	elseif not target:IsAncient() or has_talent then
 		table.insert(self.dominate_table, target)
 		if #self.dominate_table > 1 then
-			self.dominate_table[1]:ForceKill(true) 
+			self.dominate_table[1]:ForceKill(true)
 		end
 		target:SetBaseMaxHealth(target:GetMaxHealth() + bonus_health)
 		target:SetBaseDamageMax(target:GetBaseDamageMax() + bonus_damage)
 		target:SetBaseDamageMin(target:GetBaseDamageMin() + bonus_damage)
-		target:AddNewModifier(target, nil, "modifier_summonbuff", {id = caster:GetPlayerID()})
+		target:AddNewModifier(target, nil, "modifier_summonbuff", { id = caster:GetPlayerID() })
 		target:AddNewModifier(
 			caster, -- player source
 			self, -- ability source
 			"modifier_enchantress_enchant_lua", -- modifier name
 			{ duration = -1 } -- kv
 		)
-		
+
 		-- dispel target
-		target:Purge( false, true, false, false, false )
+		target:Purge(false, true, false, false, false)
 
 		-- play effects
 		local sound_cast = "Hero_Enchantress.EnchantCreep"
-		EmitSoundOn( sound_cast, target )
+		EmitSoundOn(sound_cast, target)
 	end
 
 	-- play effects
 	local sound_cast = "Hero_Enchantress.EnchantCast"
-	EmitSoundOn( sound_cast, caster )
+	EmitSoundOn(sound_cast, caster)
 end
 
 modifier_enchantress_enchant_lua = class({})
@@ -82,23 +90,21 @@ end
 
 --------------------------------------------------------------------------------
 -- Initializations
-function modifier_enchantress_enchant_lua:OnCreated( kv )
+function modifier_enchantress_enchant_lua:OnCreated(kv)
 	if IsServer() then
 		local parent = self:GetParent()
 		local caster = self:GetCaster()
 
 		-- set controllable
-		parent:SetTeam( caster:GetTeamNumber() )
-		parent:SetOwner( caster )
-		parent:SetControllableByPlayer( caster:GetPlayerOwnerID(), true )
+		parent:SetTeam(caster:GetTeamNumber())
+		parent:SetOwner(caster)
+		parent:SetControllableByPlayer(caster:GetPlayerOwnerID(), true)
 	end
 end
 
-function modifier_enchantress_enchant_lua:OnRefresh( kv )
-	
-end
+function modifier_enchantress_enchant_lua:OnRefresh(kv) end
 
-function modifier_enchantress_enchant_lua:OnDestroy( kv )
+function modifier_enchantress_enchant_lua:OnDestroy(kv)
 	local ability = self:GetAbility()
 	table.remove(ability.dominate_table, 1)
 end
@@ -195,18 +201,17 @@ end
 
 --------------------------------------------------------------------------------
 -- Initializations
-function modifier_enchantress_enchant_lua_slow:OnCreated( kv )
+function modifier_enchantress_enchant_lua_slow:OnCreated(kv)
 	-- references
-	self.slow = self:GetAbility():GetSpecialValueFor( "slow_movement_speed" ) -- special value
+	self.slow = self:GetAbility():GetSpecialValueFor("slow_movement_speed") -- special value
 end
 
-function modifier_enchantress_enchant_lua_slow:OnRefresh( kv )
+function modifier_enchantress_enchant_lua_slow:OnRefresh(kv)
 	-- references
-	self.slow = self:GetAbility():GetSpecialValueFor( "slow_movement_speed" ) -- special value
+	self.slow = self:GetAbility():GetSpecialValueFor("slow_movement_speed") -- special value
 end
 
-function modifier_enchantress_enchant_lua_slow:OnDestroy( kv )
-end
+function modifier_enchantress_enchant_lua_slow:OnDestroy(kv) end
 
 --------------------------------------------------------------------------------
 -- Modifier Effects

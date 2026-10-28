@@ -1,7 +1,5 @@
 require("AOHGameMode")
-require( "lib/animations")
-
-
+require("lib/animations")
 
 function do_precache(elements, handle)
 	for _, e in ipairs(elements) do
@@ -9,22 +7,17 @@ function do_precache(elements, handle)
 	end
 end
 
-
 function Precache(context)
 	local items = {
 		"item_bag_of_gold",
 		"item_tombstone",
 	}
 
-	local models = {
+	local models = {}
 
-	}
+	local particles = {}
 
-	local particles = {
-
-	}
-
-	local soundevents = {	
+	local soundevents = {
 		"soundevents/game_sounds.vsndevts",
 		"soundevents/game_sounds_heroes/game_sounds_abyssal_underlord.vsndevts",
 		"soundevents/game_sounds_heroes/game_sounds_antimage.vsndevts",
@@ -50,46 +43,31 @@ function Precache(context)
 		"soundevents/game_sounds_heroes/game_sounds_oracle.vsndevts",
 		"soundevents/game_sounds_heroes/game_sounds_wisp.vsndevts",
 		"soundevents/game_sounds_heroes/game_sounds_zuus.vsndevts",
-		"soundevents/game_sounds_custom.vsndevts"
+		"soundevents/game_sounds_custom.vsndevts",
 	}
 
-	local units = { 
+	local units = {}
 
-	}
+	do_precache(items, function(e)
+		PrecacheItemByNameSync(e, context)
+	end)
 
+	do_precache(models, function(e)
+		PrecacheModel(e, context)
+	end)
 
+	do_precache(particles, function(e)
+		PrecacheResource("particle", e, context)
+	end)
 
-	do_precache(items, 
-		function(e) 
-			PrecacheItemByNameSync(e, context) 
-		end
-	)
+	do_precache(soundevents, function(e)
+		PrecacheResource("soundfile", e, context)
+	end)
 
-	do_precache(models, 
-		function(e) 
-			PrecacheModel(e, context)
-		end
-	)
-
-	do_precache(particles, 
-		function(e) 
-			PrecacheResource("particle", e, context)
-		end
-	)
-
-	do_precache(soundevents, 
-		function(e) 
-			PrecacheResource("soundfile", e, context)
-		end
-	)
-
-	do_precache(units, 
-		function(e) 
-			PrecacheUnitByNameSync(e, context)
-		end
-	)
+	do_precache(units, function(e)
+		PrecacheUnitByNameSync(e, context)
+	end)
 end
-
 
 function Activate()
 	GameRules.GameMode = AOHGameMode()

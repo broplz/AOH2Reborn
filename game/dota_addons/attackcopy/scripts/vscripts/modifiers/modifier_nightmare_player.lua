@@ -1,24 +1,23 @@
-
 modifier_nightmare_player = class({})
 
 function modifier_nightmare_player:IsPurgable()
-    return false
+	return false
 end
 
 function modifier_nightmare_player:IsDebuff()
-    return false
+	return false
 end
 
 function modifier_nightmare_player:RemoveOnDeath()
-    return false
+	return false
 end
 
 function modifier_nightmare_player:AllowIllusionDuplicate()
-    return true
+	return true
 end
 
 function modifier_nightmare_player:GetTexture()
-    return "night_stalker_darkness"
+	return "night_stalker_darkness"
 end
 
 function modifier_nightmare_player:OnCreated()
@@ -30,11 +29,11 @@ function modifier_nightmare_player:OnCreated()
 end
 
 function modifier_nightmare_player:DeclareFunctions()
-    return {
+	return {
 		MODIFIER_PROPERTY_COOLDOWN_PERCENTAGE,
-    }
+	}
 end
 
 function modifier_nightmare_player:GetModifierPercentageCooldown()
-    return 10
+	return 10
 end

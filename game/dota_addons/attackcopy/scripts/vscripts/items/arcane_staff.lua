@@ -2,27 +2,34 @@ require("lib/my")
 require("lib/popup")
 LinkLuaModifier("modifier_item_arcane_staff_bubble", "items/arcane_staff.lua", LUA_MODIFIER_MOTION_NONE)
 
-
 arcane_staff = class({})
 
-
 function arcane_staff:GetIntrinsicModifierName()
-    return "modifier_item_arcane_staff"
+	return "modifier_item_arcane_staff"
 end
 
 function arcane_staff:OnSpellStart()
 	if IsServer() then
-		self.bubble_duration = self:GetSpecialValueFor( "bubble_duration" )
+		self.bubble_duration = self:GetSpecialValueFor("bubble_duration")
 
 		local hTarget = self:GetCursorTarget()
-		if not PlayerResource:IsDisableHelpSetForPlayerID(self:GetCaster():GetPlayerOwnerID(), hTarget:GetPlayerOwnerID()) then
-			hTarget:AddNewModifier( self:GetCaster(), self, "modifier_item_arcane_staff_bubble", { duration = self.bubble_duration } )
+		if
+			not PlayerResource:IsDisableHelpSetForPlayerID(
+				self:GetCaster():GetPlayerOwnerID(),
+				hTarget:GetPlayerOwnerID()
+			)
+		then
+			hTarget:AddNewModifier(
+				self:GetCaster(),
+				self,
+				"modifier_item_arcane_staff_bubble",
+				{ duration = self.bubble_duration }
+			)
 
-			EmitSoundOn( "DOTA_Item.GhostScepter.Activate", self:GetCaster() )
+			EmitSoundOn("DOTA_Item.GhostScepter.Activate", self:GetCaster())
 		end
 	end
 end
-
 
 modifier_item_arcane_staff_bubble = class({})
 
@@ -39,24 +46,24 @@ function modifier_item_arcane_staff_bubble:GetEffectAttachType()
 end
 
 function modifier_item_arcane_staff_bubble:DeclareFunctions()
-    return {
-        MODIFIER_PROPERTY_HEALTH_REGEN_PERCENTAGE,
-    }
+	return {
+		MODIFIER_PROPERTY_HEALTH_REGEN_PERCENTAGE,
+	}
 end
 
 function modifier_item_arcane_staff_bubble:GetModifierHealthRegenPercentage()
-    return self:GetAbility():GetSpecialValueFor("bubble_heal_pct")
+	return self:GetAbility():GetSpecialValueFor("bubble_heal_pct")
 end
 
 function modifier_item_arcane_staff_bubble:CheckState()
 	local state = {}
-	if IsServer()  then
-		state[ MODIFIER_STATE_ROOTED ] = true
-		state[ MODIFIER_STATE_DISARMED] = true
-		state[ MODIFIER_STATE_MAGIC_IMMUNE ] = true
-		state[ MODIFIER_STATE_INVULNERABLE ] = true
-		state[ MODIFIER_STATE_OUT_OF_GAME ] = true
-		state[ MODIFIER_STATE_UNSELECTABLE ] = true
+	if IsServer() then
+		state[MODIFIER_STATE_ROOTED] = true
+		state[MODIFIER_STATE_DISARMED] = true
+		state[MODIFIER_STATE_MAGIC_IMMUNE] = true
+		state[MODIFIER_STATE_INVULNERABLE] = true
+		state[MODIFIER_STATE_OUT_OF_GAME] = true
+		state[MODIFIER_STATE_UNSELECTABLE] = true
 	end
 
 	return state
@@ -69,7 +76,7 @@ LinkLuaModifier("modifier_item_arcane_staff", "items/arcane_staff.lua", LUA_MODI
 modifier_item_arcane_staff = class({})
 
 function modifier_item_arcane_staff:IsHidden()
-    return true
+	return true
 end
 
 function modifier_item_arcane_staff:IsPurgable()
@@ -77,14 +84,14 @@ function modifier_item_arcane_staff:IsPurgable()
 end
 
 function modifier_item_arcane_staff:GetAttributes()
-    return MODIFIER_ATTRIBUTE_MULTIPLE
+	return MODIFIER_ATTRIBUTE_MULTIPLE
 end
 
 function modifier_item_arcane_staff:DeclareFunctions()
-    return {
-        MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE,
-        MODIFIER_PROPERTY_STATS_INTELLECT_BONUS,
-    }
+	return {
+		MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE,
+		MODIFIER_PROPERTY_STATS_INTELLECT_BONUS,
+	}
 end
 
 if IsServer() then
@@ -96,23 +103,20 @@ if IsServer() then
 			local PlayerID = parent:GetPlayerID()
 			_G.AOHGameMode.SetArcane(PlayerID, self.base, self.mult)
 		end
-	end 
-	
+	end
+
 	function modifier_item_arcane_staff:OnDestroy()
 		local parent = self:GetParent()
 		if parent:IsRealHero() and not parent:IsTempestDouble() then
 			local PlayerID = parent:GetPlayerID()
 			_G.AOHGameMode.SetArcane(PlayerID, -self.base, -self.mult)
 		end
-	end 
+	end
 end
 function modifier_item_arcane_staff:GetModifierPreAttack_BonusDamage()
-    return self:GetAbility():GetSpecialValueFor("bonus_damage")
+	return self:GetAbility():GetSpecialValueFor("bonus_damage")
 end
-
 
 function modifier_item_arcane_staff:GetModifierBonusStats_Intellect()
-    return self:GetAbility():GetSpecialValueFor("bonus_int")
+	return self:GetAbility():GetSpecialValueFor("bonus_int")
 end
-
-

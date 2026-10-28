@@ -1,10 +1,7 @@
-
-
 centaur_custom_return = class({})
 
-
 function centaur_custom_return:GetIntrinsicModifierName()
-    return "modifier_centaur_custom_return"
+	return "modifier_centaur_custom_return"
 end
 
 function centaur_custom_return:OnUpgrade()
@@ -12,21 +9,23 @@ function centaur_custom_return:OnUpgrade()
 	caster:FindModifierByName("modifier_centaur_custom_return"):ForceRefresh()
 end
 
-LinkLuaModifier("modifier_centaur_custom_return", "abilities/heroes/centaur_custom_return.lua", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier(
+	"modifier_centaur_custom_return",
+	"abilities/heroes/centaur_custom_return.lua",
+	LUA_MODIFIER_MOTION_NONE
+)
 modifier_centaur_custom_return = class({})
 
-
 function modifier_centaur_custom_return:IsHidden()
-    return true
+	return true
 end
 
-
 if IsServer() then
-    function modifier_centaur_custom_return:DeclareFunctions()
-        return {
-            MODIFIER_EVENT_ON_TAKEDAMAGE
-        }
-    end
+	function modifier_centaur_custom_return:DeclareFunctions()
+		return {
+			MODIFIER_EVENT_ON_TAKEDAMAGE,
+		}
+	end
 	function modifier_centaur_custom_return:OnCreated()
 		self.ability = self:GetAbility()
 		self.parent = self:GetParent()
@@ -45,7 +44,7 @@ if IsServer() then
 			self:StartIntervalThink(5)
 		end
 	end
-	
+
 	function modifier_centaur_custom_return:OnIntervalThink()
 		local talent = self.parent:FindAbilityByName("special_bonus_unique_centaur_3")
 		if talent and talent:GetLevel() > 0 then
@@ -54,12 +53,11 @@ if IsServer() then
 		end
 	end
 
+	function modifier_centaur_custom_return:OnTakeDamage(keys)
+		local unit = keys.unit
+		local attacker = keys.attacker
 
-    function modifier_centaur_custom_return:OnTakeDamage(keys)
-        local unit = keys.unit
-        local attacker = keys.attacker
-			
-        if unit == self.parent and unit ~= attacker and keys.damage_flags ~= 16 then
+		if unit == self.parent and unit ~= attacker and keys.damage_flags ~= 16 then
 			local current_time = GameRules:GetGameTime()
 			local time_diff = current_time - self.time
 			if time_diff > 0.15 then
@@ -72,14 +70,25 @@ if IsServer() then
 					damage = damage,
 					damage_type = self.ability:GetAbilityDamageType(),
 					damage_flags = 16,
-					victim = attacker
+					victim = attacker,
 				})
 
-				local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_centaur/centaur_return.vpcf", PATTACH_POINT, unit)
-				ParticleManager:SetParticleControlEnt(particle, 1, attacker, PATTACH_POINT, "attach_hitloc", attacker:GetAbsOrigin(), true)
+				local particle = ParticleManager:CreateParticle(
+					"particles/units/heroes/hero_centaur/centaur_return.vpcf",
+					PATTACH_POINT,
+					unit
+				)
+				ParticleManager:SetParticleControlEnt(
+					particle,
+					1,
+					attacker,
+					PATTACH_POINT,
+					"attach_hitloc",
+					attacker:GetAbsOrigin(),
+					true
+				)
 				ParticleManager:ReleaseParticleIndex(particle)
-
 			end
-        end
-    end
+		end
+	end
 end

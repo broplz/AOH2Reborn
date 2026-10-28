@@ -18,7 +18,7 @@ end
 -- Initializations
 function modifier_generic_summon_timer:OnDestroy()
 	if IsServer() then
-		self:GetParent():ForceKill( false )
+		self:GetParent():ForceKill(false)
 	end
 end
 
@@ -26,12 +26,12 @@ end
 -- Declare Functions
 function modifier_generic_summon_timer:DeclareFunctions()
 	local funcs = {
-		MODIFIER_PROPERTY_LIFETIME_FRACTION
+		MODIFIER_PROPERTY_LIFETIME_FRACTION,
 	}
 
 	return funcs
 end
 
-function modifier_generic_summon_timer:GetUnitLifetimeFraction( params )
-	return ( ( self:GetDieTime() - GameRules:GetGameTime() ) / self:GetDuration() )
+function modifier_generic_summon_timer:GetUnitLifetimeFraction(params)
+	return ((self:GetDieTime() - GameRules:GetGameTime()) / self:GetDuration())
 end

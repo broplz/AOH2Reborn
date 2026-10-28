@@ -3,7 +3,6 @@ require("lib/my")
 
 custom_blizzard_orb = class({})
 
-
 function custom_blizzard_orb:OnSpellStart()
 	local caster = self:GetCaster()
 	local heroes = ai_alive_heroes()
@@ -17,16 +16,18 @@ function custom_blizzard_orb:OnSpellStart()
 			{ duration = self:GetSpecialValueFor("duration") } -- kv
 		)
 	end
-
 end
 
-LinkLuaModifier("modifier_custom_blizzard_orb_behavior", "abilities/bosses/custom_blizzard_orb.lua", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier(
+	"modifier_custom_blizzard_orb_behavior",
+	"abilities/bosses/custom_blizzard_orb.lua",
+	LUA_MODIFIER_MOTION_NONE
+)
 
 modifier_custom_blizzard_orb_behavior = class({})
 
-
 function modifier_custom_blizzard_orb_behavior:IsHidden()
-    return true
+	return true
 end
 function modifier_custom_blizzard_orb_behavior:IsPurgable()
 	return false
@@ -37,15 +38,24 @@ function modifier_custom_blizzard_orb_behavior:OnCreated()
 	local ability = self:GetAbility()
 	local delay = ability:GetSpecialValueFor("delay")
 	self.blizzard = self.parent:FindAbilityByName("custom_freezing_field")
-	local fx2 = ParticleManager:CreateParticle("particles/units/heroes/hero_tusk/tusk_frozen_sigil.vpcf", PATTACH_ABSORIGIN_FOLLOW, parent)
-	ParticleManager:SetParticleControlEnt(fx2, 0, self.parent, PATTACH_POINT_FOLLOW, "attach_hitloc", self.parent:GetAbsOrigin(), true)
-	Timers:CreateTimer(
-		delay,
-		function()
-			self.parent:CastAbilityNoTarget(self.blizzard, -1)
-			self:StartIntervalThink(1)
-		end
+	local fx2 = ParticleManager:CreateParticle(
+		"particles/units/heroes/hero_tusk/tusk_frozen_sigil.vpcf",
+		PATTACH_ABSORIGIN_FOLLOW,
+		parent
 	)
+	ParticleManager:SetParticleControlEnt(
+		fx2,
+		0,
+		self.parent,
+		PATTACH_POINT_FOLLOW,
+		"attach_hitloc",
+		self.parent:GetAbsOrigin(),
+		true
+	)
+	Timers:CreateTimer(delay, function()
+		self.parent:CastAbilityNoTarget(self.blizzard, -1)
+		self:StartIntervalThink(1)
+	end)
 end
 
 function modifier_custom_blizzard_orb_behavior:OnDestroy()

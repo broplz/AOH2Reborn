@@ -1,9 +1,7 @@
-
 item_tome_bargain = class({})
 
-
 function item_tome_bargain:OnSpellStart()
-local caster = self:GetCaster()
+	local caster = self:GetCaster()
 	if caster:HasModifier("modifier_item_tome_bargain") then
 		local tome = caster:FindModifierByName("modifier_item_tome_bargain")
 		local tome_count = tome:GetStackCount()
@@ -15,8 +13,6 @@ local caster = self:GetCaster()
 	end
 	self:SpendCharge()
 end
-
-
 
 LinkLuaModifier("modifier_item_tome_bargain", "items/item_tome_bargain.lua", LUA_MODIFIER_MOTION_NONE)
 
@@ -36,7 +32,7 @@ function modifier_item_tome_bargain:IsPurgable()
 	return false
 end
 function modifier_item_tome_bargain:RemoveOnDeath()
-    return false
+	return false
 end
 function modifier_item_tome_bargain:OnCreated()
 	self.bonus_attack = self:GetAbility():GetSpecialValueFor("bonus_base_damage")
