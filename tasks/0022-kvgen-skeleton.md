@@ -19,7 +19,7 @@ checks: kv
 tests: []
 needs_approval: false
 returns: 0
-sessions: 1
+sessions: 0
 blocked_reason: 
 reviewed_sha: 
 qa_sha: 
