@@ -33,6 +33,20 @@ def sessions(days):
     return rows
 
 
+def _closed(line):
+    # ATTENTION line about a task that is already done/split
+    import glob, re
+    m = re.search(r"task (\d{4})", line)
+    if not m:
+        return False
+    for p in glob.glob(os.path.join(config.TASK_DIR, m.group(1) + "-*.md")):
+        with open(p, encoding="utf-8") as f:
+            for l in f:
+                if l.startswith("status:"):
+                    return l.split(":", 1)[1].strip() in config.FINAL_STATUSES
+    return False
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--days", type=int, default=1)
@@ -72,7 +86,7 @@ def main():
     att = os.path.join(config.LOG_DIR, "ATTENTION.md")
     try:
         with open(att, encoding="utf-8") as f:
-            lines = [l.rstrip() for l in f if l.strip()][-6:]
+            lines = [l.rstrip() for l in f if l.strip() and not _closed(l)][-6:]
         out += lines or ["- nothing"]
     except OSError:
         out.append("- nothing")
