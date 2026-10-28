@@ -299,25 +299,23 @@ function AOHGameMode:ChooseRandomSpawnInfo()
 end
 
 function AOHGameMode:DifficultyClicked(keys)
-	EmitSoundOnClient("AOH.MenuSelection", PlayerResource:GetPlayer(keys.id))
+	local playerID = keys.PlayerID
+	EmitSoundOnClient("AOH.MenuSelection", PlayerResource:GetPlayer(playerID))
 	if keys.type == 0 then
-		AOHGameMode.difficultycount[keys.id] = keys.choice
+		AOHGameMode.difficultycount[playerID] = keys.choice
 	else
-		if AOHGameMode.modifiercount[keys.id][keys.choice] == 0 then
-			AOHGameMode.modifiercount[keys.id][keys.choice] = 1
+		if AOHGameMode.modifiercount[playerID][keys.choice] == 0 then
+			AOHGameMode.modifiercount[playerID][keys.choice] = 1
 		else
-			AOHGameMode.modifiercount[keys.id][keys.choice] = 0
+			AOHGameMode.modifiercount[playerID][keys.choice] = 0
 		end
-		CustomGameEventManager:Send_ServerToAllClients("vote_update", {
-			id = keys.id,
-			update_type = 1,
-			choice = keys.choice,
-			value = AOHGameMode.modifiercount[keys.id][keys.choice],
-		})
+		local value = AOHGameMode.modifiercount[playerID][keys.choice]
+		local update = { id = playerID, update_type = 1, choice = keys.choice, value = value }
+		CustomGameEventManager:Send_ServerToAllClients("vote_update", update)
 	end
 	CustomGameEventManager:Send_ServerToAllClients(
 		"vote_update",
-		{ id = keys.id, update_type = 0, difficulty = AOHGameMode.difficultycount[keys.id] }
+		{ id = playerID, update_type = 0, difficulty = AOHGameMode.difficultycount[playerID] }
 	)
 end
 
@@ -816,8 +814,9 @@ end
 
 -- Deprecated, now takes place in javascript file.
 function AOHGameMode:SettingsUpdate(keys)
-	EmitSoundOnClient("ui_generic_button_click", PlayerResource:GetPlayer(keys.id))
-	AOHGameMode.player_settings[keys.id][0] = keys.dash_value
+	local playerID = keys.PlayerID
+	EmitSoundOnClient("ui_generic_button_click", PlayerResource:GetPlayer(playerID))
+	AOHGameMode.player_settings[playerID][0] = keys.dash_value
 end
 
 function AOHGameMode:OnPlayerChat(keys)

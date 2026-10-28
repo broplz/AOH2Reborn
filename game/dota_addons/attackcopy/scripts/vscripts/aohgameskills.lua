@@ -103,34 +103,36 @@ function AOHGameSkills:Init()
 end
 
 function AOHGameSkills:CreditsClicked(keys)
-	EmitSoundOnClient("AOH.CreditsClicked", PlayerResource:GetPlayer(keys.id))
-	if AOHGameSkills.credits_clicked[keys.id] == false or _G.AOHGameMode._debug then
-		AOHGameSkills.credits_clicked[keys.id] = true
-		AOHGameSkills.AddCurrency(keys.id, 1)
+	local playerID = keys.PlayerID
+	EmitSoundOnClient("AOH.CreditsClicked", PlayerResource:GetPlayer(playerID))
+	if AOHGameSkills.credits_clicked[playerID] == false or _G.AOHGameMode._debug then
+		AOHGameSkills.credits_clicked[playerID] = true
+		AOHGameSkills.AddCurrency(playerID, 1)
 	end
 end
 
 function AOHGameSkills:Transaction(keys)
-	local hero = PlayerResource:GetSelectedHeroEntity(keys.id)
+	local playerID = keys.PlayerID
+	local hero = PlayerResource:GetSelectedHeroEntity(playerID)
 	if keys.type == 0 then
 		if hero:GetGold() >= AOHGameSkills.value then
-			AOHGameSkills.AddCurrency(keys.id, 1)
+			AOHGameSkills.AddCurrency(playerID, 1)
 			hero:SpendGold(AOHGameSkills.value, DOTA_ModifyGold_PurchaseItem)
 			AOHGameSkills.value = AOHGameSkills.value + 50
 			CustomGameEventManager:Send_ServerToAllClients("update_value", { value = AOHGameSkills.value })
 		end
 	else
-		if AOHGameSkills.currency[keys.id] > 0 then
-			AOHGameSkills.currency[keys.id] = AOHGameSkills.currency[keys.id] - 1
+		if AOHGameSkills.currency[playerID] > 0 then
+			AOHGameSkills.currency[playerID] = AOHGameSkills.currency[playerID] - 1
 			AOHGameSkills.value = AOHGameSkills.value - 50
 			hero:ModifyGold(AOHGameSkills.value, true, DOTA_ModifyGold_SellItem)
 			if AOHGameSkills.value < 200 then
 				AOHGameSkills.value = 200
 			end
 			CustomGameEventManager:Send_ServerToPlayer(
-				PlayerResource:GetPlayer(keys.id),
+				PlayerResource:GetPlayer(playerID),
 				"update_currency",
-				{ currency = AOHGameSkills.currency[keys.id] }
+				{ currency = AOHGameSkills.currency[playerID] }
 			)
 			CustomGameEventManager:Send_ServerToAllClients("update_value", { value = AOHGameSkills.value })
 		end
@@ -193,35 +195,36 @@ function AOHGameSkills:Renew(playerID)
 end
 
 function AOHGameSkills:SkillSelected(keys)
+	local playerID = keys.PlayerID
 	if
 		(
 			((_G.AOHGameMode._nRoundNumber + 2) / 6) >= keys.tier
-			and math.floor(keys.tier / 2 + 0.55) <= AOHGameSkills.currency[keys.id]
-			and PlayerResource:GetSelectedHeroEntity(keys.id):IsAlive()
+			and math.floor(keys.tier / 2 + 0.55) <= AOHGameSkills.currency[playerID]
+			and PlayerResource:GetSelectedHeroEntity(playerID):IsAlive()
 		)
-		or AOHGameSkills.chosen_skills[keys.id][keys.tier - 1][keys.choice] == 1
+		or AOHGameSkills.chosen_skills[playerID][keys.tier - 1][keys.choice] == 1
 		or _G.AOHGameMode._debug
 	then
-		local hero = PlayerResource:GetSelectedHeroEntity(keys.id)
-		if AOHGameSkills.chosen_skills[keys.id][keys.tier - 1][keys.choice] == 0 then
-			AOHGameSkills.currency[keys.id] = AOHGameSkills.currency[keys.id] - math.floor(keys.tier / 2 + 0.55)
-			AOHGameSkills.chosen_skills[keys.id][keys.tier - 1][keys.choice] = 1
+		local hero = PlayerResource:GetSelectedHeroEntity(playerID)
+		if AOHGameSkills.chosen_skills[playerID][keys.tier - 1][keys.choice] == 0 then
+			AOHGameSkills.currency[playerID] = AOHGameSkills.currency[playerID] - math.floor(keys.tier / 2 + 0.55)
+			AOHGameSkills.chosen_skills[playerID][keys.tier - 1][keys.choice] = 1
 			CustomGameEventManager:Send_ServerToPlayer(
-				PlayerResource:GetPlayer(keys.id),
+				PlayerResource:GetPlayer(playerID),
 				"skill_purchase_success",
-				{ transaction = 1, currency = AOHGameSkills.currency[keys.id], tier = keys.tier, choice = keys.choice }
+				{ transaction = 1, currency = AOHGameSkills.currency[playerID], tier = keys.tier, choice = keys.choice }
 			)
 			hero:AddNewModifier(hero, nil, AOHGameSkills._TIERS[keys.tier - 1][keys.choice], { duration = -1 })
 		else
-			AOHGameSkills.currency[keys.id] = AOHGameSkills.currency[keys.id] + math.floor(keys.tier / 2 + 0.55)
-			AOHGameSkills.chosen_skills[keys.id][keys.tier - 1][keys.choice] = 0
+			AOHGameSkills.currency[playerID] = AOHGameSkills.currency[playerID] + math.floor(keys.tier / 2 + 0.55)
+			AOHGameSkills.chosen_skills[playerID][keys.tier - 1][keys.choice] = 0
 			CustomGameEventManager:Send_ServerToPlayer(
-				PlayerResource:GetPlayer(keys.id),
+				PlayerResource:GetPlayer(playerID),
 				"skill_purchase_success",
-				{ transaction = 0, currency = AOHGameSkills.currency[keys.id], tier = keys.tier, choice = keys.choice }
+				{ transaction = 0, currency = AOHGameSkills.currency[playerID], tier = keys.tier, choice = keys.choice }
 			)
 			hero:RemoveModifierByName(AOHGameSkills._TIERS[keys.tier - 1][keys.choice])
 		end
-		EmitSoundOnClient("AOH.PerkSelected", PlayerResource:GetPlayer(keys.id))
+		EmitSoundOnClient("AOH.PerkSelected", PlayerResource:GetPlayer(playerID))
 	end
 end

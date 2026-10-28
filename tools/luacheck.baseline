@@ -2477,7 +2477,7 @@ game/dota_addons/attackcopy/scripts/vscripts/aohgamemode.lua: (W113) accessing u
 game/dota_addons/attackcopy/scripts/vscripts/aohgamemode.lua: (W122) setting read-only field 'GLOBAL_roundNumber' of global 'GameRules'
 game/dota_addons/attackcopy/scripts/vscripts/aohgamemode.lua: (W122) setting read-only field 'xpTable' of global 'GameRules'
 game/dota_addons/attackcopy/scripts/vscripts/aohgamemode.lua: (W213) unused loop variable 'var'
-game/dota_addons/attackcopy/scripts/vscripts/aohgamemode.lua: (W431) shadowing upvalue 'fx' on line 399
+game/dota_addons/attackcopy/scripts/vscripts/aohgamemode.lua: (W431) shadowing upvalue 'fx' on line 397
 game/dota_addons/attackcopy/scripts/vscripts/aohgameround.lua: (W111) setting non-standard global variable 'AOHGameRound'
 game/dota_addons/attackcopy/scripts/vscripts/aohgameround.lua: (W111) setting non-standard global variable 'nCurrentGoldDrop'
 game/dota_addons/attackcopy/scripts/vscripts/aohgameround.lua: (W112) mutating non-standard global variable 'AOHGameRound'
@@ -2653,14 +2653,10 @@ game/dota_addons/attackcopy/scripts/vscripts/bosses/custom_weaver_behavior.lua: 
 game/dota_addons/attackcopy/scripts/vscripts/bosses/nyx_infiltrate.lua: (W111) setting non-standard global variable 'AIThink'
 game/dota_addons/attackcopy/scripts/vscripts/bosses/nyx_infiltrate.lua: (W111) setting non-standard global variable 'Spawn'
 game/dota_addons/attackcopy/scripts/vscripts/bosses/nyx_infiltrate.lua: (W113) accessing undefined variable 'AIThink'
-game/dota_addons/attackcopy/scripts/vscripts/dashmanager.lua: (W111) setting non-standard global variable 'hero'
 game/dota_addons/attackcopy/scripts/vscripts/dashmanager.lua: (W112) mutating non-standard global variable 'DashManager'
 game/dota_addons/attackcopy/scripts/vscripts/dashmanager.lua: (W112) mutating non-standard global variable 'DashManager'
 game/dota_addons/attackcopy/scripts/vscripts/dashmanager.lua: (W113) accessing undefined variable 'DashManager'
 game/dota_addons/attackcopy/scripts/vscripts/dashmanager.lua: (W113) accessing undefined variable 'DashManager'
-game/dota_addons/attackcopy/scripts/vscripts/dashmanager.lua: (W113) accessing undefined variable 'hero'
-game/dota_addons/attackcopy/scripts/vscripts/dashmanager.lua: (W113) accessing undefined variable 'hero'
-game/dota_addons/attackcopy/scripts/vscripts/dashmanager.lua: (W113) accessing undefined variable 'hero'
 game/dota_addons/attackcopy/scripts/vscripts/items/arcane_staff.lua: (W111) setting non-standard global variable 'arcane_staff'
 game/dota_addons/attackcopy/scripts/vscripts/items/arcane_staff.lua: (W111) setting non-standard global variable 'item_arcane_staff'
 game/dota_addons/attackcopy/scripts/vscripts/items/arcane_staff.lua: (W111) setting non-standard global variable 'item_arcane_staff_2'
