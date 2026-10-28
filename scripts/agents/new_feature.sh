@@ -7,12 +7,14 @@
 # rebase — R4 in ADR-0002), and points tasks/backlog.md at it.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"; cd "$ROOT"
+MAIN="$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed "s#origin/##")"
+[ -z "$MAIN" ] && { git rev-parse -q --verify master >/dev/null && MAIN=master || MAIN=main; }
 NAME="${1:?usage: new_feature.sh feat/<pN>-<slug>}"
 case "$NAME" in feat/*) ;; *) echo "name must start with feat/" >&2; exit 2 ;; esac
 [ -z "$(git status --porcelain)" ] || { echo "working tree is dirty" >&2; exit 1; }
-git switch main
+git switch "$MAIN"
 git switch -c "$NAME"
-git tag "aoh/fork/${NAME#feat/}" main
+git tag "aoh/fork/${NAME#feat/}" "$MAIN"
 if grep -qE '^\s*Active feature branch:' tasks/backlog.md; then
   python3 - "$NAME" <<'PY'
 import re, sys

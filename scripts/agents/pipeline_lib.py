@@ -181,7 +181,7 @@ def approved(task_id: str, base: str = "") -> bool:
             texts.append(f.read())
     except OSError:
         pass
-    for ref in (base, "main"):
+    for ref in (base, "main", "master"):
         if ref:
             r = git("show", f"{ref}:{rel(config.APPROVALS)}", check=False)
             if r.returncode == 0:
