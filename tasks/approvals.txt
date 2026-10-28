@@ -4,3 +4,4 @@
 # scripts/agents/diff.sh tasks/<id>-*.md shows what changed; ## Result says what to check in-game.
 0001 approved
 0002 approved
+0004 approved
