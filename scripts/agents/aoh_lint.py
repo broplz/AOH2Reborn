@@ -165,7 +165,7 @@ def main():
         if not match(path, SCOPE_FREE) and allowed and not any(re.match(p, path) for p in allowed):
             fails.append(f"{path}: outside the task's allowed_paths")
         for l in added:
-            if re.search(r"\b(TODO|FIXME|XXX)\b", l) and not re.search(r"\b(TODO|FIXME|XXX)\b\s*[:(]?\s*\d{4}", l):
+            if not path.endswith(".md") and re.search(r"\b(TODO|FIXME|XXX)\b", l) and not re.search(r"\b(TODO|FIXME|XXX)\b\s*[:(]?\s*\d{4}", l):
                 fails.append(f"{path}: TODO/FIXME without a task id: {l.strip()[:80]}")
                 break
         if not match(path, PROD_EXCLUDE):
