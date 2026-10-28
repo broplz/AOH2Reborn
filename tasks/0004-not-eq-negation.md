@@ -23,7 +23,7 @@ checks: lua
 tests: []
 needs_approval: true
 returns: 0
-sessions: 1
+sessions: 0
 blocked_reason: 
 reviewed_sha: 
 qa_sha: 
