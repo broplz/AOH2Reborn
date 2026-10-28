@@ -1,7 +1,7 @@
 ---
 id: 0002
 title: addon_russian.txt stays UTF-16LE BOM CRLF on disk, stored as UTF-8 in git via .gitattributes
-status: ready
+status: done
 epic: p0
 prefix: p0
 kind: code
@@ -21,8 +21,8 @@ needs_approval: true
 returns: 0
 sessions: 0
 blocked_reason: 
-reviewed_sha: 707f9ca88cbb8954a742bd9854f0011c0946b280
-qa_sha: 707f9ca88cbb8954a742bd9854f0011c0946b280
+reviewed_sha: fb3a37cd271527836896fa2a075532942cf12269
+qa_sha: fb3a37cd271527836896fa2a075532942cf12269
 ---
 
 ## Goal
@@ -72,6 +72,8 @@ Tried: no other route. The task needs git restore, rm, add --renormalize and com
 Next idea: the owner allows `git restore`, `git rm`, `git add` and `git commit` (and `git check-attr`, `git hash-object`, `git clone`) for this task, then the next session runs steps 1-5 in the order given in Notes.
 
 ## Result
+Round 3: no code changed. Ran DoD 1-5, 7, 8: (1) grep -c → 1; (2) `git ls-files --eol` → `i/lf w/-text attr/text eol=crlf`; (3) `wc -c P` → 691310; (4) `git status --short` empty; (5) head -c 10 → `    "lang"`, key lines → 2626; (7) tools/normalize_text.py absent; (8) diff stat lists only .gitattributes, P, task file. Not claimed: [human] 9a, 9b, 9 (owner: hash-object must give c7571a0b…, fresh clone, Russian tooltips still show).
+
 Round 2: owner restored the UTF-16LE BOM CRLF bytes of P, added the single `.gitattributes` line and removed tools/normalize_text.py and the round-1 backlog line (707f9ca, a3aa8c6). Session 2 changed no code. Verified by me: `git status --short` empty; base blob id is c7571a0b60f7079ea7ee46eb9b1f09238da03bd9. Not verified (Bash denied): DoD 2, 3, 6. Owner playtest: DoD 9 (Russian tooltips still show).
 
 Round 1 (superseded by the re-spec): converted P to UTF-8/LF with tools/normalize_text.py, commit 6eb99bd. The owner rejected it; see Notes.
@@ -79,6 +81,19 @@ Round 1 (superseded by the re-spec): converted P to UTF-8/LF with tools/normaliz
 ## Review
 APPROVE
 
+Round 3 (code head 707f9ca; this round changed only the task file).
+Checklist:
+1. Spec: no code changed since the round-2 APPROVE, which matches the round-3 re-spec. `.gitattributes` has only the DoD-1 line. HEAD:P is a UTF-8 blob with 2626 key lines (I ran DoD 5).
+2. Scope: `git diff --stat feat/p0-foundation...HEAD` lists only .gitattributes, P and the task file (DoD 8). tools/normalize_text.py is absent (DoD 7).
+3. Conventions: n/a (no Lua/KV). aoh_lint: 0 fail, 0 warn, NEEDS APPROVAL (expected: needs_approval plus [human] items).
+4. Dota correctness: n/a. The on-disk file is 691310 bytes, the same as the base blob (DoD 3), so the bytes Dota reads did not change in size.
+5. KV: n/a (checks: none).
+6. Verification: I re-ran every round-3 ## Result claim and each one holds. `git ls-files --eol` gives `i/lf w/-text attr/text eol=crlf`, `wc -c` gives 691310, `git status --short` is empty, the key-line count is 2626, and the diff stat is as claimed. 9a, 9b and 9 are listed for the owner and not claimed.
+7. Hygiene: clean. The round-2 non-blocking note about ## Result is resolved.
+
+For the human: 9a (`git check-attr` + `git hash-object --no-filters P` → c7571a0b…), 9b (fresh-clone hash), 9 (Russian tooltips in game).
+
+---
 Round 2 (code head 707f9ca, owner-made commits 707f9ca + a3aa8c6).
 Checklist:
 1. Spec: matches the re-spec. `.gitattributes` has exactly the single DoD-1 line (no global patterns). tools/normalize_text.py was deleted in 707f9ca. The round-1 backlog line was removed, so tasks/backlog.md equals base and is absent from the diff. HEAD:P is a UTF-8 blob: `head -c 10` gives `    "lang"` and the key-line count is 2626 (DoD 5, I ran both). HEAD:P is the same blob as 6eb99bd:P (c52a357), which is the renormalized form of the base text, so no string content changed. On-disk P is 691310 bytes, the same size as the base blob (diff stat `Bin 691310 -> …`). `git status --short` is empty (DoD 4). Both together strongly indicate the UTF-16LE-BOM CRLF bytes are restored (DoD 3).
@@ -93,6 +108,23 @@ Non-blocking notes (no return needed):
 1. tasks/0002-resource-utf8.md:60-67: ## Handoff still says "nothing in the repo changed", and ## Result has only the round-1 line. Round 2 was done by the owner, so nobody wrote a Result. The owner or qa may want to add one line on top of ## Result, for example "Round 2: owner restored P bytes, added .gitattributes, removed tools/normalize_text.py (707f9ca)".
 
 ## QA
+PASS
+
+Round 3. `scripts/agents/check.sh none` exits "unknown argument: none"; checks is none, so skipped (as the Notes say).
+1. DoD 1: grep -c -x → 1. OK.
+2. DoD 2: `git ls-files --eol` → `i/lf w/-text attr/text eol=crlf` + P. OK.
+3. DoD 3: `wc -c P` → 691310. OK.
+4. DoD 4: `git status --short` empty. OK.
+5. DoD 5: `head -c 10` → `    "lang"`; key-line count → 2626. OK.
+6. DoD 7: tools/normalize_text.py absent. OK.
+7. DoD 8: diff stat lists only .gitattributes, P, task file; backlog has no normalize_text line. OK.
+
+For the human:
+- 9a: `git check-attr text working-tree-encoding eol -- P` → text: set / UTF-16LE-BOM / crlf; `git hash-object --no-filters P` → c7571a0b60f7079ea7ee46eb9b1f09238da03bd9.
+- 9b: `git clone --quiet --branch task/0002-resource-utf8 . logs/0002-clone`, then `git hash-object --no-filters logs/0002-clone/P` → c7571a0b….
+- 9: fresh clone of merged base, `cmp` against the saved old-base P → no output; Dota in Russian still shows Russian tooltips.
+
+Older rounds (superseded by the round-3 re-spec):
 Round 2 (superseded by the round-3 re-spec; old DoD numbering): FAIL (not verifiable in this session: DoD 2, 3 and 6 were denied by the Bash permission mode, so I cannot approve)
 
 Verified:
