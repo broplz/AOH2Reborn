@@ -1,7 +1,7 @@
 ---
 id: 0004
 title: fix the 5 `not x == y` sites (luacheck W582) and stop ignoring 582
-status: ready
+status: blocked
 epic: p0
 prefix: p0
 kind: code
@@ -22,8 +22,8 @@ checks: lua
 tests: []
 needs_approval: false
 returns: 0
-sessions: 0
-blocked_reason: 
+sessions: 1
+blocked_reason: 6th W582 site windrunner_force_fire_toggle.lua:89 is outside allowed_paths (hook); needs teamlead decision on the rewrite
 reviewed_sha: 
 qa_sha: 
 ---
@@ -69,6 +69,32 @@ V = `game/dota_addons/attackcopy/scripts/vscripts`
   (never --update-baseline).
 
 ## Handoff
+Session 1 (commit 48fd8c2). Blocked: DoD 8 needs a file outside allowed_paths (guard_paths hook).
+
+Done:
+- The 5 sites rewritten exactly as in the notes (aohgameround.lua:132, modifier_boss.lua:56,
+  boss_aghanim_spell_swap.lua:266-267, boss_void_spirit_counter.lua:108). One line each, no reformatting.
+- `'582'` entry removed from tools/gen_luacheckrc.py:76 and .luacheckrc:10 (identical text).
+- DoD 1-6 hold; DoD 7 `check.sh lua` → `CHECK RESULT: OK (lua)`.
+- No lib/ helper or modifier_boss API changed (only the condition inside QueryTicket), so no callers to migrate.
+
+Failing: DoD 8 `check.sh lua --all-files` → FAIL, ratchet: 1 new, 4341 known, 0 fixed:
+`abilities/heroes/windrunner_force_fire_toggle.lua:89:8 (W582)` —
+`and not target:GetTeam() ~= self.parent:GetTeam()`. The DoD-1 grep misses it because it is `not x ~= y`.
+Today `(not team) ~= team` is `false ~= number` → always true, so the clause is a no-op and auto
+focus-fire triggers on any attack target, allies (denies) included.
+
+Tried: editing that file → blocked by guard_paths (not in allowed_paths). Did not hand-add the
+warning to tools/luacheck.baseline: that hides a real bug and the notes forbid growing the baseline.
+
+Next (teamlead): add `game/dota_addons/attackcopy/scripts/vscripts/abilities/heroes/windrunner_force_fire_toggle.lua`
+to allowed_paths and pick the rewrite:
+- intent (recommended): `and target:GetTeam() ~= self.parent:GetTeam()` — gameplay change: no
+  auto focus-fire on allied targets; `[human]` check: toggle on, deny an allied creep → Focus Fire not cast;
+  attack an enemy → Focus Fire cast.
+- behaviour-identical: delete the clause.
+Then rerun `scripts/agents/check.sh lua --all-files`. Also consider widening DoD 1 to
+`grep -rn -E "not [^=~]+ (==|~=) " V`. Logged in tasks/backlog.md under Found by agents.
 
 ## Result
 
