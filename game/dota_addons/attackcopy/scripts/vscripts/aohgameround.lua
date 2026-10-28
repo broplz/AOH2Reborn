@@ -129,7 +129,7 @@ function AOHGameRound:IsFinished()
 		return true
 	end
 
-	if not self._lastEnemiesRemaining == nEnemiesRemaining then
+	if self._lastEnemiesRemaining ~= nEnemiesRemaining then
 		self._lastEnemiesRemaining = nEnemiesRemaining
 		debug_print(string.format("%d enemies remaining in the round...", #self._vEnemiesRemaining))
 	end

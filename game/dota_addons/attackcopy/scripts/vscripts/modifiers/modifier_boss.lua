@@ -53,7 +53,7 @@ if IsServer() then
 	end
 
 	function modifier_boss:QueryTicket(key)
-		if key == self.open_ticket and not self.lockout == true then
+		if key == self.open_ticket and self.lockout ~= true then
 			return true
 		else
 			return false

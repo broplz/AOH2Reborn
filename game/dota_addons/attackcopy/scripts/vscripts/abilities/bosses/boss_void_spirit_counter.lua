@@ -105,7 +105,7 @@ if IsServer() then
 	end
 
 	function modifier_boss_void_spirit_counter:OnDestroy()
-		if not self.has_procced == true then
+		if self.has_procced ~= true then
 			self.parent:AddNewModifier(
 				self.parent,
 				self,

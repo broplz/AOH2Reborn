@@ -86,7 +86,7 @@ if IsServer() then
 		local target = keys.target
 		if
 			attacker == self.parent
-			and not target:GetTeam() ~= self.parent:GetTeam()
+			and target:GetTeam() ~= self.parent:GetTeam()
 			and self.focus_fire:IsCooldownReady()
 		then
 			if not self.parent:HasModifier("modifier_windrunner_focusfire") then

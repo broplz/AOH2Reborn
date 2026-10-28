@@ -263,8 +263,8 @@ function modifier_aghanim_spell_swap:DisableSpell()
 				and not hAbility:IsAttributeBonus()
 				and hAbility:GetAssociatedPrimaryAbilities() == nil
 				and not hAbility:IsHidden()
-				and not hAbility.bAghDisabled == true
-				and not hAbility.bAghDummy == true
+				and hAbility.bAghDisabled ~= true
+				and hAbility.bAghDummy ~= true
 				and hAbility:IsActivated()
 			then
 				print("considering ability for disable: " .. hAbility:GetAbilityName())

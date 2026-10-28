@@ -33,6 +33,7 @@ Audit and phase plan: docs/adr/0002-target-architecture.md → "AOH2Reborn — �
 
 ## Found by agents
 (one line each: what, where, why it matters — the teamlead promotes these into tasks)
+- 0004: 6th W582 site `abilities/heroes/windrunner_force_fire_toggle.lua:89` `not target:GetTeam() ~= self.parent:GetTeam()` is always true (auto focus-fire also fires on allied/deny targets); blocks `check.sh lua --all-files` once 582 is un-ignored — add the file to 0004's allowed_paths with fix `target:GetTeam() ~= self.parent:GetTeam()` (behaviour change) or drop the clause (behaviour-identical).
 
 ## For the owner
 - accept docs/adr/0001-ai-team.md and docs/adr/0002-target-architecture.md (status Proposed → Accepted) before the first `run_queue.py --plan`
