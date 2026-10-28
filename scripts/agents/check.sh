@@ -32,9 +32,10 @@ if [ "$WHAT" = all ] || [ "$WHAT" = lua ]; then
     [ -z "$BASE" ] && BASE="$(grep -E '^\s*Active feature branch:' tasks/backlog.md 2>/dev/null | head -1 | awk '{print $NF}' | tr -d '`')"
     [ -z "$BASE" ] && BASE="main"
     git rev-parse -q --verify "$BASE" >/dev/null 2>&1 || BASE="HEAD"
-    mapfile -t FILES < <( { git diff --name-only "$BASE...HEAD" -- "$LUA_DIR" tests; git diff --name-only HEAD -- "$LUA_DIR" tests; git ls-files --others --exclude-standard -- "$LUA_DIR" tests; } | grep '\.lua$' | sort -u )
-    while IFS= read -r f; do [ -f "$f" ] && FILES+=("$f"); done < <(ls tests/*.lua 2>/dev/null)
-    mapfile -t FILES < <(printf '%s\n' "${FILES[@]}" | sort -u | while read -r f; do [ -f "$f" ] && echo "$f"; done)
+    FILES=()
+    while IFS= read -r f; do [ -n "$f" ] && [ -f "$f" ] && FILES+=("$f"); done < <(
+      { git diff --name-only "$BASE...HEAD" -- "$LUA_DIR" tests; git diff --name-only HEAD -- "$LUA_DIR" tests;
+        git ls-files --others --exclude-standard -- "$LUA_DIR" tests; ls tests/*.lua 2>/dev/null; } | grep '\.lua$' | sort -u )
     echo "lua scope: ${#FILES[@]} file(s) changed vs $BASE (+ tests/)" | tee -a "$LOG"
   fi
   if [ "${#FILES[@]}" -gt 0 ]; then
