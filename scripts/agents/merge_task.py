@@ -80,6 +80,15 @@ def merge(path, check_only=False):
         pl.log(f"squash of {branch} into {base} conflicts; trying to rebase the branch first")
         pl.switch(branch)
         rb = pl.git("rebase", base, check=False)
+        while rb.returncode != 0:
+            # only the task file conflicts (run_unblock synced it to base): keep the branch copy.
+            # during a rebase `--theirs` is the branch side.
+            conflicted = pl.git("diff", "--name-only", "--diff-filter=U", check=False).stdout.split()
+            if conflicted != [pl.rel(path)]:
+                break
+            pl.git("checkout", "--theirs", "--", pl.rel(path))
+            pl.git("add", "--", pl.rel(path))
+            rb = pl.git("-c", "core.editor=true", "rebase", "--continue", check=False)
         if rb.returncode != 0:
             pl.git("rebase", "--abort", check=False)
             t = TaskFile(path)
