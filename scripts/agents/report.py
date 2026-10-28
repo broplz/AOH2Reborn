@@ -78,7 +78,7 @@ def main():
         out.append("- nothing")
     try:
         with open(config.DECISIONS, encoding="utf-8") as f:
-            pending = [l.rstrip() for l in f if l.startswith("- ")]
+            pending = [l.rstrip() for l in f if l.startswith("- ") and not l.startswith("- [x]")]
         if pending:
             out.append(f"- decisions-needed.md: {len(pending)} open line(s); first: {pending[0][:100]}")
     except OSError:
