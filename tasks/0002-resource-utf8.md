@@ -19,8 +19,8 @@ checks: none
 tests: []
 needs_approval: true
 returns: 0
-sessions: 2
-blocked_reason:
+sessions: 0
+blocked_reason: 
 reviewed_sha: 707f9ca88cbb8954a742bd9854f0011c0946b280
 qa_sha: 707f9ca88cbb8954a742bd9854f0011c0946b280
 ---
