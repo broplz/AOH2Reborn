@@ -16,6 +16,8 @@ DEV_ROLES = ("developer", "developer-hard")
 
 # `claude -p --max-turns` per role; developer roles scale with the task size.
 # There is no 40-minute build here, so sessions are shorter than on BB.
+# NB: the CLI caps agentic rounds; RESULT num_turns also counts parallel tool calls, so logged
+# turns can exceed this with subtype=success (aws/aws-durable-execution-ci#70, claude-code-action#1795).
 MAX_TURNS = {
     "developer": {"S": 25, "M": 40, "L": 55},
     "developer-hard": {"S": 30, "M": 50, "L": 70},
