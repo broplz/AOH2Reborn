@@ -3,3 +3,4 @@
 # shops or the hero list — ADR-0001 §3) only when its id is listed here. Playtest first:
 # scripts/agents/diff.sh tasks/<id>-*.md shows what changed; ## Result says what to check in-game.
 0001 approved
+0002 approved
