@@ -1,7 +1,7 @@
 ---
 id: 0001
 title: scripts/agents/link_addon.sh links game/ and content/ into the Dota 2 install
-status: blocked
+status: done
 epic: p0
 prefix: p0
 kind: code
@@ -17,8 +17,9 @@ tests: []
 needs_approval: true
 returns: 1
 sessions: 1
-blocked_reason: .claude/replay/last.html in diff, owner must restore it
-reviewed_sha: 80a7aae312735d83daff782d2a30c63e3cdf991e
+blocked_reason: 
+reviewed_sha: 2f3f3806a04fc423775494671d58d9975c2b7738
+qa_sha: 2f3f3806a04fc423775494671d58d9975c2b7738
 ---
 
 ## Goal
@@ -75,6 +76,28 @@ Round 1
 - Cleanup: `logs/fake_dota` and `logs/fake_conflict` are git-ignored scratch and contain symlinks into the repo.
 
 ## Review
+APPROVE
+1. Non-blocking: the Handoff says a backlog line about the replay leak was added, but
+   `grep -n replay tasks/backlog.md` finds nothing. The leak is already escalated in
+   docs/reports/decisions-needed.md:7, so nothing is lost. Note for the owner: `.gitignore` still
+   has no `.claude/replay/` entry, so the next task's driver auto-commit can pick the file up again.
+
+Checklist notes (round 2):
+- Spec: the script is unchanged except the round-1 item 3 fix. scripts/agents/link_addon.sh:35
+  now sends `dota dir not found` to stderr, like the other exit-2 messages. DoD 1–7 still hold
+  as reviewed in round 1.
+- Scope / DoD 8: I re-ran `git diff --stat feat/p0-foundation...HEAD`. It lists only
+  `scripts/agents/link_addon.sh` (+61) and `tasks/0001-link-addon.md`, so `.claude/replay/last.html`
+  has been restored. aoh_lint: 0 fail, 0 warn, NEEDS APPROVAL (DoD has [human] items).
+- Conventions, Dota correctness, KV: not applicable (shell script). The user rules hold: one
+  SUBDIRS list with one loop, no duplicated blocks.
+- Verification: the Handoff honestly says the stderr change was not re-run. It is a one-line change
+  and the exit code is the same. [human] items 9–10 are left for the owner; the Windows branch is
+  reported as never run.
+- Hygiene: no secrets, no debug output, no TODO; English throughout.
+
+---
+Round 1
 REQUEST_CHANGES
 1. Scope / DoD 8 fails: `git diff --stat feat/p0-foundation...HEAD` lists `.claude/replay/last.html`
    (+8 −20, commit f1f7b40 "wip after developer (driver auto-commit)"). The file is outside
@@ -106,3 +129,17 @@ Checklist notes:
 - Hygiene: no secrets, no debug output, no TODO; English throughout.
 
 ## QA
+PASS
+1. DoD 1: header usage comment present (lines 2-11), check.sh style.
+2. DoD 2: fresh `--dota-dir logs/qa_dota` printed exactly two `linked:` lines, exit 0.
+3. DoD 3: `ls -l` shows both `attackcopy -> /Users/.../AOH2Reborn/{game,content}/dota_addons/attackcopy` (absolute).
+4. DoD 4: second run printed two `ok: already linked:` lines, exit 0 (no error), nothing changed.
+5. DoD 5: conflict dir -> exit 1, `conflict: <path> exists and is not a link to <target>` printed; the dir still exists (`ls` succeeded); the content pair was still linked.
+6. DoD 6: missing dir -> exit 2, `dota dir not found: <path>`.
+7. DoD 7: `--help` exit 0, prints the usage comment.
+8. DoD 8: `git diff --stat feat/p0-foundation...HEAD` lists only `scripts/agents/link_addon.sh` and the task file.
+(Scratch dirs used: logs/qa_dota, logs/qa_conflict; git-ignored. Windows junction branch is not exercised.)
+
+For the human:
+- DoD 9 (macOS): run `bash scripts/agents/link_addon.sh` with no arguments; expect two `linked:` lines; open Workshop Tools (or `dota2 -tools`), confirm `attackcopy` is listed and the map opens.
+- DoD 10 (Windows Git Bash): same command; in cmd run `dir "C:\Program Files (x86)\Steam\steamapps\common\dota 2 beta\game\dota_addons"` and the content equivalent; expect `<JUNCTION>` for `attackcopy`.
