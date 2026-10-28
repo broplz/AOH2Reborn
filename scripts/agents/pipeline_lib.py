@@ -96,7 +96,7 @@ def code_head(branch: str) -> str:
 
 def autocommit(message: str) -> bool:
     """Commit whatever an agent left uncommitted so the next session (or the merge) sees it."""
-    git("add", "-A")
+    git("add", "-A", "--", ".", ":!.claude/")   # never sweep Claude Code artifacts into a task branch
     if git_out("diff", "--cached", "--name-only") == "":
         return False
     git("commit", "-q", "-m", message)
