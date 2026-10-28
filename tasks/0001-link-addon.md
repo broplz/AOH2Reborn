@@ -59,6 +59,7 @@ Workshop Tools open the `attackcopy` addon straight from the repo (macOS and Win
 - The file will not be executable (agents cannot chmod); always invoke it as `bash scripts/agents/link_addon.sh`. Owner may `chmod +x` later.
 - Items 9–10 need the playtest machine (open question in docs/reports/decisions-needed.md); write the exact steps in ## Result.
 - `logs/` is git-ignored scratch; the fake dirs never get committed.
+- 2026-10-28 unblock: escalated (docs/reports/decisions-needed.md). Not split/re-spec: the script is done; the only defect is the replay-hook file `.claude/replay/last.html` auto-committed by the driver, which only the owner may restore/ignore. After the owner restores it, the task resumes at `review` (DoD 8 re-run by the reviewer).
 
 ## Handoff
 Round 2 (returned). Done: review item 3 (`>&2` on `dota dir not found`); item 1 backlog line added under "Found by agents".
