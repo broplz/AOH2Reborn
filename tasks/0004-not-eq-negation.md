@@ -1,7 +1,7 @@
 ---
 id: 0004
-title: fix the 5 `not x == y` sites (luacheck W582) and stop ignoring 582
-status: blocked
+title: fix the 6 `not x ==/~= y` sites (luacheck W582) and stop ignoring 582
+status: ready
 epic: p0
 prefix: p0
 kind: code
@@ -15,15 +15,16 @@ allowed_paths:
   - game/dota_addons/attackcopy/scripts/vscripts/modifiers/modifier_boss.lua
   - game/dota_addons/attackcopy/scripts/vscripts/abilities/bosses/boss_aghanim_spell_swap.lua
   - game/dota_addons/attackcopy/scripts/vscripts/abilities/bosses/boss_void_spirit_counter.lua
+  - game/dota_addons/attackcopy/scripts/vscripts/abilities/heroes/windrunner_force_fire_toggle.lua
   - tools/gen_luacheckrc.py
   - .luacheckrc
   - tools/luacheck.baseline
 checks: lua
 tests: []
-needs_approval: false
+needs_approval: true
 returns: 0
 sessions: 1
-blocked_reason: 6th W582 site windrunner_force_fire_toggle.lua:89 is outside allowed_paths (hook); needs teamlead decision on the rewrite
+blocked_reason: 
 reviewed_sha: 
 qa_sha: 
 ---
@@ -34,7 +35,7 @@ then remove the `'582'` entry from the luacheck ignore list so new ones fail.
 
 ## Definition of Done
 V = `game/dota_addons/attackcopy/scripts/vscripts`
-1. `grep -rn -E "not [^=~]+ == " V` → no output.
+1. `grep -rn -E "not [^=~]+ (==|~=) " V` → no output.
 2. `grep -n "if self._lastEnemiesRemaining ~= nEnemiesRemaining then" V/aohgameround.lua` → `132:` …
 3. `grep -n "if key == self.open_ticket and self.lockout ~= true then" V/modifiers/modifier_boss.lua` → `56:` …
 4. `grep -n -E "and hAbility\.bAgh(Disabled|Dummy) ~= true" V/abilities/bosses/boss_aghanim_spell_swap.lua` → lines `266:` and `267:`.
@@ -43,7 +44,11 @@ V = `game/dota_addons/attackcopy/scripts/vscripts`
 7. `scripts/agents/check.sh lua` → `CHECK RESULT: OK (lua)`.
 8. `scripts/agents/check.sh lua --all-files` → `CHECK RESULT: OK (lua)`.
 9. `git diff --stat feat/p0-foundation...HEAD` → only files from allowed_paths + this task file;
-   each of the 4 Lua files shows a 1-2 line change (no reformatting).
+   each of the 5 Lua files shows a 1-2 line change (no reformatting).
+10. `grep -n "and target:GetTeam() ~= self.parent:GetTeam()" V/abilities/heroes/windrunner_force_fire_toggle.lua` → `89:` …
+11. `grep -c "W582" tools/luacheck.baseline` → `0`.
+12. [human] Windrunner with the Focus Fire toggle on: attack (deny) an allied creep → Focus Fire is
+    NOT cast; attack an enemy → Focus Fire is cast as before.
 
 ## Notes from teamlead
 - Depends on 0005: without the luacheck ratchet, `check.sh lua` fails on the legacy warnings of
@@ -67,6 +72,17 @@ V = `game/dota_addons/attackcopy/scripts/vscripts`
 - If `check.sh lua` reports W582 elsewhere (a site the grep missed), fix it the same way and list it
   in ## Result; if it reports "fixed" baseline entries, run `python3 tools/luacheck_ratchet.py --prune`
   (never --update-baseline).
+- Re-spec 2026-10-29 (teamlead, after session 1 blocked on the 6th site):
+  - The 5 original sites and the 582 removal are already done on the branch (48fd8c2) — do not redo
+    them. Remaining work: one line in windrunner_force_fire_toggle.lua, then DoD 1-11.
+  - windrunner_force_fire_toggle.lua:89 `and not target:GetTeam() ~= self.parent:GetTeam()` →
+    `and target:GetTeam() ~= self.parent:GetTeam()` (the intent rewrite). Today the clause is
+    `false ~= number` → always true, so auto Focus Fire also fires on allied (deny) targets. The fix
+    is a gameplay change, hence `needs_approval: true` and the [human] DoD 12; list it in ## Result
+    as a behaviour change. Do not delete the clause, do not touch any other line of that file.
+  - Never add the W582 to tools/luacheck.baseline (DoD 11).
+  - This takes the "windrunner `not`" item out of the unplanned p1 one-line-bugs backlog entry;
+    whoever plans that batch drops it.
 
 ## Handoff
 Session 1 (commit 48fd8c2). Blocked: DoD 8 needs a file outside allowed_paths (guard_paths hook).
