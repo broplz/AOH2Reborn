@@ -7,6 +7,7 @@
 #      Default scope = Lua files changed on this branch vs its base (AOH_BASE, else the active
 #      feature branch from tasks/backlog.md, else main) plus tests/ — the legacy tree is linted
 #      file by file as tasks touch it. --all-files lints everything (phase-0 "format the repo" task, CI nightly).
+#      luacheck runs through the ratchet: legacy warnings in tools/luacheck.baseline, only NEW ones fail.
 # kv:  tools/kvcheck.py (syntax, duplicate keys/entries, ScriptFile) with its baseline ratchet,
 #      + tools/vanilla_diff.py when tools/vanilla/ has a snapshot.
 # Exit 0 OK · 1 FAIL · 5 a required tool is missing (brew install luacheck stylua).
@@ -40,7 +41,7 @@ if [ "$WHAT" = all ] || [ "$WHAT" = lua ]; then
   fi
   if [ "${#FILES[@]}" -gt 0 ]; then
     step "luacheck"
-    run luacheck luacheck --no-color -q "${FILES[@]}"
+    run luacheck python3 tools/luacheck_ratchet.py "${FILES[@]}"
     step "stylua --check"
     run stylua stylua --check "${FILES[@]}"
   fi
