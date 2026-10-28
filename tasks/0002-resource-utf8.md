@@ -20,7 +20,7 @@ tests: []
 needs_approval: true
 returns: 0
 sessions: 0
-blocked_reason:
+blocked_reason: 
 reviewed_sha: 6eb99bd2215946894e41b9ce58660d824b5efd90
 qa_sha: 6eb99bd2215946894e41b9ce58660d824b5efd90
 ---
