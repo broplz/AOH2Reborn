@@ -1,7 +1,7 @@
 ---
 id: 0002
 title: addon_russian.txt stays UTF-16LE BOM CRLF on disk, stored as UTF-8 in git via .gitattributes
-status: ready
+status: blocked
 epic: p0
 prefix: p0
 kind: code
@@ -18,11 +18,11 @@ allowed_paths:
 checks: none
 tests: []
 needs_approval: true
-returns: 0
-sessions: 0
-blocked_reason: 
-reviewed_sha: 6eb99bd2215946894e41b9ce58660d824b5efd90
-qa_sha: 6eb99bd2215946894e41b9ce58660d824b5efd90
+returns: 1
+sessions: 2
+blocked_reason: Bash denies git check-attr and git hash-object (DoD 2, 3, 6); the owner must run them or allow them
+reviewed_sha: 707f9ca88cbb8954a742bd9854f0011c0946b280
+qa_sha: 707f9ca88cbb8954a742bd9854f0011c0946b280
 ---
 
 ## Goal
@@ -58,10 +58,57 @@ P = `game/dota_addons/attackcopy/resource/addon_russian.txt`
 - needs_approval: owner fresh-checkout test (DoD 9) and deletion of tools/normalize_text.py.
 
 ## Handoff
+Session 2: the repo already holds the round-2 work (owner-made 707f9ca + a3aa8c6: P bytes restored, .gitattributes, tool and backlog line removed). I changed no code. Review is APPROVE; QA is FAIL only because DoD 2, 3 and 6 could not be run.
+Ran in session 2: `git rev-parse feat/p0-foundation:P` → c7571a0b60f7079ea7ee46eb9b1f09238da03bd9 (allowed); `git status --short` → empty (allowed).
+Denied again in session 2: `git check-attr …` (DoD 2) and `git hash-object --no-filters P` (DoD 3). I did not try the clone (DoD 6), because it depends on DoD 3.
+Next: the owner runs DoD 2, 3 and 6 (the hash must be c7571a0b…), or allows `git check-attr`, `git hash-object` and `git clone` for the next session. Nothing suggests a product defect.
+Earlier note (session 1): Bash commands were all denied.
+Failed: `git restore --source=feat/p0-foundation -- P` (step 1) and `git rm tools/normalize_text.py` (step 2) were both denied. Grep is not available either.
+Tried: no other route. The task needs git restore, rm, add --renormalize and commit, and the Write/Edit tools cannot do these. Writing UTF-16LE bytes with Write is not possible.
+Next idea: the owner allows `git restore`, `git rm`, `git add` and `git commit` (and `git check-attr`, `git hash-object`, `git clone`) for this task, then the next session runs steps 1-5 in the order given in Notes.
 
 ## Result
+Round 2: owner restored the UTF-16LE BOM CRLF bytes of P, added the single `.gitattributes` line and removed tools/normalize_text.py and the round-1 backlog line (707f9ca, a3aa8c6). Session 2 changed no code. Verified by me: `git status --short` empty; base blob id is c7571a0b60f7079ea7ee46eb9b1f09238da03bd9. Not verified (Bash denied): DoD 2, 3, 6. Owner playtest: DoD 9 (Russian tooltips still show).
+
 Round 1 (superseded by the re-spec): converted P to UTF-8/LF with tools/normalize_text.py, commit 6eb99bd. The owner rejected it; see Notes.
 
 ## Review
+APPROVE
+
+Round 2 (code head 707f9ca, owner-made commits 707f9ca + a3aa8c6).
+Checklist:
+1. Spec: matches the re-spec. `.gitattributes` has exactly the single DoD-1 line (no global patterns). tools/normalize_text.py was deleted in 707f9ca. The round-1 backlog line was removed, so tasks/backlog.md equals base and is absent from the diff. HEAD:P is a UTF-8 blob: `head -c 10` gives `    "lang"` and the key-line count is 2626 (DoD 5, I ran both). HEAD:P is the same blob as 6eb99bd:P (c52a357), which is the renormalized form of the base text, so no string content changed. On-disk P is 691310 bytes, the same size as the base blob (diff stat `Bin 691310 -> …`). `git status --short` is empty (DoD 4). Both together strongly indicate the UTF-16LE-BOM CRLF bytes are restored (DoD 3).
+2. Scope: the diff vs base touches only `.gitattributes`, P and the task file (DoD 8). english/schinese are untouched.
+3. Conventions: n/a (no Lua/KV). aoh_lint: 0 fail, 0 warn, NEEDS APPROVAL (expected: needs_approval + [human] DoD 9).
+4. Dota correctness: n/a. The on-disk bytes Dota reads are unchanged.
+5. KV: n/a (checks: none; kvcheck does not read resource/).
+6. Verification: ## Result has no round-2 entry, so it makes no claims to verify. I could not run `git check-attr` (DoD 2), `git hash-object --no-filters` (DoD 3) or the clone (DoD 6): Bash denied them in this session. qa should run DoD 2, 3 and 6 directly. DoD 9 stays with the owner.
+7. Hygiene: clean.
+
+Non-blocking notes (no return needed):
+1. tasks/0002-resource-utf8.md:60-67: ## Handoff still says "nothing in the repo changed", and ## Result has only the round-1 line. Round 2 was done by the owner, so nobody wrote a Result. The owner or qa may want to add one line on top of ## Result, for example "Round 2: owner restored P bytes, added .gitattributes, removed tools/normalize_text.py (707f9ca)".
 
 ## QA
+FAIL (not verifiable in this session: DoD 2, 3 and 6 were denied by the Bash permission mode, so I cannot approve)
+
+Verified:
+1. DoD 1: grep -c -x → 1. OK.
+2. DoD 4: `git status --short` is empty. OK.
+3. DoD 5 (first half): `git show HEAD:P | head -c 10` → `    "lang"`. OK. I did not run the 2626 key-line count.
+4. DoD 7: tools/normalize_text.py does not exist. OK.
+5. DoD 8: `git diff --stat feat/p0-foundation...HEAD` lists only .gitattributes, P (Bin 691310 -> 442721) and the task file. OK.
+6. Indirect evidence for DoD 3: on-disk P is 691310 bytes, equal to the base blob size. `git ls-files --eol` shows `i/lf w/-text attr/text eol=crlf`. This is not the literal check.
+
+Not verified (blocked):
+7. DoD 2: `git check-attr text working-tree-encoding eol -- P` was denied.
+8. DoD 3: `git hash-object --no-filters P` was denied. The base blob id is c7571a0b60f7079ea7ee46eb9b1f09238da03bd9, so compare against it.
+9. DoD 6: the fresh clone was not attempted because the DoD 3 commands were denied.
+10. Check/test: `scripts/agents/check.sh none` exits with "unknown argument: none". checks is none, so I skipped it.
+
+Repro: run the DoD 2, 3 and 6 commands in a session that allows them. Expected: the id matches c7571a0b…; actual: the commands are denied. Nothing suggests a product defect.
+
+Non-blocking: ## Handoff and ## Result still describe round 1 and a failed session; add a round-2 line.
+
+For the human:
+- DoD 9: fresh clone of the merged base, `cmp` the clone's P against `git show <old-base-sha>:P` saved earlier → no output. Dota with language Russian still shows Russian tooltips.
+- Run DoD 2, 3 and 6 yourself (or allow them) and approve if the hash is c7571a0b60f7079ea7ee46eb9b1f09238da03bd9.
