@@ -1,0 +1,171 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Edit",
+      "Write",
+      "Agent",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git show*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git rev-parse*)",
+      "Bash(git ls-files*)",
+      "Bash(git blame*)",
+      "Bash(git branch --show-current)",
+      "Bash(git branch -a)",
+      "Bash(git branch --list*)",
+      "Bash(git tag -l*)",
+      "Bash(git describe*)",
+      "Bash(git grep*)",
+      "Bash(scripts/agents/*)",
+      "Bash(bash scripts/agents/*)",
+      "Bash(python3 scripts/agents/*)",
+      "Bash(python3 tools/*)",
+      "Bash(ls*)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(rg *)",
+      "Bash(mkdir *)",
+      "Bash(pwd)",
+      "Bash(echo *)",
+      "Bash(date*)",
+      "Bash(which *)",
+      "Bash(env)",
+      "Bash(jq *)",
+      "Bash(diff *)",
+      "Bash(file *)",
+      "Bash(du *)",
+      "Bash(iconv *)",
+      "Bash(sleep *)",
+      "Bash(true)",
+      "Bash(python3 --version)",
+      "Bash(lua -v)",
+      "Bash(luacheck --version)",
+      "Bash(stylua --version)"
+    ],
+    "deny": [
+      "Bash(git push*)",
+      "Bash(git switch*)",
+      "Bash(git checkout*)",
+      "Bash(git merge*)",
+      "Bash(git rebase*)",
+      "Bash(git reset*)",
+      "Bash(git clean*)",
+      "Bash(git branch -D *)",
+      "Bash(git branch -d *)",
+      "Bash(git stash*)",
+      "Bash(git worktree*)",
+      "Bash(git -C *)",
+      "Bash(git pull*)",
+      "Bash(git fetch*)",
+      "Bash(rm -rf *)",
+      "Bash(rm -r *)",
+      "Bash(sudo *)",
+      "Bash(brew *)",
+      "Bash(pip *)",
+      "Bash(pip3 *)",
+      "Bash(luarocks *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(cargo *)",
+      "Bash(cd *)",
+      "Bash(chmod -R *)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(ssh *)",
+      "Bash(open *)",
+      "Bash(osascript *)",
+      "Bash(claude *)",
+      "Read(./.env)",
+      "Read(./**/.env)",
+      "Read(./**/*.env)",
+      "Read(./**/*secret*)",
+      "Read(./**/*Secret*)",
+      "Edit(./.claude/settings.json)",
+      "Edit(./.claude/agents/**)",
+      "Edit(./.claude/hooks/**)",
+      "Edit(./.claude/skills/**)",
+      "Edit(./CLAUDE.md)",
+      "Edit(./tasks/approvals.txt)",
+      "WebFetch",
+      "WebSearch"
+    ]
+  },
+  "env": {
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "1",
+    "CLAUDE_CODE_FORK_SUBAGENT": "0",
+    "BASH_DEFAULT_TIMEOUT_MS": "600000",
+    "BASH_MAX_TIMEOUT_MS": "1200000"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_paths.py\""
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_bash.py\""
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Grep|Glob",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_read.py\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/loop_detector.py\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/session_end.py\""
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/session_end.py\""
+          }
+        ]
+      }
+    ]
+  }
+}

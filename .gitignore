@@ -8,3 +8,10 @@ content/*
 !content/dota_addons
 content/dota_addons/*
 !content/dota_addons/attackcopy
+
+# AI pipeline
+logs/
+tools/vanilla/
+.claude/agent-memory/*/
+!.claude/agent-memory/.gitkeep
+__pycache__/

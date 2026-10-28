@@ -1,0 +1,29 @@
+name: ci
+on:
+  push:
+    branches: [main, "feat/**"]
+  pull_request:
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Lua toolchain
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q lua5.1 luarocks
+          sudo luarocks install luacheck 1.2.0
+          curl -sSL -o stylua.zip https://github.com/JohnnyMorganz/StyLua/releases/download/v2.6.0/stylua-linux-x86_64.zip
+          unzip -q stylua.zip -d /usr/local/bin && chmod +x /usr/local/bin/stylua
+      - name: KV checks (+ vanilla names)
+        run: |
+          python3 tools/vanilla_snapshot.py
+          scripts/agents/check.sh kv
+      - name: Lua checks (changed files vs main; nightly runs --all-files)
+        env: { AOH_BASE: origin/main }
+        run: scripts/agents/check.sh lua
+      - name: Lua unit tests
+        run: scripts/agents/test.sh
