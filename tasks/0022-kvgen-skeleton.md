@@ -1,7 +1,7 @@
 ---
 id: 0022
 title: tools/kvgen.py skeleton — YAML source + template, --check against the committed boss wrapper entries
-status: ready
+status: blocked
 epic: p0
 prefix: p0
 kind: code
@@ -19,8 +19,8 @@ checks: kv
 tests: []
 needs_approval: false
 returns: 0
-sessions: 0
-blocked_reason: 
+sessions: 1
+blocked_reason: guard_paths hook rejects files inside tools/fixtures/kvgen/ (allowed_paths entry needs tools/fixtures/kvgen/**); DoD 2 fixtures cannot be written
 reviewed_sha: 
 qa_sha: 
 ---
@@ -77,6 +77,45 @@ decision (docs/reports/decisions-needed.md, 2026-10-29), and so is the migration
   (a later task after the owner decides where the output goes), and the 0014 telegraph base.
 
 ## Handoff
+Session 1 (developer-hard), commit 5f6b015. Blocked by a hook: `guard_paths.py` reads the
+allowed_paths entry `tools/fixtures/kvgen/` as a literal path, so it rejected the Write of
+`tools/fixtures/kvgen/abilities.kv`. Unblock: the teamlead changes the entry to `tools/fixtures/kvgen/**`
+(or the hook treats a trailing `/` as a directory). There is also a line under "Found by agents" in tasks/backlog.md.
+
+Done and verified this session:
+- `tools/kvgen.py`: the YAML subset parser (documented in the module docstring, errors as file:line),
+  the template loader (`"{field}"` placeholders, `[?field]` … `[/field]` optional blocks), the renderer,
+  the KV comparer (`KVGEN FAIL <entry>/<path>: kv=<a> gen=<b>`), and the `--check [family]`,
+  `--list <family>`, `--extract <family>` and `--self-test` modes. It uses only kvlib and the stdlib.
+  `--extract` matches the template against each KV entry by backtracking and binds the fields, so no
+  values were typed by hand. It keeps any existing `# excluded:` reasons when it rewrites the file.
+- `tools/kvgen_templates/boss_wrapper.kv`: one template. Specials are slots `sN`/`sN_type`/`sN_value`
+  with the fixed ids "0N"; RunScript args are slots `aN` rendered as `"aN" "%aN"`. Six entries
+  (fissure group, spectral_dagger) put AbilityCastRange after AbilityCooldown, so the template has an
+  optional `cast_range_after_cooldown` field for them.
+- `kv-src/boss_wrappers.yaml`: 55 entries. One is excluded: `boss_legion_commander_gods_rebuke_wrapper`,
+  the only wrapper with AbilityUnitTargetType before AbilityUnitTargetTeam. So N = 56 − 1 = 55.
+  `custom_ice_path_wrapper` (Function `generate_warning_aoe_noanim`) and the charge and dissimilate wrappers
+  are outside the family by its predicate.
+- Results: `--check` → `KVGEN RESULT: OK (55 entries)`. `--list boss_wrapper | wc -l` → 55.
+  The YAML grep gives 59 matches for `_wrapper`. The yaml-import grep prints nothing.
+  `check.sh kv` → `CHECK RESULT: OK (kv)`.
+
+Next session: write these fixtures. `SELF_TESTS`/`SELF_TEST_ERRORS` in kvgen.py already expect them:
+1. `tools/fixtures/kvgen/abilities.kv`: `"DOTAAbilities"` containing three entries.
+   - `fixture_target_wrapper`: generic_target, Team ENEMY, CastRange 700, Cooldown "12", ManaCost 0,
+     ICWH 1, special 01 FIELD_FLOAT delay 1.2, RunScript Target TARGET plus `delay`.
+   - `fixture_aoe_wrapper`: generic_aoe, Texture, Cooldown then CastRange, ManaCost 10, 01 radius,
+     no Target.
+   - `fixture_charge_wrapper`: Function `charge_wrapper`, which is not a family member and must be ignored.
+2. `ok.yaml`: both members, matching the KV.
+3. `changed_value.yaml`: the same as ok.yaml, but `cooldown: "99"` on the target wrapper.
+4. `missing_in_kv.yaml`: ok.yaml plus a `fixture_ghost_wrapper` entry.
+5. `missing_in_yaml.yaml`: only the target wrapper.
+6. `bad_syntax.yaml`: a parse error on line 8 (e.g. a nested mapping or an unquoted `a: b: c`).
+   The self-test expects the error message to contain `bad_syntax.yaml:8:`.
+The easiest way to write the yaml files is to run `--extract`-style output by hand: 2 entries.
+Then run `--self-test`, `--check`, `check.sh kv`, fill ## Result, set status review.
 
 ## Result
 
