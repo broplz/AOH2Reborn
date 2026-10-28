@@ -397,7 +397,6 @@
 	"AttributeBaseStrength"		"28"
 	"AttributeStrengthGain"		"2.700000"
 	"AttributeIntelligenceGain"	"3.600000"
-	"AttributeAgilityGain"		"2.700000"
 	"AttributeBaseAgility"		"20"
 	"AttributeAgilityGain"		"2.40000"
 	"StatusHealthRegen"		"6.25"

@@ -3711,7 +3711,6 @@
     "AbilityUnitTargetType"			"DOTA_UNIT_TARGET_HERO"
     "AbilityUnitTargetFlags"		"DOTA_UNIT_TARGET_FLAG_NOT_CREEP_HERO"
     "Model"							"models/props_gameplay/gold_bag.vmdl"
-    "ItemKillable"					"0"
     "AbilityCastRange"				"100"
     "AbilityCastPoint"				"0.0"
     "ItemCost"						"99999"
@@ -5030,114 +5029,6 @@
         }
     }
 }
-"item_recipe_great_manta"
-{
-    "ID"							"70127"
-    "BaseClass"						"item_recipe_manta"
-    "ItemCost"						"1300"	
-    "ItemShopTags"					""
-    "ItemRecipe"					"1"
-    "ItemResult"					"item_great_manta"
-    "ItemRequirements"
-    {
-        "01"						"item_manta;item_yasha"
-    }
-}
-"item_great_manta"
-{
-    "ID"							"70128"
-    "BaseClass"                     "item_manta"
-    "AbilityTextureName"		    "great_manta"
-    "AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_DONT_RESUME_ATTACK"
-    "AbilitySharedCooldown"			"manta"
-    "AbilityCooldown"				"30.0"
-    "AbilityCastPoint"				"0.0"
-    "AbilityManaCost"				"125"
-    "ItemShopTags"					"agi;str;int;attack_speed;move_speed;hard_to_tag"
-    "ItemQuality"					"epic"
-    "ItemAliases"					"manta style"
-    "ItemDeclarations"				"DECLARE_PURCHASES_TO_TEAMMATES | DECLARE_PURCHASES_IN_SPEECH | DECLARE_PURCHASES_TO_SPECTATORS"
-    "MaxUpgradeLevel"               "2"
-    "ItemBaseLevel"                 "2"
-    "AbilitySpecial"
-    {
-       "01"
-        {
-            "var_type"				"FIELD_INTEGER"
-            "bonus_strength"		"10 20"
-        }
-        "02"
-        {
-            "var_type"				"FIELD_INTEGER"
-            "bonus_agility"			"26 38"
-        }
-        "03"
-        {
-            "var_type"				"FIELD_INTEGER"
-            "bonus_intellect"		"10 20"
-        }
-        "04"
-        {
-            "var_type"				"FIELD_INTEGER"
-            "bonus_attack_speed"	"12 24"
-        }
-        "05"
-        {
-            "var_type"				"FIELD_INTEGER"
-            "bonus_movement_speed"	"20 25"
-        }
-        "06"
-        {
-            "var_type"				"FIELD_INTEGER"
-            "images_count"			"2"
-        }			
-        "07"
-        {
-            "var_type"				"FIELD_INTEGER"
-            "tooltip_illusion_duration"			"20"
-        }
-        "08"
-        {
-            "var_type"				"FIELD_INTEGER"
-            "images_do_damage_percent_melee"	"-30 -10"
-        }
-        "09"
-        {
-            "var_type"				"FIELD_INTEGER"
-            "tooltip_damage_outgoing_melee"			"70 90"
-        }	
-        "10"
-        {
-            "var_type"				"FIELD_INTEGER"
-            "images_take_damage_percent"	"225 150"
-        }
-        "11"
-        {
-            "var_type"				"FIELD_INTEGER"
-            "tooltip_damage_incoming_total_pct"			"325 250"
-        }			
-        "12"
-        {
-            "var_type"				"FIELD_INTEGER"
-            "images_do_damage_percent_ranged"	"-40 -20"
-        }
-        "13"
-        {
-            "var_type"				"FIELD_INTEGER"
-            "tooltip_damage_outgoing_ranged"			"60 80"
-        }
-        "14"
-        {
-            "var_type"				"FIELD_FLOAT"
-            "invuln_duration"		"0.1"
-        }
-        "15"
-        {
-            "var_type"				"FIELD_INTEGER"
-            "vision_radius"			"1000"
-        }
-    }
-}
 "item_recipe_great_shivas_guard"
 {
     "ID"							"70129"
@@ -6083,8 +5974,6 @@
     "BaseClass"						"item_datadriven"
     "AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
     "AbilityTextureName"			    "plain_ring"
-    "ItemShopTags"					    "regen_health;regen_mana;mana_pool;health_pool"
-    "ItemQuality"					    "epic"
     "ItemAliases"					    "gr;gold ring"
     "ItemShopTags"					"consumable"
     "ItemQuality"					"consumable"
@@ -6777,7 +6666,6 @@
 {
     "BaseClass"                     "item_lua"
 	"ScriptFile"                    "items/item_assault_temp.lua"
-	"ItemCost"						"0"
     "AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_PASSIVE"
     "AbilityTextureName"            "foramon_supreme_assault"
 	"ItemPurchasable"				"1"
@@ -9721,8 +9609,6 @@
 	"ItemShopTags"					"regen_health;regen_mana;mana_pool;health_pool"
 	"ItemQuality"					"epic"
 	"ItemAliases"					"dbs;dark bloodstone"
-	"ItemInitialCharges"			"0"
-	"ItemDisplayCharges"			"0"
 	"ItemDeclarations"				"DECLARE_PURCHASES_TO_TEAMMATES | DECLARE_PURCHASES_IN_SPEECH | DECLARE_PURCHASES_TO_SPECTATORS"
 	"AbilityTextureName"			"foramon_dark_bloodstone"
 	"ItemInitialCharges"			"0"
@@ -10012,7 +9898,6 @@
 	"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_PASSIVE"
 	"ItemCost"						"0"
 	"ItemIsNeutralDrop"				"0"
-	"ItemSellable"					"0"
 	"ItemGloballyCombinable"		"0"
 	"ItemPurchasable"				"1"
 	"ItemShareability"				"ITEM_FULLY_SHAREABLE"
@@ -10069,7 +9954,6 @@
 	"ItemShareability"				"ITEM_FULLY_SHAREABLE"
 	"ItemCost"						"0"
 	"ItemGloballyCombinable"		"0"
-	"ItemPurchasable"				"1"
 	"AbilityTextureName"			"Melee_Creep"
 	"AbilityCastRange"				"300"
 	"AbilityCastPoint"				"0.5"
@@ -10119,7 +10003,6 @@
 	"ItemShareability"				"ITEM_FULLY_SHAREABLE"
 	"ItemCost"						"0"
 	"ItemGloballyCombinable"		"0"
-	"ItemPurchasable"				"1"
 	"AbilityTextureName"			"Ranged_Creep"
 	"AbilityCastRange"				"300"
 	"AbilityCastPoint"				"0.5"

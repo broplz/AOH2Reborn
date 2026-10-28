@@ -1,7 +1,7 @@
 ---
 id: 0007
 title: KV duplicates, part 1 — remove the 6 duplicated entries and 19 duplicated scalar keys (last copy wins)
-status: ready
+status: done
 epic: p1
 prefix: p1
 kind: code
@@ -23,8 +23,8 @@ needs_approval: true
 returns: 0
 sessions: 0
 blocked_reason: 
-reviewed_sha: 
-qa_sha: 
+reviewed_sha: 6a8ec86a1da89e77c554cc11e7963bdce25b6100
+qa_sha: 6a8ec86a1da89e77c554cc11e7963bdce25b6100
 ---
 
 ## Goal
@@ -84,7 +84,72 @@ B = tools/kvcheck.baseline
 ## Handoff
 
 ## Result
+Round 1. Deleted the earlier copy of 6 duplicated entries and 19 duplicated scalar keys (last copy
+wins) and removed exactly those 25 lines from tools/kvcheck.baseline by hand.
+
+Verified: `scripts/agents/check.sh kv` → `CHECK RESULT: OK (kv)`. Baseline greps: duplicated entry 0,
+scalar-key regex 0, `duplicate key` 29, riki_custom_dagger 1. `git diff -U0` shows deletions only,
+with one exception: in npc_courier_replacement the whitespace-only line (4 tabs) after
+CombatClassDefend became an empty line (the Edit tool strips whitespace-only lines); no KV effect.
+I spot-checked `--show item_plain_perma` only; the other sites are covered by kvcheck failing on any
+remaining duplicate that is not in the baseline.
+
+| entry | key | kept value | dropped value |
+|---|---|---|---|
+| legion_commander_press_the_attack | (entry) | duration 5.5, hp_regen 30 45 60 75 (no 02) | duration 5.0, attack_speed 30 60 90 120, hp_regen 30 40 50 70 |
+| pangolier_swashbuckle | (entry) | damage 32 63 90 117, strikes 6 7 8 9 (no cooldown/04) | AbilityCooldown 12 10 8 6, attack_interval 0.05, damage 10 20 30 40, strikes 9 10 11 12 |
+| shadow_shaman_voodoo | (entry) | AbilityCooldown 18 | AbilitySpecial movespeed 100, duration 1.25 1.6 1.95 2.3 |
+| special_bonus_unique_nyx_2 | (entry) | value 280 + ad_linked_ability | value 1000 |
+| item_great_manta | (entry) | identical | identical |
+| item_recipe_great_manta | (entry) | identical | identical |
+| boss_aghanim_spell_swap | AbilityTextureName | rubick_spell_steal | aghanim_spell_swap |
+| boss_aghanim_summon_portals | AbilityTextureName | aghanim_spears | aghanim_summon_portals |
+| npc_dota_hero_marci | AttributeAgilityGain | 2.40000 | 2.700000 |
+| item_assault_temp | ItemCost | 9050 | 0 |
+| item_dark_bloodstone | ItemInitialCharges | 0 | 0 |
+| item_dark_bloodstone | ItemDisplayCharges | 0 | 0 |
+| item_bag_of_gold | ItemKillable | 0 | 0 |
+| item_pocket_rax | ItemPurchasable | 1 | 1 |
+| item_pocket_rax_ranged | ItemPurchasable | 1 | 1 |
+| item_plain_perma | ItemQuality | consumable | epic |
+| item_plain_perma | ItemShopTags | consumable | regen_health;regen_mana;mana_pool;health_pool |
+| item_player_unstoppable | ItemSellable | 0 | 0 |
+| npc_boss_luna | AttackCapabilities | DOTA_UNIT_CAP_RANGED_ATTACK | DOTA_UNIT_CAP_MELEE_ATTACK |
+| npc_boss_shredder | BaseClass | npc_dota_creature | npc_dota_creature |
+| npc_boss_shredder | HasInventory | 1 | 1 |
+| npc_boss_aghanim | HasInventory | 1 | 1 |
+| npc_courier_replacement | CombatClassAttack | DOTA_COMBAT_CLASS_ATTACK_BASIC | DOTA_COMBAT_CLASS_ATTACK_HERO |
+| npc_courier_replacement | CombatClassDefend | DOTA_COMBAT_CLASS_DEFEND_BASIC | DOTA_COMBAT_CLASS_DEFEND_HERO |
+| npc_boss_clockwerk_rush | vscripts | bosses/attack_ancient.lua | bosses/attack_move.lua |
+
+Open questions: none blocking. The kept clockwerk_rush vscripts (attack_ancient) and Marci's 2.4 are
+what the engine used before ("last wins" per owner); worth a glance at the [human] playtest.
+
+Owner playtest ([human], DoD 8): shop shows item_assault_temp at 9050; item_pocket_rax purchasable;
+item_great_manta + recipe build; Marci agility gain 2.4/level; Clockwerk rush and Shredder bosses
+spawn and act; no KV errors in the console at load.
 
 ## Review
+APPROVE
+
+1. Spec: I checked all 25 sites against the `feat/p0-foundation` base by line number. The FIRST copy is the one deleted in each case: assault_temp 6780 (9050 kept at 6785), dark_bloodstone 9724/9725, pocket_rax 10072, pocket_rax_ranged 10122, bag_of_gold 3714, player_unstoppable 10015, plain_perma, marci, luna, shredder BaseClass 4482 and HasInventory 4492 (4526 kept), aghanim HasInventory 6553 (6632 kept), clockwerk_rush vscripts 3825 (attack_ancient 3871 kept), courier 7242/7243 (7261/7262 kept), and the 4 override entries. For great_manta, git displays the deletion as the second pair (base 5033/5046). The two pairs are adjacent and byte-identical (I checked `--show` against the deleted hunk), so deleting either gives the same file. This matches "identical" in the table.
+2. Scope: only allowed_paths are touched. No tests are touched.
+3/4. Conventions and Dota correctness: not applicable, because there is no Lua. aoh_lint reports 0 fail and 0 warn. It needs approval only because npc_heroes_custom.txt changed and DoD 8 is a [human] item. Both are expected.
+5. KV: the change only deletes lines, so no new keys or localization are needed. qa re-runs kvcheck.
+6. Verification: the table values match the base file at every site I checked. The only `+` line is at npc_units_custom.txt:7237: a whitespace-only line became empty. ## Result discloses this, and it has no KV effect. I accept it as the documented exception to DoD 7.
+7. Hygiene: nothing to report. DoD 8 [human] is listed for the owner and not claimed.
 
 ## QA
+PASS
+
+1. `scripts/agents/check.sh kv` → `CHECK RESULT: OK (kv)` (log logs/check-20261029-022126.log).
+2. DoD 1-4: baseline greps return 0 / 0 / 29 / 1 as required.
+3. DoD 6: `--show` on item_assault_temp (ItemCost 9050 once), npc_boss_clockwerk_rush (vscripts attack_ancient once), legion_commander_press_the_attack (one entry, duration 5.5) match the Result table. The diff of the other sites shows the first copy deleted at each site.
+4. DoD 7: diff stat touches only allowed_paths plus this task file. The diff has deletions only, except the whitespace-only line in npc_units_custom.txt (npc_courier_replacement) that became empty. It is disclosed in ## Result and has no KV effect.
+
+For the human (DoD 8), in a local lobby:
+- Shop: item_assault_temp costs 9050. item_pocket_rax and item_pocket_rax_ranged are purchasable.
+- item_great_manta and its recipe build as before.
+- Marci gains 2.4 agility per level.
+- The Clockwerk rush boss (attack_ancient.lua) and the Shredder boss spawn and act as before.
+- The console shows no KV or Lua errors at load.

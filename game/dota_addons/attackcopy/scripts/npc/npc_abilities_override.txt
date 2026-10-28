@@ -1122,17 +1122,6 @@
 			}
 		}
 	}
-	"special_bonus_unique_nyx_2"
-	{
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"					"FIELD_INTEGER"
-				"value"						"1000"
-			}
-		}
-	}
 	"special_bonus_unique_nyx"
 	{
 		"AbilitySpecial"
@@ -4983,27 +4972,6 @@
 			"01"
 			{
 				"var_type"				"FIELD_FLOAT"
-				"duration"				"5.0"
-			}
-			"02"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"attack_speed"			"30 60 90 120"
-			}
-			"03"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"hp_regen"				"30 40 50 70"
-			}
-		}
-	}
-	"legion_commander_press_the_attack"
-	{
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"				"FIELD_FLOAT"
 				"duration"				"5.5"
 			}
 			"03"
@@ -6598,30 +6566,6 @@
 	{
 		"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_FRIENDLY"
 	}
-	"pangolier_swashbuckle"
-	{
-		"AbilityCooldown"				"12 10 8 6"
-		"AbilitySpecial"
-		{
-			"04"
-			{
-				"var_type"				        "FIELD_FLOAT"
-				"attack_interval"		        "0.05"
-			}
-			"05"
-			{
-				"var_type"				        "FIELD_INTEGER"
-				"damage"				        "10 20 30 40"
-				"LinkedSpecialBonus"	        "special_bonus_unique_pangolier_3"
-				"CalculateSpellDamageTooltip"	"0"
-			}
-			"08"
-			{
-				"var_type"				        "FIELD_INTEGER"
-				"strikes"				        "9 10 11 12"
-			}
-		}
-	}
 	"phantom_assassin_fan_of_knives"
 	{
 		"AbilityCooldown"				"14"
@@ -7583,22 +7527,6 @@
 			{
 				"var_type"			"FIELD_FLOAT"
 				"min_slow"			"20.0"
-			}
-		}
-	}
-	"shadow_shaman_voodoo"
-	{
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"					"FIELD_INTEGER"
-				"movespeed"					"100"
-			}
-			"02"
-			{
-				"var_type"					"FIELD_FLOAT"
-				"duration"					"1.25 1.6 1.95 2.3"
 			}
 		}
 	}

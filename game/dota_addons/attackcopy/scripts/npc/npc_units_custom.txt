@@ -1623,7 +1623,6 @@
 	"Ability16"					"generic_hidden"
 	"Ability17"					"custom_luna_invis"
 	"ArmorPhysical"				"13"
-	"AttackCapabilities"		"DOTA_UNIT_CAP_MELEE_ATTACK"
 	"AttackCapabilities"		"DOTA_UNIT_CAP_RANGED_ATTACK"
 	"AttackAcquisitionRange"	"1200"
 	"AttackRange"		        "450"
@@ -3822,7 +3821,6 @@
 	"UnitLabel" 							"main_boss"
     "Model"						"models/heroes/rattletrap/rattletrap.vmdl"
     "BaseClass"					"npc_dota_creature"
-	"vscripts"					"bosses/attack_move.lua"
     "SoundSet"					"Hero_Rattletrap"
     "GameSoundsFile"			"soundevents/game_sounds_heroes/game_sounds_rattletrap.vsndevts"
     "VoiceFile"					"soundevents/voscripts/game_sounds_vo_rattletrap.vsndevts"
@@ -4479,7 +4477,6 @@
 "npc_boss_shredder"
 {
 	"UnitLabel" 							"main_boss"
-    "BaseClass"					"npc_dota_creature"
     "Model"		"models/heroes/shredder/shredder.vmdl"
 	"IdleExpression"		"scenes/shredder/shredder_exp_idle_01.vcd"
     "BaseClass"					"npc_dota_creature"
@@ -4489,7 +4486,6 @@
     "Level"						"36"
     "ConsideredHero"			"1"
     "CanBeDominated"			"0"
-    "HasInventory"				"1"
     "ArmorPhysical"				"25"
     "MagicalResistance"			"25"
     "AttackCapabilities"		"DOTA_UNIT_CAP_MELEE_ATTACK"
@@ -6550,7 +6546,6 @@
 	"IsBossMonster"				"1"
 	"IdleExpression"			"scenes/aghanim/aghanim_exp_idle.vcd"
 	"VoiceFile"					"soundevents/voscripts/game_sounds_vo_aghanim.vsndevts"
-	"HasInventory"							"1"
 	"UnitLabel" 							"main_boss"
     "AbilityLayout"							"4"
 
@@ -7239,9 +7234,7 @@
 	"AttackRange"				"500"		// Range within a target can be attacked.
 	"ProjectileModel"			"particles/units/heroes/hero_witchdoctor/witchdoctor_ward_attack.vpcf" // Particle system model for projectile.
 	"ProjectileSpeed"			"1000"		// Speed of projectile.
-	"CombatClassAttack"			"DOTA_COMBAT_CLASS_ATTACK_HERO"
-	"CombatClassDefend"			"DOTA_COMBAT_CLASS_DEFEND_HERO"
-				
+
 	"Ability1"					"courier_invincibility"
 	"ArmorPhysical"				"10"		// Physical protection.
 	"MagicalResistance"				"0"			// Magical protection.

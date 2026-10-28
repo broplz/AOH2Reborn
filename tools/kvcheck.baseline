@@ -6,8 +6,6 @@ game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key 
 game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key '03' in boss_enigma_black_hole/AbilitySpecial
 game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key '04' in boss_enigma_black_hole/AbilitySpecial
 game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key '06' in watch_tower_increase_stats/AbilitySpecial
-game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key 'AbilityTextureName' in boss_aghanim_spell_swap
-game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key 'AbilityTextureName' in boss_aghanim_summon_portals
 game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key 'ApplyModifier' in pugna_custom_nether_ward/OnSpellStart/SpawnUnit/OnSpawn
 game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key 'AttachEffect' in nyx_assassin_custom_spiked_carapace/Modifiers/modifier_spiked_carapaced_stun_datadriven/OnCreated
 game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key 'CASTER' in legion_arcana/Modifiers/modifier_arcana/OnCreated/AttachEffect/ControlPointEntities
@@ -21,36 +19,13 @@ game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key 
 game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key 'SpawnUnit' in pugna_custom_nether_ward/OnSpellStart
 game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key 'TARGET' in chen_custom_holy_persuasion/OnSpellStart/FireEffect/ControlPointEntities
 game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key 'TARGET' in necrolyte_custom_reapers_scythe/OnSpellStart/DelayedAction/Action/FireEffect/ControlPointEntities
-game/dota_addons/attackcopy/scripts/npc/npc_abilities_override.txt: duplicated entry legion_commander_press_the_attack (first at ; one copy is ignored by the engine)
-game/dota_addons/attackcopy/scripts/npc/npc_abilities_override.txt: duplicated entry pangolier_swashbuckle (first at ; one copy is ignored by the engine)
-game/dota_addons/attackcopy/scripts/npc/npc_abilities_override.txt: duplicated entry shadow_shaman_voodoo (first at ; one copy is ignored by the engine)
-game/dota_addons/attackcopy/scripts/npc/npc_abilities_override.txt: duplicated entry special_bonus_unique_nyx_2 (first at ; one copy is ignored by the engine)
-game/dota_addons/attackcopy/scripts/npc/npc_heroes_custom.txt: duplicate key 'AttributeAgilityGain' in npc_dota_hero_marci
 game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key '01' in item_tome_bargain/AbilitySpecial
 game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key '01' in item_tome_selling/AbilitySpecial
 game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key '05' in item_plain_ring/AbilitySpecial
 game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key '05' in item_suicidal_mask/AbilitySpecial
 game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key '10' in item_suicidal_mask/AbilitySpecial
-game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key 'ItemCost' in item_assault_temp
-game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key 'ItemDisplayCharges' in item_dark_bloodstone
-game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key 'ItemInitialCharges' in item_dark_bloodstone
-game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key 'ItemKillable' in item_bag_of_gold
-game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key 'ItemPurchasable' in item_pocket_rax
-game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key 'ItemPurchasable' in item_pocket_rax_ranged
-game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key 'ItemQuality' in item_plain_perma
-game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key 'ItemSellable' in item_player_unstoppable
-game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key 'ItemShopTags' in item_plain_perma
-game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicated entry item_great_manta (first at ; one copy is ignored by the engine)
-game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicated entry item_recipe_great_manta (first at ; one copy is ignored by the engine)
 game/dota_addons/attackcopy/scripts/npc/npc_units_custom.txt: duplicate key 'Ability2' in npc_boss_luna/Creature/OffensiveAbilities
-game/dota_addons/attackcopy/scripts/npc/npc_units_custom.txt: duplicate key 'AttackCapabilities' in npc_boss_luna
-game/dota_addons/attackcopy/scripts/npc/npc_units_custom.txt: duplicate key 'BaseClass' in npc_boss_shredder
-game/dota_addons/attackcopy/scripts/npc/npc_units_custom.txt: duplicate key 'CombatClassAttack' in npc_courier_replacement
-game/dota_addons/attackcopy/scripts/npc/npc_units_custom.txt: duplicate key 'CombatClassDefend' in npc_courier_replacement
-game/dota_addons/attackcopy/scripts/npc/npc_units_custom.txt: duplicate key 'HasInventory' in npc_boss_aghanim
-game/dota_addons/attackcopy/scripts/npc/npc_units_custom.txt: duplicate key 'HasInventory' in npc_boss_shredder
 game/dota_addons/attackcopy/scripts/npc/npc_units_custom.txt: duplicate key 'Wearable5' in npc_boss_skeleton_king/Creature/AttachWearables
 game/dota_addons/attackcopy/scripts/npc/npc_units_custom.txt: duplicate key 'Wearable5' in npc_boss_skeleton_king_angry/Creature/AttachWearables
 game/dota_addons/attackcopy/scripts/npc/npc_units_custom.txt: duplicate key 'particle_folder' in npc_boss_enigma/precache
 game/dota_addons/attackcopy/scripts/npc/npc_units_custom.txt: duplicate key 'particle_folder' in npc_boss_faceless_void/precache
-game/dota_addons/attackcopy/scripts/npc/npc_units_custom.txt: duplicate key 'vscripts' in npc_boss_clockwerk_rush

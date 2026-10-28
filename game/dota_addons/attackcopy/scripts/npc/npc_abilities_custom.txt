@@ -20460,7 +20460,6 @@
     "boss_aghanim_summon_portals"
     {
         "BaseClass"                     "ability_lua"
-        "AbilityTextureName"            "aghanim_summon_portals"
         "ScriptFile"                    "abilities/bosses/boss_aghanim_summon_portals"
 		"AbilityTextureName"			"aghanim_spears"
         "AbilityBehavior"               "DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_CHANNELLED | DOTA_ABILITY_BEHAVIOR_DONT_RESUME_ATTACK"
@@ -20586,7 +20585,6 @@
         // General
         //-------------------------------------------------------------------------------------------------------------
         "BaseClass"                     "ability_lua"
-        "AbilityTextureName"            "aghanim_spell_swap"
         "ScriptFile"                    "abilities/bosses/boss_aghanim_spell_swap"
 
         "AbilityBehavior"               "DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_CHANNELLED | DOTA_ABILITY_BEHAVIOR_DONT_RESUME_ATTACK"
