@@ -1,0 +1,88 @@
+"{name}"
+{
+	"BaseClass"	"ability_datadriven"
+	"AbilityBehavior"	"{behavior}"
+[?target_team]
+	"AbilityUnitTargetTeam"	"{target_team}"
+[/target_team]
+[?target_type]
+	"AbilityUnitTargetType"	"{target_type}"
+[/target_type]
+[?target_flags]
+	"AbilityUnitTargetFlags"	"{target_flags}"
+[/target_flags]
+[?spell_immunity]
+	"SpellImmunityType"	"{spell_immunity}"
+[/spell_immunity]
+[?dispellable]
+	"SpellDispellableType"	"{dispellable}"
+[/dispellable]
+[?texture]
+	"AbilityTextureName"	"{texture}"
+[/texture]
+[?cast_range]
+	"AbilityCastRange"	"{cast_range}"
+[/cast_range]
+[?cast_point]
+	"AbilityCastPoint"	"{cast_point}"
+[/cast_point]
+	"AbilityCooldown"	"{cooldown}"
+[?cast_range_after_cooldown]
+	"AbilityCastRange"	"{cast_range_after_cooldown}"
+[/cast_range_after_cooldown]
+	"AbilityManaCost"	"{mana_cost}"
+	"IsCastableWhileHidden"	"1"
+	"AbilitySpecial"
+	{
+[?s1]
+		"01"	{	"var_type"	"{s1_type}"	"{s1}"	"{s1_value}"	}
+[/s1]
+[?s2]
+		"02"	{	"var_type"	"{s2_type}"	"{s2}"	"{s2_value}"	}
+[/s2]
+[?s3]
+		"03"	{	"var_type"	"{s3_type}"	"{s3}"	"{s3_value}"	}
+[/s3]
+[?s4]
+		"04"	{	"var_type"	"{s4_type}"	"{s4}"	"{s4_value}"	}
+[/s4]
+[?s5]
+		"05"	{	"var_type"	"{s5_type}"	"{s5}"	"{s5_value}"	}
+[/s5]
+[?s6]
+		"06"	{	"var_type"	"{s6_type}"	"{s6}"	"{s6_value}"	}
+[/s6]
+[?s7]
+		"07"	{	"var_type"	"{s7_type}"	"{s7}"	"{s7_value}"	}
+[/s7]
+	}
+	"OnSpellStart"
+	{
+		"RunScript"
+		{
+			"ScriptFile"	"abilities\other\generic.lua"
+			"Function"	"{function}"
+[?target]
+			"Target"	"{target}"
+[/target]
+[?a1]
+			"{a1}"	"%{a1}"
+[/a1]
+[?a2]
+			"{a2}"	"%{a2}"
+[/a2]
+[?a3]
+			"{a3}"	"%{a3}"
+[/a3]
+[?a4]
+			"{a4}"	"%{a4}"
+[/a4]
+[?a5]
+			"{a5}"	"%{a5}"
+[/a5]
+[?a6]
+			"{a6}"	"%{a6}"
+[/a6]
+		}
+	}
+}

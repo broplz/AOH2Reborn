@@ -1,0 +1,8 @@
+# kvgen --self-test fixture: line 8 holds an unquoted `a: b: c` scalar, a parse error.
+
+family: boss_wrapper
+template: tools/kvgen_templates/boss_wrapper.kv
+entries:
+  - name: "fixture_target_wrapper"
+    cooldown: "12"
+    behavior: a: b: c

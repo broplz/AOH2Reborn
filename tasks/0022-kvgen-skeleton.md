@@ -1,7 +1,7 @@
 ---
 id: 0022
 title: tools/kvgen.py skeleton — YAML source + template, --check against the committed boss wrapper entries
-status: ready
+status: done
 epic: p0
 prefix: p0
 kind: code
@@ -21,8 +21,8 @@ needs_approval: false
 returns: 0
 sessions: 0
 blocked_reason: 
-reviewed_sha: 
-qa_sha: 
+reviewed_sha: fcbd724f503ca369a866a978d121e7bdfde1802f
+qa_sha: fcbd724f503ca369a866a978d121e7bdfde1802f
 ---
 
 ## Goal
@@ -122,7 +122,69 @@ The easiest way to write the yaml files is to run `--extract`-style output by ha
 Then run `--self-test`, `--check`, `check.sh kv`, fill ## Result, set status review.
 
 ## Result
+Session 2 (developer-hard).
+What changed
+- `tools/kvgen.py`: the stdlib-only generator skeleton. It has the YAML subset parser (documented in
+  the docstring), the KV template with `[?field]` optional blocks, the renderer, the comparer, and the
+  `--check [family]`, `--list`, `--extract` and `--self-test` modes. KV is read through `tools/kvlib.py`.
+  No game file is written. (Session 1, 5f6b015.)
+- `tools/kvgen_templates/boss_wrapper.kv`: a single template. Optional `cast_range_after_cooldown`
+  covers the six entries that put AbilityCastRange after AbilityCooldown.
+- `kv-src/boss_wrappers.yaml`: written by `--extract boss_wrapper` (no values typed by hand). It has
+  55 entries and 1 `# excluded:` entry, `boss_legion_commander_gods_rebuke_wrapper`, whose
+  TargetType comes before TargetTeam. N = 55, as the re-spec accepted.
+- `tools/fixtures/kvgen/` (this session): `abilities.kv` with 2 family members and the non-member
+  `fixture_charge_wrapper`, plus `ok`, `changed_value`, `missing_in_kv`, `missing_in_yaml` and
+  `bad_syntax` (.yaml), covering DoD 2 a–d and the file:line parse error.
+- Callers: none. kvgen is a new tool and nothing imports it. kvlib.py is unchanged.
+
+How verified (all run this session)
+1. `python3 tools/kvgen.py --check` → `KVGEN RESULT: OK (55 entries)`, exit 0.
+2. `python3 tools/kvgen.py --self-test` → `KVGEN SELFTEST: OK`.
+3. `--list boss_wrapper` prints 55 names, one per line.
+4. The yaml-import grep prints nothing.
+5. `grep -c "_wrapper" kv-src/boss_wrappers.yaml` → 59 (≥ 55).
+6. `scripts/agents/check.sh kv` → `CHECK RESULT: OK (kv)`.
+7. `git diff --stat feat/p0-foundation...HEAD` changes only allowed_paths, this task file, and
+   the one "Found by agents" line in tasks/backlog.md. Nothing under game/ changed.
+
+Open questions: where generated KV goes and when to migrate are still owner decisions
+(decisions-needed.md). No [human] items: the tool does not touch the game.
 
 ## Review
+APPROVE
+
+Checklist (round 1, code head fcbd724):
+1. Spec: matches the DoD and ADR-0002 decision 2. The tool is stdlib-only, reads KV through kvlib, writes no game
+   file, has the `--check/--list/--extract/--self-test` modes, documents the YAML subset in the docstring, uses the
+   `KVGEN FAIL <entry>/<path>: kv= gen=` shape, keeps the backslash ScriptFile, and lists the exclusion in the YAML
+   header. I ran it: `--check` → `KVGEN RESULT: OK (55 entries)`, `--self-test` → `KVGEN SELFTEST: OK`,
+   `--list boss_wrapper` → 55 names. N = 55 is the number the re-spec accepted.
+2. Scope: allowed_paths, the task file, and one "Found by agents" line in tasks/backlog.md (allowed by CLAUDE.md rule 1).
+   Nothing under game/ changed.
+3. Lua/KV conventions: n/a (no Lua and no game KV). The template reproduces the existing `ability_datadriven` entries
+   for the --check comparison and adds none to the game.
+4. Dota correctness: n/a.
+5. KV: no game KV changed. The `check.sh kv` claim is left for qa to re-run.
+6. Verification: I reproduced the --check, --self-test and --list claims above. The diff stat matches Result item 7.
+7. Hygiene: no secrets, no TODOs, English only. aoh_lint: 0 fail, 1 size warn.
+
+Non-blocking (for the migration task or the teamlead; they do not block this task):
+1. tools/kvgen.py `parse_yaml`: `os.path.relpath(path, kvlib.ROOT)` is computed in three places. Compute it once
+   as a local `rel`.
+2. tools/kvgen.py `compare`: it `return`s at the first structural mismatch in a block, so later diffs in that entry
+   are only reported after the first one is fixed. That is fine for a skeleton, but the docstring should say so.
+3. Size: kvgen.py alone is 417 lines, more than the M cap of 300 (aoh_lint WARN). Teamlead: the next kvgen task should be sized L.
 
 ## QA
+PASS
+
+1. DoD 1: `kvgen.py --check` → `KVGEN RESULT: OK (55 entries)`. Grep of `"Function" "generic_*` gives 56; the one difference is the excluded `boss_legion_commander_gods_rebuke_wrapper`, accepted in the re-spec.
+2. DoD 2: `--self-test` → `KVGEN SELFTEST: OK`. Fixtures are under tools/fixtures/kvgen/.
+3. DoD 3: `--list boss_wrapper | wc -l` → 55, equal to N.
+4. DoD 4: yaml-import grep prints nothing.
+5. DoD 5: `grep -c _wrapper kv-src/boss_wrappers.yaml` → 59, at least 55.
+6. DoD 6: `check.sh kv` → `CHECK RESULT: OK (kv)`.
+7. DoD 7: the diff stat shows only allowed_paths, this task file, and one line in tasks/backlog.md (the "Found by agents" line, allowed by CLAUDE.md rule 1). Nothing under game/ changed.
+
+For the human: none, the tool does not touch the game.

@@ -1,0 +1,74 @@
+// kvgen --self-test fixture: two boss_wrapper family members and one non-member.
+"DOTAAbilities"
+{
+	"fixture_target_wrapper"
+	{
+		"BaseClass"	"ability_datadriven"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+		"AbilityUnitTargetTeam"	"DOTA_UNIT_TARGET_TEAM_ENEMY"
+		"AbilityCastRange"	"700"
+		"AbilityCooldown"	"12"
+		"AbilityManaCost"	"0"
+		"IsCastableWhileHidden"	"1"
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"	"FIELD_FLOAT"
+				"delay"	"1.2"
+			}
+		}
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"	"abilities\other\generic.lua"
+				"Function"	"generic_target"
+				"Target"	"TARGET"
+				"delay"	"%delay"
+			}
+		}
+	}
+
+	"fixture_aoe_wrapper"
+	{
+		"BaseClass"	"ability_datadriven"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_AOE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+		"AbilityTextureName"	"elder_titan_echo_stomp"
+		"AbilityCooldown"	"9.0"
+		"AbilityCastRange"	"800"
+		"AbilityManaCost"	"10"
+		"IsCastableWhileHidden"	"1"
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"	"FIELD_INTEGER"
+				"radius"	"300"
+			}
+		}
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"	"abilities\other\generic.lua"
+				"Function"	"generic_aoe"
+				"radius"	"%radius"
+			}
+		}
+	}
+
+	"fixture_charge_wrapper"
+	{
+		"BaseClass"	"ability_datadriven"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"	"abilities\other\generic.lua"
+				"Function"	"charge_wrapper"
+			}
+		}
+	}
+}

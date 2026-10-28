@@ -1,0 +1,28 @@
+# kvgen --self-test fixture: both family members, matching abilities.kv.
+
+family: boss_wrapper
+template: tools/kvgen_templates/boss_wrapper.kv
+entries:
+  - name: "fixture_target_wrapper"
+    behavior: "DOTA_ABILITY_BEHAVIOR_UNIT_TARGET | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+    target_team: "DOTA_UNIT_TARGET_TEAM_ENEMY"
+    cast_range: "700"
+    cooldown: "12"
+    mana_cost: "0"
+    s1_type: "FIELD_FLOAT"
+    s1: "delay"
+    s1_value: "1.2"
+    function: "generic_target"
+    target: "TARGET"
+    a1: "delay"
+  - name: "fixture_aoe_wrapper"
+    behavior: "DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_AOE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+    texture: "elder_titan_echo_stomp"
+    cooldown: "9.0"
+    cast_range_after_cooldown: "800"
+    mana_cost: "10"
+    s1_type: "FIELD_INTEGER"
+    s1: "radius"
+    s1_value: "300"
+    function: "generic_aoe"
+    a1: "radius"
