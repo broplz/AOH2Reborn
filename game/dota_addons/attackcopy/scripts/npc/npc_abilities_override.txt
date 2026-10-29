@@ -917,17 +917,6 @@
 			}
 		}
 	}
-	"special_bonus_unique_marci_guardian_magic_immune"
-	{
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"			"FIELD_FLOAT"
-				"value"				"2.0"
-			}
-		}
-	}
 	"special_bonus_unique_marci_guardian_lifesteal"
 	{
 		"AbilitySpecial"
@@ -2558,17 +2547,6 @@
 			{
 				"var_type"				"FIELD_FLOAT"
 				"damage"		"80 120 160"
-			}
-		}
-	}
-	"beastmaster_call_of_the_wild_boar"
-	{
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"					"FIELD_INTEGER"
-				"duration"				"75 75 75 75"
 			}
 		}
 	}

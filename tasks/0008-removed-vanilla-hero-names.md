@@ -1,7 +1,7 @@
 ---
 id: 0008
 title: Drop dead overrides for removed vanilla names (beastmaster boar, marci magic-immune talent)
-status: ready
+status: done
 epic: p1
 prefix: p1
 kind: code
@@ -20,8 +20,8 @@ needs_approval: true
 returns: 0
 sessions: 0
 blocked_reason: 
-reviewed_sha: 
-qa_sha: 
+reviewed_sha: cdd13e26a1c961a611aaab17efe87a38fba7f2b7
+qa_sha: cdd13e26a1c961a611aaab17efe87a38fba7f2b7
 ---
 
 ## Goal
@@ -66,7 +66,32 @@ N = `game/dota_addons/attackcopy/scripts/npc`
 ## Handoff
 
 ## Result
+Round 1
+- Changed: removed the dead `beastmaster_call_of_the_wild_boar` and `special_bonus_unique_marci_guardian_magic_immune` entries from npc_abilities_override.txt; Marci `Ability15` now `special_bonus_unique_marci_guardian_strong_dispel`; removed the 2 matching lines from tools/vanilla_diff.baseline.
+- Verified: `check.sh kv` → OK; `vanilla_diff.py` → `0 fail, 2 known, 125 warn`, neither name mentioned; strong_dispel appears once (line 391).
+- `aoh_lint.py 0008` → 0 fail, NEEDS APPROVAL (expected).
+- Not run: [human] item 9.
+- Owner playtest: Marci level-20 slot shows strong-dispel talent, no console error; Beastmaster Call of the Wild still summons the hawk.
 
 ## Review
+APPROVE
+1. Spec: both dead entries deleted whole (npc_abilities_override.txt ex-lines 920–930 and 2564–2574), nothing else touched; Marci `Ability15` → `special_bonus_unique_marci_guardian_strong_dispel` (npc_heroes_custom.txt:391), whitespace kept; baseline lost exactly the two lines and keeps aghanim_spear / vampiric_aura + header. No override or tooltip added, as the notes require.
+2. Scope: only the 3 allowed_paths changed (+ task file). No tests touched.
+3. Conventions: KV-only change; no Lua, no new AbilitySpecial. N/A otherwise.
+4. Dota correctness: N/A (no Lua). Successor talent exists in tools/vanilla/heroes/npc_dota_hero_marci.txt and npc_ability_ids.txt; no other reference to the removed names left in scripts/.
+5. KV: `vanilla_diff.py` → `0 fail, 2 known, 125 warn`, neither removed name mentioned. Vanilla localization covers the talent, so no addon_english entry needed. kvcheck left to qa.
+6. Verification: Result claims match what I re-ran (vanilla_diff, aoh_lint → 0 fail, NEEDS APPROVAL; strong_dispel single hit line 391). [human] item 9 is listed for the owner, not claimed.
+7. Hygiene: clean.
 
 ## QA
+PASS
+1. `check.sh kv` → `CHECK RESULT: OK (kv)`.
+2. DoD 1, 2, 4 → grep counts 0; DoD 3 → single hit, line 391, inside the `npc_dota_hero_marci` block (384–408).
+3. Baseline holds the header plus the aghanim_spear and vampiric_aura lines.
+4. DoD 5: `vanilla_diff.py` → `0 fail, 2 known, 125 warn`, neither removed name mentioned.
+5. DoD 7: `aoh_lint.py 0008` → 0 fail, NEEDS APPROVAL (expected).
+6. DoD 8: diff stat shows only the 3 allowed_paths and this task file.
+
+For the human:
+- Local lobby, Marci: the level-20 talent slot shows the strong-dispel talent. Taking it at level 20 gives no console error.
+- Beastmaster: Call of the Wild still summons the hawk, and no console error mentions the boar.
