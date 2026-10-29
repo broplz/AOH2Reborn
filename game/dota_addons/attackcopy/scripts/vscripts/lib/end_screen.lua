@@ -92,15 +92,19 @@ function end_screen_get_data(isWinner)
 					items = {},
 				}
 
-				for item_slot = DOTA_ITEM_SLOT_1, DOTA_STASH_SLOT_6 do
+				-- payload key -> inventory slot: 0-8 inventory+backpack, 9/10 neutral active/passive
+				local payload_slots = {
+					[9] = DOTA_ITEM_NEUTRAL_ACTIVE_SLOT,
+					[10] = DOTA_ITEM_NEUTRAL_PASSIVE_SLOT,
+				}
+				for item_slot = DOTA_ITEM_SLOT_1, DOTA_ITEM_SLOT_9 do
+					payload_slots[item_slot] = item_slot
+				end
+				for key, item_slot in pairs(payload_slots) do
 					local item = hero:GetItemInSlot(item_slot)
 					if item then
-						playerInfo.items[item_slot] = item:GetAbilityName()
+						playerInfo.items[key] = item:GetAbilityName()
 					end
-				end
-				local item = hero:GetItemInSlot(16)
-				if item then
-					playerInfo.items[9] = item:GetAbilityName()
 				end
 				data.players[playerID] = playerInfo
 			end

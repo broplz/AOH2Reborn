@@ -1,7 +1,7 @@
 ---
 id: 0009
 title: End screen reads neutral items via DOTA_ITEM_NEUTRAL_*_SLOT, stash no longer overwrites slot 9
-status: ready
+status: done
 epic: p1
 prefix: p1
 kind: code
@@ -19,8 +19,8 @@ needs_approval: true
 returns: 0
 sessions: 0
 blocked_reason: 
-reviewed_sha: 
-qa_sha: 
+reviewed_sha: b65db0b9e45ed2ced165263c569697adeaa32d33
+qa_sha: b65db0b9e45ed2ced165263c569697adeaa32d33
 ---
 
 ## Goal
@@ -62,7 +62,27 @@ V = `game/dota_addons/attackcopy/scripts/vscripts`
 ## Handoff
 
 ## Result
+Round 1: lib/end_screen.lua now reads inventory+backpack (DOTA_ITEM_SLOT_1..9 → items[0..8]) and the
+neutral slots by enum through one key→slot table (items[9] active, items[10] passive); stash dropped.
+Verified: check.sh lua OK. Not run: aoh_lint. Playtest: DoD item 7 [human].
 
 ## Review
+APPROVE
+1. Spec: matches DoD 1-3 and the teamlead's target shape. The loop runs DOTA_ITEM_SLOT_1..9 (0..8) into items[0..8], items[9] is the active neutral and items[10] the passive one, both read by enum through one key→slot table. Stash is dropped, so the Panorama contract (items[0..9]) still holds.
+2. Scope: only lib/end_screen.lua plus the task file. No Panorama, no baseline change, no tests touched.
+3. Conventions: the new code adds no globals (`payload_slots` is local), uses enums instead of magic numbers, and keeps the legacy globals baselined as instructed. aoh_lint: 0 fail, 0 warn, NEEDS APPROVAL (expected).
+4. Dota correctness: runs server-side at game end with no timers, particles or events, so nothing to release or guard beyond the existing `if item`. Iterating with `pairs` is fine because the order of the keys doesn't matter.
+5. KV: not touched.
+6. Verification: Result says check.sh lua passed and that aoh_lint was not run; qa reruns check.sh. DoD 7 [human] is listed for the owner, not claimed.
+7. Hygiene: no print calls, no leftover TODO, English only.
+Non-blocking nit: end_screen.lua:96-99 rebuilds `payload_slots` for every player. It could be a file-level `local` built once, but that is optional.
 
 ## QA
+PASS
+1. DoD 1: grep count 0. DoD 2: count 2. DoD 3: one line (end_screen.lua:100).
+2. DoD 4: check.sh lua → CHECK RESULT: OK (lua) (logs/check-20261029-023316.log).
+3. DoD 5: aoh_lint 0 fail, 0 warn, NEEDS APPROVAL (expected).
+4. DoD 6: diff touches only lib/end_screen.lua and this task file; no Panorama.
+
+For the human:
+- DoD 7: play a local game to the end with a hero holding 6 inventory items, 1 backpack item, a stash item, an active neutral and an enchantment. The end screen must show the 6+1 items and the active neutral in the neutral box (not the stash item). The console must show no Lua error from end_screen.lua.
