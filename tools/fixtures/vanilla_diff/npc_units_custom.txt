@@ -1,0 +1,12 @@
+"DOTAUnits"
+{
+	"npc_fixture_unit"
+	{
+		"Ability1"	"live_ability"
+		"Ability2"	""
+		"Creature"
+		{
+			"LinkedAbility"	"dead_ability"
+		}
+	}
+}

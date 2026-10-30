@@ -6,6 +6,8 @@
 Needs tools/vanilla/ (python3 tools/vanilla_snapshot.py). Reports:
   FAIL  BaseClass of one of our entries that vanilla lacks (the entry is broken)
   FAIL  a vanilla ability/item we override that no longer exists (dead override)
+  FAIL  an Ability<N>/LinkedAbility in our heroes/units naming an ability that neither vanilla nor
+        our custom KV defines (Dota dies with FATAL on hero/unit spawn)
   WARN  a special_bonus_* we override as a stand-alone block while vanilla inlines it in the
         owning ability (the override is probably a no-op — verify in tools)
   INFO  vanilla heroes missing from herolist.txt
@@ -22,6 +24,25 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import kvlib as kv  # noqa: E402
 
 OUR_BASES = {"ability_datadriven", "ability_lua", "item_datadriven", "item_lua"}
+CUSTOM_FILES = ("npc_abilities_custom.txt", "npc_items_custom.txt")
+SLOT_FILES = ("npc_heroes_custom.txt", "npc_units_custom.txt")
+ABILITY_REF = re.compile(r"^(Ability\d+|LinkedAbility)$", re.I)
+
+
+def ability_refs(node):
+    """Every non-empty Ability<N>/LinkedAbility value node under node, at any depth."""
+    for c in node.children:
+        if c.value is None:
+            yield from ability_refs(c)
+        elif c.value and ABILITY_REF.match(c.key):
+            yield c
+
+
+def dead_refs(fname, entries, defined):
+    """FAIL lines for ability references in entries that `defined` lacks. `defined` must not
+    include npc_ability_ids.txt: it keeps names Valve has removed."""
+    return [f"{fname} {e.key}: {r.key} {r.value} is defined neither in vanilla nor in our KV"
+            for e in entries for r in ability_refs(e) if r.value not in defined]
 
 
 def vanilla():
@@ -68,9 +89,16 @@ def main():
     known_names = ab | items | ids
     fails, warns, infos = [], [], []
 
-    def ours(name):
+    def entries_of(name):
         root, _ = kv.parse_file(os.path.join(kv.NPC_DIR, name))
-        return [e for e in kv.entries(root) if not only or e.key in only]
+        return kv.entries(root)
+
+    def ours(name):
+        return [e for e in entries_of(name) if not only or e.key in only]
+
+    defined = ab | items | {e.key for f in CUSTOM_FILES for e in entries_of(f)}
+    for f in SLOT_FILES:
+        fails.extend(dead_refs(f, ours(f), defined))
 
     for e in ours("npc_abilities_custom.txt") + ours("npc_items_custom.txt"):
         b = e.get("BaseClass")
