@@ -9,6 +9,8 @@
     }) 
 ]]
 
+local fx = require("core/fx")
+
 function create_popup(data)
 	local target = data.target
 	local value = math.floor(data.value)
@@ -32,10 +34,10 @@ function create_popup(data)
 
 	local particle_path = "particles/msg_fx/msg_" .. type .. ".vpcf"
 
-	local particle = ParticleManager:CreateParticle(particle_path, PATTACH_ROOTBONE_FOLLOW, target)
-
-	ParticleManager:SetParticleControl(particle, 0, offset)
-	ParticleManager:SetParticleControl(particle, 1, Vector(pre, value, pos))
-	ParticleManager:SetParticleControl(particle, 2, Vector(duration, size, 0))
-	ParticleManager:SetParticleControl(particle, 3, color)
+	fx.once(particle_path, PATTACH_ROOTBONE_FOLLOW, target, {
+		[0] = offset,
+		[1] = Vector(pre, value, pos),
+		[2] = Vector(duration, size, 0),
+		[3] = color,
+	})
 end

@@ -1,4 +1,5 @@
 require("lib/my")
+local fx = require("core/fx")
 
 custom_rax_behavior = class({})
 
@@ -36,14 +37,11 @@ if IsServer() then
 	end
 	function modifier_rax_behavior:OnRefresh(keys)
 		self.target = self.owner:GetAbsOrigin()
-		local fx = ParticleManager:CreateParticle(
-			"particles/ui_mouseactions/ping_waypoint.vpcf",
-			PATTACH_WORLDORIGIN,
-			self.owner
-		)
-		ParticleManager:SetParticleControl(fx, 0, self.target)
-		ParticleManager:SetParticleControl(fx, 5, Vector(3, 0, 0))
-		ParticleManager:SetParticleControl(fx, 7, Vector(10, 255, 10))
+		fx.once("particles/ui_mouseactions/ping_waypoint.vpcf", PATTACH_WORLDORIGIN, self.owner, {
+			[0] = self.target,
+			[5] = Vector(3, 0, 0),
+			[7] = Vector(10, 255, 10),
+		})
 	end
 	function modifier_rax_behavior:OnIntervalThink()
 		local unit = CreateUnitByName(
