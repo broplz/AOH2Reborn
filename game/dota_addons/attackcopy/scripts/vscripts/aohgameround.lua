@@ -76,6 +76,16 @@ function AOHGameRound:Begin(goldRatio, expRatio)
 	self._nCoreUnitsKilled = 0
 end
 
+-- Buildings stay: towers, and the Dire ancient, whose death is Dota's own victory condition
+-- (killing it ended the game after round 1).
+local function clear_round_unit(unit)
+	if unit:IsBuilding() then
+		return
+	end
+	unit:ForceKill(false)
+	UTIL_Remove(unit)
+end
+
 function AOHGameRound:End()
 	for _, eID in pairs(self._vEventHandles) do
 		StopListeningToGameEvent(eID)
@@ -97,10 +107,7 @@ function AOHGameRound:End()
 			)
 		)
 	do
-		if not unit:IsTower() then
-			unit:ForceKill(false)
-			UTIL_Remove(unit)
-		end
+		clear_round_unit(unit)
 	end
 
 	for _, spawner in pairs(self._vSpawners) do
