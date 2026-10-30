@@ -8,7 +8,7 @@ end
 -- controls: cp -> Vector, or { ent = unit, attach = PATTACH_*, point = "attach_hitloc" }
 local function apply(idx, controls)
 	for cp, v in pairs(controls or {}) do
-		if v.ent then
+		if type(v) == "table" and v.ent then
 			ParticleManager:SetParticleControlEnt(idx, cp, v.ent, v.attach, v.point, v.ent:GetAbsOrigin(), true)
 		else
 			ParticleManager:SetParticleControl(idx, cp, v)
