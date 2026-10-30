@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 item_blast_staff = class({})
 
 function item_blast_staff:GetIntrinsicModifierName()
@@ -42,12 +44,9 @@ if IsServer() then
 	function item_blast_staff:OnProjectileHit(target, location)
 		if target and target:IsAlive() and not target:IsMagicImmune() then
 			local parent = self:GetParent()
-			local particleIndex = ParticleManager:CreateParticle(
-				"particles/custom/blast_staff_explosion.vpcf",
-				PATTACH_ABSORIGIN_FOLLOW,
-				target
-			)
-			ParticleManager:SetParticleControl(particleIndex, 3, target:GetAbsOrigin())
+			fx.once("particles/custom/blast_staff_explosion.vpcf", PATTACH_ABSORIGIN_FOLLOW, target, {
+				[3] = target:GetAbsOrigin(),
+			})
 			local damage = self:GetSpecialValueFor("int_multiplier") * parent:GetIntellect()
 
 			ApplyDamage({

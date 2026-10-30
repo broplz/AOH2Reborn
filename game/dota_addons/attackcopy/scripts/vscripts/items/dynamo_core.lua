@@ -3,6 +3,7 @@
 ]]
 require("lib/my")
 require("lib/popup")
+local fx = require("core/fx")
 
 item_dynamo_core = class({})
 
@@ -84,17 +85,9 @@ if IsServer() then
 		local target = keys.target
 		if attacker == self.parent and not target:IsNull() then
 			attacker:GiveMana(keys.damage * self.mana_steal)
-			local fx =
-				ParticleManager:CreateParticle("particles/custom/dynamo_core.vpcf", PATTACH_POINT_FOLLOW, attacker)
-			ParticleManager:SetParticleControlEnt(
-				fx,
-				0,
-				attacker,
-				PATTACH_POINT,
-				"attach_hitloc",
-				attacker:GetAbsOrigin(), -- unknown
-				true -- unknown, true
-			)
+			fx.once("particles/custom/dynamo_core.vpcf", PATTACH_POINT_FOLLOW, attacker, {
+				[0] = { ent = attacker, attach = PATTACH_POINT, point = "attach_hitloc" },
+			})
 		end
 	end
 end

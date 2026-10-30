@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 item_custom_blink = class({})
 
 function item_custom_blink:OnSpellStart()
@@ -9,7 +11,7 @@ function item_custom_blink:OnSpellStart()
 	caster:AddNewModifier(caster, self, "modifier_black_king_bar_immune", { duration = duration })
 	ProjectileManager:ProjectileDodge(caster)
 
-	ParticleManager:CreateParticle("particles/items_fx/blink_dagger_start.vpcf", PATTACH_ABSORIGIN, caster)
+	fx.once("particles/items_fx/blink_dagger_start.vpcf", PATTACH_ABSORIGIN, caster)
 	caster:EmitSound("DOTA_Item.BlinkDagger.Activate")
 
 	local origin_point = caster:GetAbsOrigin()
@@ -20,5 +22,5 @@ function item_custom_blink:OnSpellStart()
 	end
 	FindClearSpaceForUnit(caster, point, true)
 
-	ParticleManager:CreateParticle("particles/items_fx/blink_dagger_end.vpcf", PATTACH_ABSORIGIN, caster)
+	fx.once("particles/items_fx/blink_dagger_end.vpcf", PATTACH_ABSORIGIN, caster)
 end

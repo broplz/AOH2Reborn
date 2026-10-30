@@ -1,4 +1,5 @@
 require("lib/my")
+local fx = require("core/fx")
 
 item_plain_ring = class({})
 
@@ -145,11 +146,7 @@ if IsServer() then
 
 	function modifier_item_plain_ring_invincibility:OnDestroy()
 		local parent = self:GetParent()
-		ParticleManager:CreateParticle(
-			"particles/generic_gameplay/generic_lifesteal.vpcf",
-			PATTACH_ABSORIGIN_FOLLOW,
-			parent
-		)
+		fx.once("particles/generic_gameplay/generic_lifesteal.vpcf", PATTACH_ABSORIGIN_FOLLOW, parent)
 		parent:Heal(
 			(parent:GetMaxHealth() * self:GetAbility():GetSpecialValueFor("min_health") * 0.01),
 			self:GetAbility()

@@ -1,4 +1,5 @@
 require("lib/my")
+local fx = require("core/fx")
 
 function add_perma(keys)
 	if keys.caster:IsHero() then
@@ -97,11 +98,7 @@ if IsServer() then
 	end
 	function modifier_item_plain_ring_perma_invincibility:OnDestroy()
 		local parent = self:GetParent()
-		ParticleManager:CreateParticle(
-			"particles/generic_gameplay/generic_lifesteal.vpcf",
-			PATTACH_ABSORIGIN_FOLLOW,
-			parent
-		)
+		fx.once("particles/generic_gameplay/generic_lifesteal.vpcf", PATTACH_ABSORIGIN_FOLLOW, parent)
 		parent:Heal((parent:GetMaxHealth() * self.min_health * 0.01), self:GetAbility())
 	end
 end
