@@ -915,10 +915,3 @@ function AOHGameMode:OnPlayerChat(keys)
 		end
 	end
 end
-
--- Temporary playtest-3 diagnostics (lib/depth_probe), wrapped before InitGameMode registers them.
--- At the end of the file so no legacy luacheck warning moves (the baseline keys some by line).
-local probe = require("lib/depth_probe")
-for _, name in ipairs({ "OnUpdateThink", "GoldIncome", "OnThink", "OnEntitySpawned" }) do
-	AOHGameMode[name] = probe("AOHGameMode:" .. name, AOHGameMode[name])
-end

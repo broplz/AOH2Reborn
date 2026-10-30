@@ -95,12 +95,6 @@ if IsServer() then
 		)
 		self.regenmodifier:SetStackCount(self.parent_regen * (caster_max_health / self.health))
 	end
-
-	-- Temporary playtest-3 diagnostics (lib/depth_probe); the legacy class global trips W112/W113.
-	-- luacheck: push ignore 112 113
-	modifier_summonbuff.OnCreated =
-		require("lib/depth_probe")("modifier_summonbuff:OnCreated", modifier_summonbuff.OnCreated)
-	-- luacheck: pop
 end
 LinkLuaModifier("modifier_summonbuff_health", "modifiers/modifier_summonbuff.lua", LUA_MODIFIER_MOTION_NONE)
 modifier_summonbuff_health = class({})
