@@ -1,7 +1,7 @@
 ---
 id: 0030
 title: core/fx migration, heroes attached batch — destroyed-but-unreleased modifier particles in naga sword dance, bloodseeker rampage, shadow demon dark trance, huskar life break, dark seer ion shell
-status: ready
+status: done
 epic: p4
 prefix: p4
 kind: code
@@ -20,10 +20,10 @@ checks: lua
 tests: [fx]
 needs_approval: true
 returns: 0
-sessions: 0
+sessions: 1
 blocked_reason: 
-reviewed_sha: 
-qa_sha: 
+reviewed_sha: c237a91f0bdb30be1ac8032b82ba9701034df4cc
+qa_sha: c237a91f0bdb30be1ac8032b82ba9701034df4cc
 ---
 
 ## Goal
@@ -75,7 +75,31 @@ Rules:
 ## Handoff
 
 ## Result
+Round 1: moved all listed sites to `core/fx` (`fx.attach` + `fx.stop` with the original `immediate` flags; huskar end bursts via `fx.once`). Same particles, attach types, controls and destroy timing. Dark seer's :90 one-shot and the global `cast_ion_shell` are untouched. Huskar's per-tick `SetParticleControl` still runs on the index from `fx.attach`.
+Verified: `check.sh lua` OK, `test.sh fx` OK (6 passed), `aoh_lint.py 0030` 0 fail (NEEDS APPROVAL only because of the [human] item).
+Owner playtest (DoD 8): cast Naga Sword Dance, Bloodseeker Rampage, Shadow Demon Dark Trance and Dark Seer Ion Shell, and check that the effects show for the buff and vanish when it ends. For Huskar Life Break, check that the ring grows during the channel, vanishes at the end, and both end bursts show.
 
 ## Review
+APPROVE
+1. Spec: all listed sites moved to `fx.attach` + `fx.stop` with the original `immediate` flags (naga/bloodseeker/shadow demon `false`; huskar/dark seer `true`); huskar end bursts go through `fx.once` with the same CP0/CP1, ent, PATTACH_ABSORIGIN, "attach_absorigin". Attach types, owners and particle names are unchanged; `fx.apply` reproduces `SetParticleControlEnt(..., ent:GetAbsOrigin(), true)` (core/fx.lua:12). Dark seer's CP1 Vector is in the controls table. The :90 one-shot and global `cast_ion_shell` are untouched. Huskar's per-tick CP1 update still uses `self.particle`. Shadow demon's `self.parent` is set at shadow_demon_dark_trance.lua:55, before it is used.
+2. Scope: only the 5 allowed files changed. No tests touched.
+3. Conventions: `local fx = require("core/fx")` added once per file. No new globals, no KV numbers, no LinkLuaModifier changes.
+4. Correctness: every attached index now ends in destroy + release (core/fx.lua:39-40). The one-shots are released. All creates are still inside `IsServer()` blocks.
+5. KV: not touched.
+6. Verification: aoh_lint reports 0 fail / 0 warn and NEEDS APPROVAL only for the [human] DoD 8. QA re-runs check.sh and test.sh. Result lists DoD 8 for the owner and does not claim it.
+7. Hygiene: no prints, TODOs or dead code. Naga's shared `controls` table is a fine dedup.
 
 ## QA
+PASS
+1. DoD 1: CreateParticle counts are 0/0/0/0 for naga, bloodseeker, shadow demon and huskar, and 1 for dark seer.
+2. DoD 2: DestroyParticle is 0 in all 5 files.
+3. DoD 3: `require("core/fx")` is 1 in each file, and `grep "^fx *="` is empty.
+4. DoD 4: `check.sh lua` prints CHECK RESULT: OK.
+5. DoD 5: `test.sh fx` prints TEST RESULT: OK (6 passed).
+6. DoD 6: `aoh_lint.py 0030` reports 0 fail and 0 warn. It exits NEEDS APPROVAL only because of the [human] item.
+7. DoD 7: `git diff --stat` lists only the 5 allowed files plus this task file.
+
+For the human (DoD 8):
+- Start a local lobby. Cast Naga Sword Dance (check both effects), Bloodseeker Rampage, Shadow Demon Dark Trance and Dark Seer Ion Shell. Each effect should show while the buff lasts and vanish when it ends.
+- Cast Huskar Life Break. The channel ring should grow during the channel and vanish at the end. Both end bursts (inner_fire_ring_b and life_break_end) should show.
+- Check the console for Lua errors.

@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 naga_siren_custom_sword_dance = class({})
 
 function naga_siren_custom_sword_dance:OnSpellStart()
@@ -67,40 +69,21 @@ end
 if IsServer() then
 	function modifier_naga_siren_custom_sword_dance:OnCreated()
 		self.mult = 1 + self:GetAbility():GetSpecialValueFor("damage_multiplier") * 0.01
-		self.particle = ParticleManager:CreateParticle(
+		local parent = self:GetParent()
+		local controls = { [0] = { ent = parent, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" } }
+		self.particle = fx.attach(
 			"particles/econ/items/arc_warden/arc_warden_ti9_immortal/arc_warden_ti9_wraith_distortion.vpcf",
 			PATTACH_POINT,
-			self:GetParent()
+			parent,
+			controls
 		)
-		ParticleManager:SetParticleControlEnt(
-			self.particle,
-			0,
-			self:GetParent(),
-			PATTACH_POINT_FOLLOW,
-			"attach_hitloc",
-			self:GetParent():GetAbsOrigin(),
-			true
-		)
-		self.particle2 = ParticleManager:CreateParticle(
-			"particles/custom/naga_siren_sword_dance.vpcf",
-			PATTACH_POINT,
-			self:GetParent()
-		)
-		ParticleManager:SetParticleControlEnt(
-			self.particle2,
-			0,
-			self:GetParent(),
-			PATTACH_POINT_FOLLOW,
-			"attach_hitloc",
-			self:GetParent():GetAbsOrigin(),
-			true
-		)
-		EmitSoundOn("DOTA_Item.Radiance.Target.Loop", self:GetParent())
+		self.particle2 = fx.attach("particles/custom/naga_siren_sword_dance.vpcf", PATTACH_POINT, parent, controls)
+		EmitSoundOn("DOTA_Item.Radiance.Target.Loop", parent)
 	end
 
 	function modifier_naga_siren_custom_sword_dance:OnDestroy()
-		ParticleManager:DestroyParticle(self.particle, false)
-		ParticleManager:DestroyParticle(self.particle2, false)
+		fx.stop(self.particle, false)
+		fx.stop(self.particle2, false)
 		StopSoundOn("DOTA_Item.Radiance.Target.Loop", self:GetParent())
 	end
 

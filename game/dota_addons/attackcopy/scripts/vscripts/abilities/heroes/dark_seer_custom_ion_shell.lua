@@ -1,4 +1,6 @@
 require("lib/my")
+local fx = require("core/fx")
+
 function cast_ion_shell(keys)
 	if not keys.target:HasModifier("modifier_ion_shell_custom") then
 		keys.target:AddNewModifier(keys.caster, keys.ability, "modifier_ion_shell_custom", { duration = keys.duration })
@@ -36,21 +38,11 @@ if IsServer() then
 
 		self.caster = self.ability:GetCaster()
 		-- Particle effects
-		self.particle2 = ParticleManager:CreateParticle(
-			"particles/units/heroes/hero_dark_seer/dark_seer_ion_shell.vpcf",
-			PATTACH_POINT,
-			self.caster
-		)
-		ParticleManager:SetParticleControlEnt(
-			self.particle2,
-			0,
-			self.parent,
-			PATTACH_POINT_FOLLOW,
-			"attach_hitloc",
-			self.parent:GetAbsOrigin(),
-			true
-		)
-		ParticleManager:SetParticleControl(self.particle2, 1, Vector(65, 65, 65))
+		self.particle2 =
+			fx.attach("particles/units/heroes/hero_dark_seer/dark_seer_ion_shell.vpcf", PATTACH_POINT, self.caster, {
+				[0] = { ent = self.parent, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" },
+				[1] = Vector(65, 65, 65),
+			})
 		self.particle = "particles/units/heroes/hero_dark_seer/dark_seer_ion_shell_damage.vpcf"
 		self.target_types = self.ability:GetAbilityTargetType()
 		self.parent:EmitSound("Hero_Dark_Seer.Ion_Shield_lp")
@@ -65,7 +57,7 @@ if IsServer() then
 		self:StartIntervalThink(self.interval)
 	end
 	function modifier_ion_shell_custom:OnDestroy()
-		ParticleManager:DestroyParticle(self.particle2, true)
+		fx.stop(self.particle2, true)
 		self.parent:StopSound("Hero_Dark_Seer.Ion_Shield_lp")
 	end
 

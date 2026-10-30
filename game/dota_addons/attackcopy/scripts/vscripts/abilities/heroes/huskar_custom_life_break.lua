@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 huskar_custom_life_break = class({})
 
 function huskar_custom_life_break:OnSpellStart()
@@ -61,19 +63,11 @@ if IsServer() then
 		self.animCounter = 0
 		self:SetStackCount(self.ability:GetSpecialValueFor("damage"))
 		self:StartIntervalThink(self.interval)
-		self.particle = ParticleManager:CreateParticle(
+		self.particle = fx.attach(
 			"particles/custom/huskar_custom_life_break_channel.vpcf",
 			PATTACH_POINT,
-			self.caster
-		)
-		ParticleManager:SetParticleControlEnt(
-			self.particle,
-			1,
-			self.parent,
-			PATTACH_POINT_FOLLOW,
-			"attach_hitloc",
-			self.parent:GetAbsOrigin(),
-			true
+			self.caster,
+			{ [1] = { ent = self.parent, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" } }
 		)
 	end
 	function modifier_huskar_custom_life_break:OnIntervalThink()
@@ -124,35 +118,15 @@ if IsServer() then
 				})
 			end
 		end
-		ParticleManager:DestroyParticle(self.particle, true)
-		local particle = ParticleManager:CreateParticle(
+		fx.stop(self.particle, true)
+		local end_control = { ent = self.parent, attach = PATTACH_ABSORIGIN, point = "attach_absorigin" }
+		fx.once(
 			"particles/units/heroes/hero_huskar/huskar_inner_fire_ring_b.vpcf",
 			PATTACH_POINT,
-			self.caster
+			self.caster,
+			{ [0] = end_control }
 		)
-		ParticleManager:SetParticleControlEnt(
-			particle,
-			0,
-			self.parent,
-			PATTACH_ABSORIGIN,
-			"attach_absorigin",
-			self.parent:GetAbsOrigin(),
-			true
-		)
-		local particle = ParticleManager:CreateParticle(
-			"particles/custom/huskar_custom_life_break_end.vpcf",
-			PATTACH_POINT,
-			self.caster
-		)
-		ParticleManager:SetParticleControlEnt(
-			particle,
-			1,
-			self.parent,
-			PATTACH_ABSORIGIN,
-			"attach_absorigin",
-			self.parent:GetAbsOrigin(),
-			true
-		)
+		fx.once("particles/custom/huskar_custom_life_break_end.vpcf", PATTACH_POINT, self.caster, { [1] = end_control })
 	end
 end
 LinkLuaModifier("modifier_huskar_talent1", "abilities/heroes/huskar_custom_life_break.lua", LUA_MODIFIER_MOTION_NONE)

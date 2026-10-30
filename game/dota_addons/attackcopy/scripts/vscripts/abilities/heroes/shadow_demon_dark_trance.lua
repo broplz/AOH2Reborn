@@ -1,4 +1,5 @@
 require("lib/timers")
+local fx = require("core/fx")
 
 local exclude_items = {
 	item_arcane_boots = true,
@@ -57,19 +58,11 @@ if IsServer() then
 		if self:GetCaster():HasScepter() then
 			self.cooldown = self.cooldown - self:GetAbility():GetSpecialValueFor("scepter_reduce")
 		end
-		self.particle = ParticleManager:CreateParticle(
+		self.particle = fx.attach(
 			"particles/econ/items/arc_warden/arc_warden_ti9_immortal/arc_warden_ti9_wraith_distortion.vpcf",
 			PATTACH_POINT,
-			self:GetParent()
-		)
-		ParticleManager:SetParticleControlEnt(
-			self.particle,
-			0,
-			self:GetParent(),
-			PATTACH_POINT_FOLLOW,
-			"attach_hitloc",
-			self:GetParent():GetAbsOrigin(),
-			true
+			self.parent,
+			{ [0] = { ent = self.parent, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" } }
 		)
 	end
 
@@ -90,6 +83,6 @@ if IsServer() then
 	end
 
 	function modifier_shadow_demon_dark_trance:OnDestroy()
-		ParticleManager:DestroyParticle(self.particle, false)
+		fx.stop(self.particle, false)
 	end
 end
