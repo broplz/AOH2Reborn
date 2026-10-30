@@ -1335,7 +1335,7 @@
     "ConsideredHero"			"1"
     "HasInventory"				"1"
 
-    "Ability1"					"ursa_earthshocks"
+    "Ability1"					"ursa_earthshock"
     "Ability2"					"ursa_overpower"
     "Ability3"					"custom_fury_swipes"
     "Ability4"					"ursa_enrage"
