@@ -1,7 +1,7 @@
 ---
 id: 0032
 title: core/fx migration, bosses batch B — one-shot arc particles with entity controls in abyssal underlord cleave
-status: ready
+status: done
 epic: p4
 prefix: p4
 kind: code
@@ -18,6 +18,8 @@ needs_approval: true
 returns: 0
 sessions: 0
 blocked_reason: 
+reviewed_sha: 9e30e1dde472e4ca04af694aa2f8413c78555395
+qa_sha: 9e30e1dde472e4ca04af694aa2f8413c78555395
 ---
 
 ## Goal
@@ -56,7 +58,36 @@ Rules:
 ## Handoff
 
 ## Result
+Round 1: replaced the 3 raw CreateParticle sites (fade bolt, two arc lightning) in
+boss_abyssal_underlord_cleave.lua with `fx.once` (named-key ent controls, `[1] = pos` for the Vector).
+Added `local fx = require("core/fx")` at the top. Same particle, attach, owner, controls.
+Verified: check.sh lua OK, test.sh fx OK (6 passed), aoh_lint 0 fail (NEEDS APPROVAL because of the [human] item),
+diff touches only the allowed file + task file.
+Playtest [human]: local lobby vs Abyssal Underlord boss — fade bolt and arc lightning show, no Lua errors.
 
 ## Review
+APPROVE
+1. Spec: all 3 sites (:81 fade bolt, :103 arc to `pos`, :110 arc to next_enemy) moved to `fx.once` with the
+   same particle, PATTACH_POINT, owner, and CPs. Ent controls use named keys `ent/attach/point`, which match
+   core/fx.lua:11-12 (that is the same call as the old SetParticleControlEnt, origin and `true` included). The
+   Vector CP is `[1] = pos`. No CreateParticle/SetParticleControl calls are left. `require("core/fx")` is there
+   once (:1), and no `local fx =` shadows it. The 3 particle handle leaks per proc are fixed (`fx.once` releases).
+2. Scope: only the allowed file was touched (diff stat: 1 file). Timers, damage and sounds are unchanged.
+3. Conventions: the module local is not a global, and LinkLuaModifier is untouched. aoh_lint: 0 fail,
+   0 warn, NEEDS APPROVAL (because of the [human] item).
+4. Dota correctness: nothing new. The handles are used in the same places as before. Existing Timer use is out of scope.
+5. KV: no changes.
+6. Verification: I did not re-run check/test; qa runs them. The [human] item is listed for the owner. One
+   non-blocking wording note on Result:64: next time write "Owner should check: …" so it does not read as an
+   observed result.
+7. Hygiene: no prints, no TODOs, no dead code.
 
 ## QA
+PASS
+1. DoD 1-3: CreateParticle count 0, SetParticleControl count 0, require("core/fx") count 1 (combined grep gave 1), no `local fx = ParticleManager`.
+2. DoD 4: check.sh lua OK. DoD 5: test.sh fx OK (6 passed). DoD 6: aoh_lint 0 fail, 0 warn, NEEDS APPROVAL (the [human] item only).
+3. DoD 7: diff --stat lists the allowed file plus the task file only.
+4. Diff read: the 3 sites keep the same particle, attach, owner and controls. Ent controls use named keys, and the Vector CP is `[1] = pos`.
+
+For the human:
+- DoD 8: in a local lobby against the Abyssal Underlord boss, check that the fade bolt from the attacked unit to cleaved enemies shows. Check that the arc lightning goes to a random point when one enemy is near and to each other enemy otherwise. The console should show no Lua errors.

@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 LinkLuaModifier(
 	"modifier_boss_abyssal_underlord_cleave",
 	"abilities/bosses/boss_abyssal_underlord_cleave",
@@ -76,29 +78,10 @@ if IsServer() then
 						local enemy_angle = VectorToAngles(enemy_direction).y
 						local angle_diff = math.abs(AngleDiff(cast_angle, enemy_angle))
 						if angle_diff <= self.angle then
-							local fx = ParticleManager:CreateParticle(
-								"particles/units/heroes/hero_rubick/rubick_fade_bolt.vpcf",
-								PATTACH_POINT,
-								target
-							)
-							ParticleManager:SetParticleControlEnt(
-								fx,
-								0,
-								target,
-								PATTACH_POINT_FOLLOW,
-								"attach_hitloc",
-								target:GetAbsOrigin(),
-								true
-							)
-							ParticleManager:SetParticleControlEnt(
-								fx,
-								1,
-								enemy,
-								PATTACH_POINT_FOLLOW,
-								"attach_hitloc",
-								enemy:GetAbsOrigin(),
-								true
-							)
+							fx.once("particles/units/heroes/hero_rubick/rubick_fade_bolt.vpcf", PATTACH_POINT, target, {
+								[0] = { ent = target, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" },
+								[1] = { ent = enemy, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" },
+							})
 							Timers:CreateTimer(0.4, function()
 								self.damageTable.victim = enemy
 								ApplyDamage(self.damageTable)
@@ -117,46 +100,29 @@ if IsServer() then
 									self.parent:EmitSoundParams("Hero_Zuus.ArcLightning.Cast", 0, 0.25, 0)
 									local pos = enemy:GetAbsOrigin()
 										+ Vector(RandomInt(-200, 200), RandomInt(-200, 200), 0)
-									local fx = ParticleManager:CreateParticle(
-										"particles/custom/underlord_arc_lightning_.vpcf",
-										PATTACH_POINT,
-										enemy
-									)
-									ParticleManager:SetParticleControlEnt(
-										fx,
-										0,
-										enemy,
-										PATTACH_POINT_FOLLOW,
-										"attach_hitloc",
-										enemy:GetAbsOrigin(),
-										true
-									)
-									ParticleManager:SetParticleControl(fx, 1, pos)
+									fx.once("particles/custom/underlord_arc_lightning_.vpcf", PATTACH_POINT, enemy, {
+										[0] = { ent = enemy, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" },
+										[1] = pos,
+									})
 								else
 									for _, next_enemy in pairs(next_enemies) do
 										if next_enemy ~= target then
-											local fx = ParticleManager:CreateParticle(
+											fx.once(
 												"particles/custom/underlord_arc_lightning_.vpcf",
 												PATTACH_POINT,
-												enemy
-											)
-											ParticleManager:SetParticleControlEnt(
-												fx,
-												0,
 												enemy,
-												PATTACH_POINT_FOLLOW,
-												"attach_hitloc",
-												enemy:GetAbsOrigin(),
-												true
-											)
-											ParticleManager:SetParticleControlEnt(
-												fx,
-												1,
-												next_enemy,
-												PATTACH_POINT_FOLLOW,
-												"attach_hitloc",
-												next_enemy:GetAbsOrigin(),
-												true
+												{
+													[0] = {
+														ent = enemy,
+														attach = PATTACH_POINT_FOLLOW,
+														point = "attach_hitloc",
+													},
+													[1] = {
+														ent = next_enemy,
+														attach = PATTACH_POINT_FOLLOW,
+														point = "attach_hitloc",
+													},
+												}
 											)
 											self.damageTable.victim = next_enemy
 											ApplyDamage(self.damageTable)
