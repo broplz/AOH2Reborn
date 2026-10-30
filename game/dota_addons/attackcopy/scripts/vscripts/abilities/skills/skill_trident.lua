@@ -1,4 +1,5 @@
 require("lib/popup")
+local fx = require("core/fx")
 
 skill_trident = class({})
 
@@ -68,34 +69,18 @@ function skill_trident:OnProjectileHit_ExtraData(hTarget, vLocation, extraData)
 	end
 	FindClearSpaceForUnit(caster, hTarget:GetAbsOrigin(), false)
 	if hTarget:GetTeam() ~= caster:GetTeam() then
-		local fx =
-			ParticleManager:CreateParticle("particles/custom/skill_trident_hit.vpcf", PATTACH_POINT_FOLLOW, caster)
-		ParticleManager:SetParticleControlEnt(
-			fx,
-			0,
-			hTarget,
-			PATTACH_POINT,
-			"attach_hitloc",
-			hTarget:GetAbsOrigin(), -- unknown
-			true -- unknown, true
-		)
+		fx.once("particles/custom/skill_trident_hit.vpcf", PATTACH_POINT_FOLLOW, caster, {
+			[0] = { ent = hTarget, attach = PATTACH_POINT, point = "attach_hitloc" },
+		})
 		caster:PerformAttack(hTarget, true, true, true, true, true, false, false)
 		if hTarget:HasModifier("modifier_anim") then
 			caster:PerformAttack(hTarget, true, true, true, true, true, false, false)
 			caster:PerformAttack(hTarget, true, true, true, true, true, false, false)
-			local fx = ParticleManager:CreateParticle(
+			fx.once(
 				"particles/econ/items/wraith_king/wraith_king_arcana/wk_arc_weapon_style2_blur_critical.vpcf",
 				PATTACH_POINT_FOLLOW,
-				caster
-			)
-			ParticleManager:SetParticleControlEnt(
-				fx,
-				0,
-				hTarget,
-				PATTACH_POINT,
-				"attach_hitloc",
-				hTarget:GetAbsOrigin(), -- unknown
-				true -- unknown, true
+				caster,
+				{ [0] = { ent = hTarget, attach = PATTACH_POINT, point = "attach_hitloc" } }
 			)
 		end
 

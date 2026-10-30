@@ -3,6 +3,7 @@ LinkLuaModifier("modifier_skill_transfusion", "modifiers/modifier_tier_3.lua", L
 LinkLuaModifier("modifier_skill_dashdamage", "modifiers/modifier_tier_3.lua", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_skill_flames", "modifiers/modifier_tier_3.lua", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_skill_flames_counter", "modifiers/modifier_tier_3.lua", LUA_MODIFIER_MOTION_NONE)
+local fx = require("core/fx")
 modifier_skill_trident = class({})
 
 function modifier_skill_trident:IsPurgable()
@@ -171,17 +172,9 @@ function modifier_skill_flames:OnAttacked(keys)
 		else
 			self.parent:AddNewModifier(self.parent, nil, "modifier_skill_flames_counter", { duration = 8 })
 		end
-		local fx =
-			ParticleManager:CreateParticle("particles/custom/skill_flames.vpcf", PATTACH_POINT_FOLLOW, self.parent)
-		ParticleManager:SetParticleControlEnt(
-			fx,
-			3,
-			damage_victim,
-			PATTACH_POINT,
-			"attach_hitloc",
-			damage_victim:GetAbsOrigin(), -- unknown
-			true -- unknown, true
-		)
+		fx.once("particles/custom/skill_flames.vpcf", PATTACH_POINT_FOLLOW, self.parent, {
+			[3] = { ent = damage_victim, attach = PATTACH_POINT, point = "attach_hitloc" },
+		})
 		create_popup({
 			target = damage_victim,
 			value = self:GetStackCount() * 3,

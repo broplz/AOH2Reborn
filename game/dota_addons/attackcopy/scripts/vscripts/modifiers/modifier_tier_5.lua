@@ -8,6 +8,7 @@ LinkLuaModifier("modifier_bonus_strength_controller", "modifiers/stat_controller
 LinkLuaModifier("modifier_bonus_agility_controller", "modifiers/stat_controllers.lua", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_bonus_intellect_controller", "modifiers/stat_controllers.lua", LUA_MODIFIER_MOTION_NONE)
 require("lib/my")
+local fx = require("core/fx")
 modifier_skill_midas = class({})
 
 function modifier_skill_midas:IsPurgable()
@@ -222,62 +223,25 @@ if IsServer() then
 		local round = _G.AOHGameMode._nRoundNumber
 		if round and round > self.round then
 			local rand = RandomInt(0, 2)
-			local fx = ParticleManager:CreateParticle(
-				"particles/custom/modifier_luck.vpcf",
-				PATTACH_OVERHEAD_FOLLOW,
-				self.parent
-			)
-			ParticleManager:SetParticleControl(fx, 1, Vector(4, 0, 4))
+			fx.once("particles/custom/modifier_luck.vpcf", PATTACH_OVERHEAD_FOLLOW, self.parent, {
+				[1] = Vector(4, 0, 4),
+			})
 			EmitSoundOn("sounds/weapons/hero/ogre_magi/multicast01.vsnd", self.parent)
+			local flashes = {
+				[0] = "particles/econ/events/ti6/hero_levelup_ti6_flash_hit_magic.vpcf",
+				[1] = "particles/econ/events/ti8/hero_levelup_ti8_flash_hit_magic.vpcf",
+				[2] = "particles/econ/events/ti7/hero_levelup_ti7_flash_hit_magic.vpcf",
+			}
 			if rand == 0 then
 				self.strength_modifier:ModifyStacks(2)
-				local fx2 = ParticleManager:CreateParticle(
-					"particles/econ/events/ti6/hero_levelup_ti6_flash_hit_magic.vpcf",
-					PATTACH_ABSORIGIN_FOLLOW,
-					self.parent
-				)
-				ParticleManager:SetParticleControlEnt(
-					fx2,
-					0,
-					self.parent,
-					PATTACH_POINT_FOLLOW,
-					"attach_hitloc",
-					self.parent:GetAbsOrigin(),
-					true
-				)
 			elseif rand == 1 then
 				self.agility_modifier:ModifyStacks(2)
-				local fx2 = ParticleManager:CreateParticle(
-					"particles/econ/events/ti8/hero_levelup_ti8_flash_hit_magic.vpcf",
-					PATTACH_ABSORIGIN_FOLLOW,
-					self.parent
-				)
-				ParticleManager:SetParticleControlEnt(
-					fx2,
-					0,
-					self.parent,
-					PATTACH_POINT_FOLLOW,
-					"attach_hitloc",
-					self.parent:GetAbsOrigin(),
-					true
-				)
 			else
 				self.intellect_modifier:ModifyStacks(2)
-				local fx2 = ParticleManager:CreateParticle(
-					"particles/econ/events/ti7/hero_levelup_ti7_flash_hit_magic.vpcf",
-					PATTACH_ABSORIGIN_FOLLOW,
-					self.parent
-				)
-				ParticleManager:SetParticleControlEnt(
-					fx2,
-					0,
-					self.parent,
-					PATTACH_POINT_FOLLOW,
-					"attach_hitloc",
-					self.parent:GetAbsOrigin(),
-					true
-				)
 			end
+			fx.once(flashes[rand], PATTACH_ABSORIGIN_FOLLOW, self.parent, {
+				[0] = { ent = self.parent, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" },
+			})
 			self.round = round
 		end
 	end
