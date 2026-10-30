@@ -123,6 +123,9 @@ def run_task(path, once=False):
     steps, unblock_tried = 0, False
     while steps < config.MAX_LOOP_STEPS:
         steps += 1
+        # read the task file from its branch: the base copy may be stale (ready vs approved on the branch)
+        if pl.branch_exists(pl.task_branch(TaskFile(path))):
+            ensure_branch(TaskFile(path))
         tf = TaskFile(path)
         status = tf.get("status", "draft")
         pl.log(f"task {tid}: status={status} returns={tf.get('returns', 0)} sessions={tf.get('sessions', 0)}")
