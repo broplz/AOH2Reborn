@@ -589,3 +589,17 @@ end
 function modifier_builtin_blink_cooldown:RemoveOnDeath()
 	return false
 end
+
+-- Temporary playtest-3 diagnostics (lib/depth_probe); the legacy file-level class global trips W112/W113.
+-- luacheck: push ignore 112 113
+local probe = require("lib/depth_probe")
+for _, name in ipairs({
+	"GetModifierConstantHealthRegen",
+	"GetModifierConstantManaRegen",
+	"GetModifierSpellAmplify_Percentage",
+	"GetModifierPercentageCooldown",
+	"OnCreated",
+}) do
+	modifier_atr_fix[name] = probe("modifier_atr_fix:" .. name, modifier_atr_fix[name])
+end
+-- luacheck: pop
