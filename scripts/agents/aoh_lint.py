@@ -43,7 +43,7 @@ LUA_RULES = [
 ]
 # Per-file checks on the ADDED content of a Lua file
 LUA_FILE_RULES = [
-    (re.compile(r"^(?!\s*local\s)(?!\s*--)\s*([A-Za-z_][A-Za-z0-9_]*)\s*=(?!=)\s*(?!class\()(?!.*,\s*(--.*)?$)", re.M),
+    (re.compile(r"^(?!\s*local\s)(?!\s*--)\s*([A-Za-z_][A-Za-z0-9_]*)\s*=(?!=)(?!\s*(?:[A-Za-z_][A-Za-z0-9_.]*\.)?class\()(?!.*,\s*(--.*)?$)", re.M),
      "global assignment `{m}` (only `<name> = class({{}})` may be global; everything else `local`)"),
     (re.compile(r"^function\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(", re.M),
      "global function `{m}`: make it `local function` or a method on the class"),
