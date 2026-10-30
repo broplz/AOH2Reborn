@@ -1,5 +1,8 @@
 require("lib/my")
 require("AOHGameMode")
+-- Links modifier_animation_translate_permanent (AddAnimationTranslate below) in every VM that
+-- loads this ability, not only via addon_game_mode on the server.
+require("lib/animations")
 LinkLuaModifier("modifier_dummy", "modifiers/modifier_dummy.lua", LUA_MODIFIER_MOTION_NONE)
 
 watch_tower_increase_stats = class({})
@@ -176,21 +179,21 @@ if IsServer() then
 			self.dummy
 		)
 		Timers:CreateTimer(0.25, function()
-			local emp_explosion_distortion = ParticleManager:CreateParticle(
+			ParticleManager:CreateParticle(
 				"particles/custom/watch_tower_detonation_distortion.vpcf",
 				PATTACH_ABSORIGIN,
 				self.dummy
 			)
 		end)
 		Timers:CreateTimer(0.5, function()
-			local emp_explosion_distortion = ParticleManager:CreateParticle(
+			ParticleManager:CreateParticle(
 				"particles/custom/watch_tower_detonation_distortion.vpcf",
 				PATTACH_ABSORIGIN,
 				self.dummy
 			)
 		end)
 		Timers:CreateTimer(0.75, function()
-			local emp_explosion_distortion = ParticleManager:CreateParticle(
+			ParticleManager:CreateParticle(
 				"particles/custom/watch_tower_detonation_distortion.vpcf",
 				PATTACH_ABSORIGIN,
 				self.dummy
