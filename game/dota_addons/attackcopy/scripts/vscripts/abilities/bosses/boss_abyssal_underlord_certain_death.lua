@@ -1,5 +1,6 @@
 require("lib/ai")
 require("lib/my")
+local fx = require("core/fx")
 LinkLuaModifier("modifier_anim", "abilities/other/generic.lua", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_target_delay", "abilities/other/generic.lua", LUA_MODIFIER_MOTION_NONE)
 boss_abyssal_underlord_certain_death = class({})
@@ -25,12 +26,12 @@ function boss_abyssal_underlord_certain_death:OnSpellStart()
 			for _, hero in ipairs(heroes) do
 				hero:AddNewModifier(caster, self, "modifier_target_delay", { duration = delay })
 			end
-			local fx = ParticleManager:CreateParticle("particles/custom/aoe_warning.vpcf", PATTACH_WORLDORIGIN, caster)
-			ParticleManager:SetParticleControl(fx, 0, caster:GetAbsOrigin())
-			ParticleManager:SetParticleControl(fx, 1, Vector(800, 1, 1))
-			ParticleManager:SetParticleControl(fx, 2, Vector(delay, 1, 1))
-			ParticleManager:SetParticleControl(fx, 3, Vector(200, 10, 10))
-			ParticleManager:ReleaseParticleIndex(fx)
+			fx.once("particles/custom/aoe_warning.vpcf", PATTACH_WORLDORIGIN, caster, {
+				[0] = caster:GetAbsOrigin(),
+				[1] = Vector(800, 1, 1),
+				[2] = Vector(delay, 1, 1),
+				[3] = Vector(200, 10, 10),
+			})
 			Timers:CreateTimer(delay, function()
 				EmitSoundOn("Hero_Bane.Nightmare", caster)
 				for _, hero in ipairs(heroes) do
@@ -83,37 +84,14 @@ function modifier_boss_abyssal_underlord_certain_death_behavior:OnCreated()
 	self.ability = self:GetAbility()
 	self.target = self:GetCaster()
 	EmitSoundOn("Hero_Bane.Nightmare.Loop", self.target)
-	self.fx =
-		ParticleManager:CreateParticle("particles/custom/certain_death_smoke.vpcf", PATTACH_POINT_FOLLOW, self.parent)
-	self.fx2 = ParticleManager:CreateParticle("particles/custom/bear_maul.vpcf", PATTACH_OVERHEAD_FOLLOW, self.parent)
-	ParticleManager:SetParticleControlEnt(
-		self.fx2,
-		0,
-		self.parent,
-		PATTACH_POINT_FOLLOW,
-		"attach_hitloc",
-		self.parent:GetAbsOrigin(),
-		true
-	)
-	ParticleManager:SetParticleControlEnt(
-		self.fx2,
-		1,
-		self.target,
-		PATTACH_POINT_FOLLOW,
-		"attach_hitloc",
-		self.target:GetAbsOrigin(),
-		true
-	)
-	ParticleManager:SetParticleControl(self.fx2, 2, Vector(self:GetAbility():GetSpecialValueFor("duration"), 1, 0))
-	ParticleManager:SetParticleControlEnt(
-		self.fx,
-		3,
-		self.parent,
-		PATTACH_POINT_FOLLOW,
-		"attach_hitloc",
-		self.parent:GetAbsOrigin(),
-		true
-	)
+	self.fx = fx.attach("particles/custom/certain_death_smoke.vpcf", PATTACH_POINT_FOLLOW, self.parent, {
+		[3] = { ent = self.parent, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" },
+	})
+	self.fx2 = fx.attach("particles/custom/bear_maul.vpcf", PATTACH_OVERHEAD_FOLLOW, self.parent, {
+		[0] = { ent = self.parent, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" },
+		[1] = { ent = self.target, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" },
+		[2] = Vector(self:GetAbility():GetSpecialValueFor("duration"), 1, 0),
+	})
 
 	self:StartIntervalThink(0.25)
 end
@@ -144,8 +122,8 @@ end
 
 function modifier_boss_abyssal_underlord_certain_death_behavior:OnDestroy()
 	StopSoundOn("Hero_Bane.Nightmare.Loop", self.target)
-	ParticleManager:DestroyParticle(self.fx, false)
-	ParticleManager:DestroyParticle(self.fx2, false)
+	fx.stop(self.fx)
+	fx.stop(self.fx2)
 	self.parent:ForceKill(false)
 end
 

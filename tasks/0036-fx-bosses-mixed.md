@@ -1,7 +1,7 @@
 ---
 id: 0036
 title: core/fx migration, bosses batch D — soul release, thundercall, arctic field, underlord certain death, beastmaster hawk
-status: ready
+status: done
 epic: p4
 prefix: p4
 kind: code
@@ -22,6 +22,8 @@ needs_approval: true
 returns: 0
 sessions: 0
 blocked_reason: 
+reviewed_sha: 1ecdb21a7a7dd6f66e703e39fbbf675698e43fd3
+qa_sha: 1ecdb21a7a7dd6f66e703e39fbbf675698e43fd3
 ---
 
 ## Goal
@@ -82,7 +84,42 @@ Rules:
 ## Handoff
 
 ## Result
+Round 1: all particles in the 5 boss files now go through `core/fx` (`fx.once` / `fx.attach` + `fx.stop`),
+and the legacy `local fx` shadows are gone. Same particles, attach types, controls and destroy timing.
+The `fx.stop` counts are 2 / 1 / 1 as required (underlord, hawk, arctic field). The Hawk keeps `fx.stop(self.fx, true)`.
+The Arctic Field pre-vortex and the Underlord smoke and maul are now released after destroy, which fixes the leak.
+Verified: `check.sh lua` OK, `test.sh fx` OK (6 passed), `aoh_lint.py 0036` 0 fail (exit 3 = [human] approval needed),
+`git diff --stat` lists only the 5 files plus this task file.
+Open questions: none.
+Owner playtest: DoD item 9 (local lobby, all five abilities, no Lua errors in the console).
 
 ## Review
+APPROVE
+Checklist:
+- Spec: every site in the teamlead's list was migrated with the same particle, attach type, owner, CPs and destroy timing. The arctic pre-vortex and the underlord smoke and maul use `fx.stop(x)`, which is the same as `immediate == false`, the old `false`. The hawk keeps `fx.stop(self.fx, true)`. The soul release shadowraze and the thundercall bolts are now released. Nothing else was changed.
+- Scope: the diff touches only the 5 allowed files. No tests were touched.
+- Conventions: `local fx = require("core/fx")` appears once per file. No new globals. The legacy `local fx` shadows are gone. Entity controls use named keys that match the `core/fx.lua:8` contract.
+- Dota correctness: the handles, guards and timers are unchanged, and every particle is now released.
+- KV: not touched.
+- Verification: aoh_lint shows 0 fail and 0 warn and NEEDS APPROVAL, because of the [human] item. The Result claims check.sh, test.sh and the stat; qa re-runs them. The [human] item 9 is listed for the owner and is not claimed.
+- Hygiene: clean.
+Non-blocking:
+1. boss_abyssal_underlord_certain_death.lua:3 puts the require above `LinkLuaModifier`. The note asked for it after. This is cosmetic only.
 
 ## QA
+PASS
+1. DoD 1: `grep -c "ParticleManager:"` is 0 in all 5 files.
+2. DoD 2: `grep -c 'require("core/fx")'` is 1 in all 5 files.
+3. DoD 3: `grep -n "local fx = ParticleManager"` is empty.
+4. DoD 4: `fx.stop(` counts are 2 (underlord), 1 (hawk) and 1 (arctic field).
+5. DoD 5: `check.sh lua` prints `CHECK RESULT: OK`.
+6. DoD 6: `test.sh fx` prints `TEST RESULT: OK` (6 passed).
+7. DoD 7: `aoh_lint.py 0036` has 0 fail and 0 warn. It exits 3 (NEEDS APPROVAL) only because of the [human] item.
+8. DoD 8: `git diff --stat feat/p0-foundation` lists only the 5 allowed files plus this task file.
+
+For the human (DoD 9): in a local lobby, cast each of these and watch the console for Lua errors.
+- Soul Release: the warning circles and the shadowrazes show.
+- Storm Spirit Thundercall: the warning circle and the bolts show.
+- Arctic Field: the pre-vortex disappears after the delay, and the nova shows.
+- Underlord Certain Death: the smoke and the maul overhead are both gone when the behaviour ends.
+- Beastmaster hawk: the circle is gone when the hawk dies, and the arc lightning on its target shows.

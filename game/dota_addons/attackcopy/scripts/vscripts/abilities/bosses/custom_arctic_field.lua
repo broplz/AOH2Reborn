@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 function arctic_field(keys)
 	local caster = keys.caster
 	local ability = keys.ability
@@ -51,20 +53,19 @@ function explode(keys, delay)
 	end
 	local pre_dummy = CreateUnitByName("npc_dummy_unit", target_pos, false, caster, caster, caster:GetTeamNumber())
 	ability:ApplyDataDrivenModifier(caster, pre_dummy, "modifier_dummy", {})
-	local preFX = ParticleManager:CreateParticle(particle_pre, PATTACH_ABSORIGIN, pre_dummy)
-	ParticleManager:SetParticleControl(preFX, 1, Vector(damage_radius, 0, 0))
-	ParticleManager:SetParticleControl(preFX, 5, Vector(damage_radius, 0, 0))
+	local preFX = fx.attach(particle_pre, PATTACH_ABSORIGIN, pre_dummy, {
+		[1] = Vector(damage_radius, 0, 0),
+		[5] = Vector(damage_radius, 0, 0),
+	})
 	EmitSoundOn("Hero_Ancient_Apparition.IceVortexCast", pre_dummy)
 
 	Timers:CreateTimer(delay, function()
-		ParticleManager:DestroyParticle(preFX, false)
+		fx.stop(preFX)
 		local dummy = CreateUnitByName("npc_dummy_unit", target_pos, false, caster, caster, caster:GetTeamNumber())
 		ability:ApplyDataDrivenModifier(caster, dummy, "modifier_dummy", {})
 		EmitSoundOn("Hero_Crystal.CrystalNova", dummy)
 		EmitSoundOn("Hero_Crystal.CrystalNovaCast", dummy)
-		local particleFX = ParticleManager:CreateParticle(particle, PATTACH_ABSORIGIN, dummy)
-		ParticleManager:SetParticleControl(particleFX, 3, Vector(damage_radius, 0, 0))
-		ParticleManager:ReleaseParticleIndex(particleFX)
+		fx.once(particle, PATTACH_ABSORIGIN, dummy, { [3] = Vector(damage_radius, 0, 0) })
 		local targets = FindUnitsInRadius(
 			caster:GetTeam(),
 			target_pos,

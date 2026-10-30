@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 function thundercall(keys)
 	local caster = keys.caster
 	local particle = "particles/units/heroes/hero_leshrac/leshrac_lightning_bolt.vpcf"
@@ -27,18 +29,19 @@ function thundercall(keys)
 			y = range * math.cos(math.rad(c)) + caster_pos.y
 			local aoe_radius = damage_radius
 			local point_loc = Vector(x, y, caster_pos.z)
-			local fx = ParticleManager:CreateParticle("particles/custom/aoe_warning.vpcf", PATTACH_WORLDORIGIN, caster)
-			ParticleManager:SetParticleControl(fx, 0, point_loc)
-			ParticleManager:SetParticleControl(fx, 1, Vector(aoe_radius, 1, 1))
-			ParticleManager:SetParticleControl(fx, 2, Vector(delay, 1, 1))
-			ParticleManager:SetParticleControl(fx, 3, Vector(200, 10, 10))
-			ParticleManager:ReleaseParticleIndex(fx)
+			fx.once("particles/custom/aoe_warning.vpcf", PATTACH_WORLDORIGIN, caster, {
+				[0] = point_loc,
+				[1] = Vector(aoe_radius, 1, 1),
+				[2] = Vector(delay, 1, 1),
+				[3] = Vector(200, 10, 10),
+			})
 			Timers:CreateTimer(delay, function()
 				caster:EmitSoundParams("Hero_Leshrac.Lightning_Storm", 0, 0.4, 0)
-				local particleIndex = ParticleManager:CreateParticle(particle, PATTACH_WORLDORIGIN, caster)
-				ParticleManager:SetParticleControl(particleIndex, 0, point_loc + Vector(0, 0, 1000))
-				ParticleManager:SetParticleControl(particleIndex, 1, point_loc)
-				ParticleManager:SetParticleControl(particleIndex, 2, point_loc)
+				fx.once(particle, PATTACH_WORLDORIGIN, caster, {
+					[0] = point_loc + Vector(0, 0, 1000),
+					[1] = point_loc,
+					[2] = point_loc,
+				})
 				local units = FindUnitsInRadius(
 					caster:GetTeam(),
 					point_loc,

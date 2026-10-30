@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 function SoulReleaseOuter(keys)
 	local caster = keys.caster
 	local particle = "particles/econ/items/shadow_fiend/sf_fire_arcana/sf_fire_arcana_shadowraze.vpcf"
@@ -20,14 +22,14 @@ function SoulReleaseOuter(keys)
 			local point_loc = Vector(x, y, caster_pos.z)
 			local dummy = CreateUnitByName("npc_dummy_unit", point_loc, false, caster, caster, caster:GetTeamNumber())
 			ability:ApplyDataDrivenModifier(caster, dummy, "modifier_soul_release_dummy", {})
-			local fx = ParticleManager:CreateParticle("particles/custom/aoe_warning.vpcf", PATTACH_WORLDORIGIN, caster)
-			ParticleManager:SetParticleControl(fx, 0, point_loc)
-			ParticleManager:SetParticleControl(fx, 1, Vector(damage_radius, 1, 1))
-			ParticleManager:SetParticleControl(fx, 2, Vector(explosion_delay, 1, 1))
-			ParticleManager:SetParticleControl(fx, 3, Vector(200, 10, 10))
-			ParticleManager:ReleaseParticleIndex(fx)
+			fx.once("particles/custom/aoe_warning.vpcf", PATTACH_WORLDORIGIN, caster, {
+				[0] = point_loc,
+				[1] = Vector(damage_radius, 1, 1),
+				[2] = Vector(explosion_delay, 1, 1),
+				[3] = Vector(200, 10, 10),
+			})
 			Timers:CreateTimer(explosion_delay, function()
-				local particleIndex = ParticleManager:CreateParticle(particle, PATTACH_ABSORIGIN, dummy)
+				fx.once(particle, PATTACH_ABSORIGIN, dummy)
 				Timers:CreateTimer(3.0, function()
 					dummy:RemoveSelf()
 					return nil

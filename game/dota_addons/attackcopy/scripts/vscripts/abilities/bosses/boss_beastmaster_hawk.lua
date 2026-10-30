@@ -1,4 +1,5 @@
 LinkLuaModifier("modifier_hawk_behavior", "abilities/bosses/boss_beastmaster_hawk.lua", LUA_MODIFIER_MOTION_NONE)
+local fx = require("core/fx")
 boss_beastmaster_hawk = class({})
 
 function boss_beastmaster_hawk:OnSpellStart()
@@ -37,18 +38,10 @@ if IsServer() then
 		self.target = self:GetCaster()
 		self.radius = self.ability:GetSpecialValueFor("radius")
 		self.interval = self.ability:GetSpecialValueFor("interval")
-		self.fx =
-			ParticleManager:CreateParticle("particles/custom/follow_circle.vpcf", PATTACH_ABSORIGIN_FOLLOW, self.parent)
-		ParticleManager:SetParticleControlEnt(
-			self.fx,
-			0,
-			self.parent,
-			PATTACH_ABSORIGIN_FOLLOW,
-			"attach_hitloc",
-			self.parent:GetAbsOrigin(),
-			true
-		)
-		ParticleManager:SetParticleControl(self.fx, 1, Vector(self.radius, 1, 1))
+		self.fx = fx.attach("particles/custom/follow_circle.vpcf", PATTACH_ABSORIGIN_FOLLOW, self.parent, {
+			[0] = { ent = self.parent, attach = PATTACH_ABSORIGIN_FOLLOW, point = "attach_hitloc" },
+			[1] = Vector(self.radius, 1, 1),
+		})
 		self.damageTable = {
 			-- victim = target,
 			attacker = self.parent,
@@ -75,29 +68,10 @@ if IsServer() then
 
 		for _, enemy in pairs(enemies) do
 			self.parent:EmitSoundParams("Hero_Zuus.ArcLightning.Target", 0, 0.5, 0)
-			local fx = ParticleManager:CreateParticle(
-				"particles/units/heroes/hero_zuus/zuus_arc_lightning_.vpcf",
-				PATTACH_POINT,
-				self.parent
-			)
-			ParticleManager:SetParticleControlEnt(
-				fx,
-				0,
-				self.parent,
-				PATTACH_POINT_FOLLOW,
-				"attach_hitloc",
-				self.parent:GetAbsOrigin(),
-				true
-			)
-			ParticleManager:SetParticleControlEnt(
-				fx,
-				1,
-				enemy,
-				PATTACH_POINT_FOLLOW,
-				"attach_hitloc",
-				enemy:GetAbsOrigin(),
-				true
-			)
+			fx.once("particles/units/heroes/hero_zuus/zuus_arc_lightning_.vpcf", PATTACH_POINT, self.parent, {
+				[0] = { ent = self.parent, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" },
+				[1] = { ent = enemy, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" },
+			})
 			self.damageTable.victim = enemy
 			ApplyDamage(self.damageTable)
 			break
@@ -105,8 +79,7 @@ if IsServer() then
 	end
 
 	function modifier_hawk_behavior:OnDestroy()
-		ParticleManager:DestroyParticle(self.fx, true)
-		ParticleManager:ReleaseParticleIndex(self.fx)
+		fx.stop(self.fx, true)
 		self.parent:ForceKill(false)
 	end
 end
