@@ -1,3 +1,4 @@
+local fx = require("core/fx")
 require("lib/timers")
 LinkLuaModifier("modifier_devils_seal", "items/item_devils_seal.lua", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_devils_seal_str", "items/item_devils_seal.lua", LUA_MODIFIER_MOTION_NONE)
@@ -62,23 +63,15 @@ if IsServer() then
 		if self.parent:GetHealth() > 666 then
 			self.parent:SetHealth(666)
 		end
-		local fx2 = ParticleManager:CreateParticle(
+		local fx2 = fx.attach(
 			"particles/units/heroes/hero_doom_bringer/doom_infernal_blade_debuff.vpcf",
 			PATTACH_ABSORIGIN_FOLLOW,
-			self.parent
-		)
-		ParticleManager:SetParticleControlEnt(
-			fx2,
-			0,
 			self.parent,
-			PATTACH_POINT_FOLLOW,
-			"attach_hitloc",
-			self.parent:GetAbsOrigin(),
-			true
+			{ [0] = { ent = self.parent, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" } }
 		)
 		self:StartIntervalThink(0.25)
 		Timers:CreateTimer(self.delay, function()
-			ParticleManager:DestroyParticle(fx2, false)
+			fx.stop(fx2, false)
 			local units = FindUnitsInRadius(
 				self.parent:GetTeam(),
 				self.parent:GetAbsOrigin(),

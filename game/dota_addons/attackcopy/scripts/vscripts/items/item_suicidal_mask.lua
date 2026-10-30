@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 item_suicidal_mask = class({})
 
 function item_suicidal_mask:GetIntrinsicModifierName()
@@ -65,11 +67,7 @@ if IsServer() then
 		if attacker == self:GetParent() and attacker ~= target then
 			local heal = keys.damage * self:GetAbility():GetSpecialValueFor("lifesteal") / 100
 			attacker:Heal(heal, self:GetAbility())
-			ParticleManager:CreateParticle(
-				"particles/generic_gameplay/generic_lifesteal.vpcf",
-				PATTACH_ABSORIGIN_FOLLOW,
-				attacker
-			)
+			fx.once("particles/generic_gameplay/generic_lifesteal.vpcf", PATTACH_ABSORIGIN_FOLLOW, attacker)
 		end
 	end
 end
@@ -107,7 +105,7 @@ if IsServer() then
 	end
 
 	function modifier_item_suicidal_mask_debuff:OnDestroy(keys)
-		ParticleManager:DestroyParticle(self.particle, true)
+		fx.stop(self.particle, true)
 	end
 
 	function modifier_item_suicidal_mask_debuff:OnIntervalThink()
@@ -141,19 +139,13 @@ if IsServer() then
 				0,
 				false
 			)
-			self.particle = ParticleManager:CreateParticle(
+			-- runs every think: release the previous ribbon before creating the next one
+			fx.stop(self.particle, true)
+			self.particle = fx.attach(
 				"particles/bloodbath_ribbon_bigger.vpcf",
 				PATTACH_ABSORIGIN_FOLLOW,
-				self.parent
-			)
-			ParticleManager:SetParticleControlEnt(
-				self.particle,
-				1,
 				self.parent,
-				PATTACH_POINT_FOLLOW,
-				"follow_hitloc",
-				self.parent:GetAbsOrigin(),
-				true
+				{ [1] = { ent = self.parent, attach = PATTACH_POINT_FOLLOW, point = "follow_hitloc" } }
 			)
 			EmitSoundOn("Hero_Silencer.Curse", self.parent)
 			for _, unit in ipairs(units) do

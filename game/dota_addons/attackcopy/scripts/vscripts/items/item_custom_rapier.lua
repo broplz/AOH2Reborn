@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 LinkLuaModifier("modifier_bonus_secondary_token", "modifiers/modifier_bonus.lua", LUA_MODIFIER_MOTION_NONE)
 
 item_custom_rapier = class({})
@@ -88,32 +90,13 @@ modifier_item_infinite_rapier_effect = class({})
 
 function modifier_item_infinite_rapier_effect:OnCreated()
 	self.parent = self:GetParent()
-	self.particle =
-		ParticleManager:CreateParticle("particles/custom/infinite_rapier_shell.vpcf", PATTACH_POINT, self.parent)
-	ParticleManager:SetParticleControlEnt(
-		self.particle,
-		0,
-		self.parent,
-		PATTACH_POINT_FOLLOW,
-		"attach_hitloc",
-		self.parent:GetAbsOrigin(),
-		true
-	)
-	self.particle2 =
-		ParticleManager:CreateParticle("particles/custom/infinite_rapier_smoke.vpcf", PATTACH_POINT, self.parent)
-	ParticleManager:SetParticleControlEnt(
-		self.particle2,
-		0,
-		self.parent,
-		PATTACH_POINT_FOLLOW,
-		"attach_hitloc",
-		self.parent:GetAbsOrigin(),
-		true
-	)
+	local controls = { [0] = { ent = self.parent, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" } }
+	self.particle = fx.attach("particles/custom/infinite_rapier_shell.vpcf", PATTACH_POINT, self.parent, controls)
+	self.particle2 = fx.attach("particles/custom/infinite_rapier_smoke.vpcf", PATTACH_POINT, self.parent, controls)
 end
 function modifier_item_infinite_rapier_effect:OnDestroy()
-	ParticleManager:DestroyParticle(self.particle, true)
-	ParticleManager:DestroyParticle(self.particle2, true)
+	fx.stop(self.particle, true)
+	fx.stop(self.particle2, true)
 end
 function modifier_item_infinite_rapier_effect:GetAttributes()
 	return MODIFIER_ATTRIBUTE_MULTIPLE

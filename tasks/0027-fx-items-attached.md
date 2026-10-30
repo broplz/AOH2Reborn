@@ -1,7 +1,7 @@
 ---
 id: 0027
 title: core/fx migration, items batch C — attached particles in devil's seal, suicidal mask, infinite rapier
-status: ready
+status: done
 epic: p4
 prefix: p4
 kind: code
@@ -18,10 +18,10 @@ checks: lua
 tests: [fx]
 needs_approval: true
 returns: 0
-sessions: 0
+sessions: 1
 blocked_reason: 
-reviewed_sha: 
-qa_sha: 
+reviewed_sha: 1d1496086214f904d36e452ef1c927f2ef97d062
+qa_sha: 1d1496086214f904d36e452ef1c927f2ef97d062
 ---
 
 ## Goal
@@ -68,7 +68,45 @@ Rules:
 ## Handoff
 
 ## Result
+Round 1: devils_seal, suicidal_mask, custom_rapier moved to `core/fx` (`require` once each, no raw
+CreateParticle/DestroyParticle left).
+- devils_seal: `fx.attach` + `fx.stop(fx2, false)` in the existing timer.
+- suicidal_mask: lifesteal flash → `fx.once`. The ribbon is created inside `OnIntervalThink`, i.e. it
+  runs every tick (more than once per modifier), so I added `fx.stop(self.particle, true)` before each
+  create (previously leaked all but the last); OnDestroy uses `fx.stop(..., true)`.
+- rapier: used `fx.attach` + `fx.stop(…, true)` instead of `fx.bind`, because bind passes
+  immediate=false and the task forbids changing the `true` flag.
+Verified: check.sh lua OK, test.sh fx OK, aoh_lint 0 fail (NEEDS APPROVAL due to [human] item).
+Playtest (DoD 8): seal glow vanishes after `delay`; mask flash/ribbon vanish when debuff ends;
+rapier shell + smoke appear on pickup and vanish on removal.
 
 ## Review
+APPROVE
+1. Spec: all 3 files now `local fx = require("core/fx")` once, with no raw CreateParticle/DestroyParticle left
+   (DoD 1-3, checked against the diff). The `immediate` flags are kept (seal `false`, mask `true`, rapier `true`).
+   The seal timer is kept. Choosing `fx.attach`+`fx.stop` over `fx.bind` for the rapier is correct:
+   fx.lua:46 `AddParticle(idx, false, …)` would change the destroy to non-immediate.
+2. Scope: the diff touches only the 3 allowed files. No tests were touched.
+3. Conventions: the only new local is `fx`. No new globals, KV numbers or LinkLuaModifier changes. Lint: 0 fail, 0 warn
+   (NEEDS APPROVAL because of the [human] DoD item 8).
+4. Correctness: each control table matches the original SetParticleControlEnt args (fx.lua:12 adds
+   `ent:GetAbsOrigin(), true`). item_suicidal_mask.lua:143: the ribbon is created on every think, so the
+   `fx.stop` before each create is the case the teamlead asked for (fx.stop is nil-safe, fx.lua:36). The lifesteal
+   flash goes through `fx.once`, which releases it.
+5. KV: not touched.
+6. Result: the claims match the diff and lint. I did not re-run check/test; qa will. DoD 8 is listed for the owner and is not claimed as done.
+7. Hygiene: clean. Existing issues outside this scope, not blocking: global `count_modifier` at
+   item_suicidal_mask.lua:116, and `self.parent` used in the seal timer without an `IsNull` check.
 
 ## QA
+PASS
+1. DoD 1-2: grep of CreateParticle/DestroyParticle/`^fx *=` gives 0 in all 3 files.
+2. DoD 3: `require("core/fx")` count is 1 in each file.
+3. DoD 4-5: check.sh lua is OK (logs/check-20261030-172941.log); test.sh fx is OK (6 passed, 0 failed).
+4. DoD 6: aoh_lint has 0 fail and 0 warn. It exits with NEEDS APPROVAL only because of the [human] item.
+5. DoD 7: `git diff --stat feat/p0-foundation` lists only the 3 allowed files plus this task file.
+
+For the human (DoD 8), in a local lobby:
+- Devil's Seal: the debuff glow appears and disappears after `delay`.
+- Suicidal Mask: the lifesteal flash shows. The bloodbath ribbon vanishes when the debuff ends and does not stack up while it is active.
+- Infinite Rapier: the shell and smoke appear on pickup and vanish when the effect modifier is removed.
