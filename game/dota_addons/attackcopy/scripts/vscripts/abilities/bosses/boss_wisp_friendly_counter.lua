@@ -104,7 +104,7 @@ if IsServer() then
 		self.radius = self:GetAbility():GetSpecialValueFor("radius")
 		self.parent:CastAbilityNoTarget(self.parent:FindAbilityByName("outpost_channel"), -1)
 		self.emp_effect = ParticleManager:CreateParticle(
-			"particles/units/heroes/hero_invoker/invoker_emp.vpcf",
+			"particles/custom/custom_emp_sphere.vpcf",
 			PATTACH_OVERHEAD_FOLLOW,
 			self.parent
 		)

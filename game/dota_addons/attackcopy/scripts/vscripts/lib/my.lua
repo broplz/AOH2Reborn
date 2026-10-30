@@ -327,7 +327,7 @@ end
 function modifier_roundend_effect:OnCreated()
 	local parent = self:GetParent()
 	self.fx = ParticleManager:CreateParticle(
-		"particles/econ/events/ti10/fountain_regen_ti10_lvl3.vpcf",
+		"particles/generic_gameplay/rune_regeneration.vpcf",
 		PATTACH_ABSORIGIN_FOLLOW,
 		parent
 	)
