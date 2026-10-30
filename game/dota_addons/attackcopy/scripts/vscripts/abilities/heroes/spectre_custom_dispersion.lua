@@ -2,6 +2,8 @@
 	Date: August 27, 2016
 ]]
 
+local fx = require("core/fx")
+
 LinkLuaModifier(
 	"modifier_spectre_custom_dispersion",
 	"abilities/heroes/spectre_custom_dispersion.lua",
@@ -188,10 +190,12 @@ if IsServer() then
 						end
 					end
 
-					local particle = ParticleManager:CreateParticle(particle_name, PATTACH_POINT_FOLLOW, self.parent)
-					ParticleManager:SetParticleControl(particle, 0, vparent)
-					ParticleManager:SetParticleControl(particle, 1, vUnit)
-					ParticleManager:SetParticleControl(particle, 2, vparent)
+					fx.once(
+						particle_name,
+						PATTACH_POINT_FOLLOW,
+						self.parent,
+						{ [0] = vparent, [1] = vUnit, [2] = vparent }
+					)
 					ApplyDamage({
 						ability = self.ability,
 						attacker = self.parent,

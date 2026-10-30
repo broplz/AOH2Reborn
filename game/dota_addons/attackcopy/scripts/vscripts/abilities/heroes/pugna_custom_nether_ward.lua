@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 function NetherWardZap(event)
 	local caster = event.caster
 	local target = event.unit
@@ -42,8 +44,7 @@ function NetherWardZap(event)
 				ApplyDamage({ victim = target, attacker = caster, damage = zap_damage, damage_type = AbilityDamageType })
 
 				local attackName = "particles/units/heroes/hero_pugna/pugna_ward_attack.vpcf" -- There are some light/medium/heavy unused versions
-				local attack = ParticleManager:CreateParticle(attackName, PATTACH_ABSORIGIN_FOLLOW, unit)
-				ParticleManager:SetParticleControl(attack, 1, target:GetAbsOrigin())
+				fx.once(attackName, PATTACH_ABSORIGIN_FOLLOW, unit, { [1] = target:GetAbsOrigin() })
 
 				local new_mp = caster:GetMana() - casterMaxMana * stat_penalty * 0.01
 				caster:SetMana(new_mp)

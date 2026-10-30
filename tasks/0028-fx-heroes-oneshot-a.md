@@ -1,7 +1,7 @@
 ---
 id: 0028
 title: core/fx migration, heroes batch A — Vector-only one-shot particles in pugna, spectre, bloodseeker thirst, undying, obsidian sanity eclipse
-status: ready
+status: done
 epic: p4
 prefix: p4
 kind: code
@@ -20,10 +20,10 @@ checks: lua
 tests: [fx]
 needs_approval: true
 returns: 0
-sessions: 0
+sessions: 1
 blocked_reason: 
-reviewed_sha: 
-qa_sha: 
+reviewed_sha: 90ac4280a00531ea797b5b504e7420b1724306e8
+qa_sha: 90ac4280a00531ea797b5b504e7420b1724306e8
 ---
 
 ## Goal
@@ -65,7 +65,40 @@ Rules:
 ## Handoff
 
 ## Result
+Round 1: replaced the 5 unreleased `ParticleManager:CreateParticle` sites (pugna, spectre, bloodseeker,
+undying, obsidian) with `fx.once`, same particle/attach/owner/control points; each file has
+`local fx = require("core/fx")` once. Verified: `check.sh lua` OK, `test.sh fx` OK (6 passed),
+`aoh_lint.py 0028` 0 fail (NEEDS APPROVAL because of the [human] item).
+Playtest (DoD 8): trigger each of the 5 effects in a local lobby and confirm they still show.
 
 ## Review
+APPROVE
+1. Spec: all 5 sites from the teamlead notes replaced with `fx.once`; particle, attach, owner and CPs
+   unchanged (spectre CP0/1/2, obsidian CP1/2/3, pugna CP1); unused locals dropped. Nothing else changed.
+   `grep -c ParticleManager:CreateParticle` = 0 in all 5 files; `local fx = require("core/fx")` once per file.
+2. Scope: diff touches only the 5 allowed files (DoD 7).
+3. Conventions: `fx` is local; no new globals added (existing `SanityEclipseDamage`/`NetherWardZap`
+   globals are pre-existing and out of scope); no KV numbers, LinkLuaModifier untouched.
+4. Dota: `fx.once` = create + controls + `ReleaseParticleIndex` (core/fx.lua:26-27), so the leak is fixed;
+   no new timers/handles.
+5. KV: not touched.
+6. Verification: aoh_lint 0 fail / 0 warn, NEEDS APPROVAL only for the [human] item, matching ## Result.
+   check.sh/test.sh left to qa. DoD 8 is listed for the owner, not claimed.
+7. Hygiene: no prints, no TODOs, English.
 
 ## QA
+PASS
+1. DoD 1: CreateParticle count 0 in all 5 files.
+2. DoD 2: `require("core/fx")` count 1 in all 5 files.
+3. DoD 3: `^fx *=` grep empty.
+4. DoD 4: `check.sh lua` CHECK RESULT: OK.
+5. DoD 5: `test.sh fx` TEST RESULT: OK (6 passed).
+6. DoD 6: aoh_lint 0 fail, 0 warn (exit 3 = NEEDS APPROVAL only for the [human] item).
+7. DoD 7: diff stat lists only the 5 allowed files plus this task file.
+
+For the human (DoD 8), in a local lobby, confirm each effect still shows:
+- Pugna Nether Ward zap
+- Spectre Dispersion reflect beam
+- Bloodseeker Thirst blood splash
+- Undying Decay tombstone
+- Obsidian Destroyer Sanity's Eclipse damage number

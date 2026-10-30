@@ -1,4 +1,5 @@
 require("lib/my")
+local fx = require("core/fx")
 LinkLuaModifier(
 	"modifier_undying_custom_decay_hud",
 	"abilities/heroes/undying_custom_decay.lua",
@@ -75,7 +76,7 @@ function undying_custom_decay:OnSpellStart()
 			end
 		)
 	end
-	ParticleManager:CreateParticle(
+	fx.once(
 		"particles/econ/items/undying/undying_manyone/undying_pale_tombstone.vpcf",
 		PATTACH_ABSORIGIN_FOLLOW,
 		target

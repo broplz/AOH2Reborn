@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 bloodseeker_custom_thirst = class({})
 
 if IsServer() then
@@ -114,7 +116,7 @@ if IsServer() then
 				damage_type = DAMAGE_TYPE_PURE,
 				victim = target,
 			})
-			ParticleManager:CreateParticle(
+			fx.once(
 				"particles/econ/items/lifestealer/ls_ti9_immortal/ls_ti9_open_wounds_blood_soft.vpcf",
 				PATTACH_ABSORIGIN_FOLLOW,
 				target
