@@ -915,3 +915,7 @@ function AOHGameMode:OnPlayerChat(keys)
 		end
 	end
 end
+
+-- Temporary playtest-3 diagnostics, armed when this module loads (before InitGameMode).
+-- At the end of the file so no legacy luacheck warning moves (the baseline keys some by line).
+require("lib/stack_guard").install()
