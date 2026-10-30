@@ -77,6 +77,14 @@ end
 
 function modifier_atr_fix:OnCreated()
 	self.parent = self:GetParent()
+	-- Temporary playtest-3 diagnostics, removed together with lib/depth_probe.
+	Warning(
+		"[depth] modifier_atr_fix:OnCreated unit="
+			.. self.parent:GetUnitName()
+			.. " hero="
+			.. tostring(self.parent:IsHero())
+			.. "\n"
+	)
 	self.level = self:GetParent()
 	if IsServer() then
 		self.parent:AddNewModifier(self.parent, self:GetAbility(), "modifier_builtin_blink", {
