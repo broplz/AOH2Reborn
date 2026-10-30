@@ -56,6 +56,8 @@ K = `game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt`, B = `gam
 - The wrappers are HIDDEN → no tooltip needed. Do not touch the target abilities, boss_juggernaut_init
   (phase controller = 0015) or boss_juggernaut_counter.
 - Edit K with Edit on the exact entry; never Read K whole (Grep + Read offset/limit ≤ 400).
+- 2026-10-30 escalated: lint regex vs `telegraph.class` → docs/reports/decisions-needed.md. Stays blocked
+  until the owner widens aoh_lint.py:46 (then only DoD 6 + ## Result remain) or orders the mixin re-spec.
 
 ## Handoff
 Session 1 (developer-hard) — blocked on a spec contradiction (DoD 2 vs DoD 6), no strikes.
