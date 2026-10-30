@@ -1,4 +1,5 @@
 require("lib/timers")
+local fx = require("core/fx")
 
 clinkz_custom_death_pact = class({})
 
@@ -15,29 +16,10 @@ function clinkz_custom_death_pact:OnSpellStart()
 		damage_type = self:GetAbilityDamageType(),
 		damage = damage,
 	})
-	local fx = ParticleManager:CreateParticle(
-		"particles/units/heroes/hero_clinkz/clinkz_death_pact.vpcf",
-		PATTACH_POINT_FOLLOW,
-		caster
-	)
-	ParticleManager:SetParticleControlEnt(
-		fx,
-		0,
-		target,
-		PATTACH_POINT_FOLLOW,
-		"attach_hitloc",
-		target:GetAbsOrigin(),
-		true
-	)
-	ParticleManager:SetParticleControlEnt(
-		fx,
-		1,
-		caster,
-		PATTACH_POINT_FOLLOW,
-		"attach_hitloc",
-		caster:GetAbsOrigin(),
-		true
-	)
+	fx.once("particles/units/heroes/hero_clinkz/clinkz_death_pact.vpcf", PATTACH_POINT_FOLLOW, caster, {
+		[0] = { ent = target, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" },
+		[1] = { ent = caster, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" },
+	})
 	caster:AddNewModifier(
 		caster,
 		self,

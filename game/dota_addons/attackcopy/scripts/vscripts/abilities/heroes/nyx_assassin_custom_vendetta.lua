@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 LinkLuaModifier(
 	"modifier_nyx_assassin_custom_vendetta_invis",
 	"abilities/heroes/nyx_assassin_custom_vendetta.lua",
@@ -150,16 +152,9 @@ function modifier_nyx_assassin_custom_vendetta_invis:OnAttackLanded(keys)
 			damage_type = damage_type,
 			victim = target,
 		})
-		local fx = ParticleManager:CreateParticle("particles/custom/glare_edge.vpcf", PATTACH_POINT_FOLLOW, target)
-		ParticleManager:SetParticleControlEnt(
-			fx,
-			0,
-			target,
-			PATTACH_POINT,
-			"attach_hitloc",
-			target:GetAbsOrigin(), -- unknown
-			true -- unknown, true
-		)
+		fx.once("particles/custom/glare_edge.vpcf", PATTACH_POINT_FOLLOW, target, {
+			[0] = { ent = target, attach = PATTACH_POINT, point = "attach_hitloc" },
+		})
 		local color = Vector(100, 95, 237)
 		if self:GetCaster():HasModifier("modifier_item_aghanims_shard") then
 			color = Vector(200, 195, 47)

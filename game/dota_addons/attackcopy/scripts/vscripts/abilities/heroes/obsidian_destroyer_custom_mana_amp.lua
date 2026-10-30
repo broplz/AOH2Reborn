@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 obsidian_destroyer_custom_mana_amp = class({})
 
 function obsidian_destroyer_custom_mana_amp:OnSpellStart()
@@ -8,19 +10,11 @@ function obsidian_destroyer_custom_mana_amp:OnSpellStart()
 		"modifier_mana_amp_custom_active",
 		{ duration = self:GetSpecialValueFor("duration") }
 	)
-	local particle = ParticleManager:CreateParticle(
+	fx.once(
 		"particles/units/heroes/hero_obsidian_destroyer/obsidian_destroyer_essence_effect.vpcf",
 		PATTACH_ABSORIGIN_FOLLOW,
-		caster
-	)
-	ParticleManager:SetParticleControlEnt(
-		particle,
-		0,
 		caster,
-		PATTACH_POINT_FOLLOW,
-		"attach_hitloc",
-		caster:GetAbsOrigin(),
-		true
+		{ [0] = { ent = caster, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" } }
 	)
 end
 

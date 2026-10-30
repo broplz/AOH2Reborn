@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 --[[Author: Noya
 	Date: 11.01.2015.
 	Creates an unselectable, uncontrollable and invulnerable illusion at the back of the target
@@ -36,9 +38,11 @@ function ReflectionCast(event)
 	local target = event.target
 	local particleName = "particles/units/heroes/hero_terrorblade/terrorblade_reflection_cast.vpcf"
 
-	local particle = ParticleManager:CreateParticle(particleName, PATTACH_POINT_FOLLOW, caster)
-	ParticleManager:SetParticleControl(particle, 3, Vector(1, 0, 0))
-
+	-- CP0 passes target's origin with the caster entity, so it cannot use the controls table.
+	local particle = fx.attach(particleName, PATTACH_POINT_FOLLOW, caster, {
+		[3] = Vector(1, 0, 0),
+		[1] = { ent = target, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" },
+	})
 	ParticleManager:SetParticleControlEnt(
 		particle,
 		0,
@@ -48,13 +52,5 @@ function ReflectionCast(event)
 		target:GetAbsOrigin(),
 		true
 	)
-	ParticleManager:SetParticleControlEnt(
-		particle,
-		1,
-		target,
-		PATTACH_POINT_FOLLOW,
-		"attach_hitloc",
-		target:GetAbsOrigin(),
-		true
-	)
+	ParticleManager:ReleaseParticleIndex(particle)
 end
