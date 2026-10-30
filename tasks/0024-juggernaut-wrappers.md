@@ -1,7 +1,7 @@
 ---
 id: 0024
 title: Juggernaut's 3 boss wrappers → ability_lua on bosses/_shared/telegraph.lua (split from backlog 0014)
-status: blocked
+status: ready
 epic: p2
 prefix: p2
 kind: code
@@ -20,7 +20,7 @@ tests: [telegraph]
 needs_approval: true
 returns: 0
 sessions: 1
-blocked_reason: aoh_lint.py:46 rejects the mandated `boss_x = telegraph.class(...)` global (DoD 2 vs DoD 6); lint fix is outside allowed_paths
+blocked_reason: 
 reviewed_sha: 
 qa_sha: 
 ---
