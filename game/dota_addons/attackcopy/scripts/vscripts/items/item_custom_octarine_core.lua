@@ -59,15 +59,17 @@ if IsServer() then
 	end
 
 	function modifier_item_custom_octarine_core:OnTakeDamage(keys)
-		if keys.attacker:HasModifier("modifier_item_custom_octarine_core") then
-			if self.parent == keys.attacker and keys.unit ~= self.parent then
-				if
-					bit.band(keys.damage_flags, DOTA_DAMAGE_FLAG_REFLECTION) == 0
-					and keys.damage_type ~= DAMAGE_TYPE_PHYSICAL
-				then
-					self.parent:Heal(keys.original_damage * self.lifesteal, self)
-					ParticleManager:CreateParticle(self.particle_name, PATTACH_ABSORIGIN_FOLLOW, self.parent)
-				end
+		if keys.attacker ~= self.parent then
+			return
+		end
+		if keys.unit ~= self.parent then
+			if
+				bit.band(keys.damage_flags, DOTA_DAMAGE_FLAG_REFLECTION) == 0
+				and keys.damage_type ~= DAMAGE_TYPE_PHYSICAL
+			then
+				self.parent:Heal(keys.original_damage * self.lifesteal, self)
+				local fx = ParticleManager:CreateParticle(self.particle_name, PATTACH_ABSORIGIN_FOLLOW, self.parent)
+				ParticleManager:ReleaseParticleIndex(fx)
 			end
 		end
 	end

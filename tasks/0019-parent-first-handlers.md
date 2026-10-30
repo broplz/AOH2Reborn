@@ -1,7 +1,7 @@
 ---
 id: 0019
 title: Parent-first guards in the octarine, mars spear checker and zuus wrath event handlers
-status: ready
+status: done
 epic: p4
 prefix: p4
 kind: code
@@ -17,11 +17,11 @@ allowed_paths:
 checks: lua
 tests: []
 needs_approval: false
-returns: 0
+returns: 1
 sessions: 0
 blocked_reason: 
-reviewed_sha: 
-qa_sha: 
+reviewed_sha: 1e414a7b66c878e583b3975fb7eaf332f9679206
+qa_sha: 1e414a7b66c878e583b3975fb7eaf332f9679206
 ---
 
 ## Goal
@@ -45,6 +45,72 @@ escalated (docs/reports/decisions-needed.md, 2026-10-30).
    `GetSpecialValueFor` calls appear after the guard and after the `used_ability` nil check.
 6. `python3 scripts/agents/aoh_lint.py 0019` passes.
 7. `git diff --stat feat/p0-foundation` lists only the three allowed files plus this task file.
+
+## Result
+Round 2:
+- Review item 1: zuus `OnAbilityExecuted` now starts with `if keys.unit ~= self:GetParent() then return end`;
+  `local parent = self:GetParent()` follows it. `check.sh lua` OK.
+
+Round 1:
+- octarine `OnTakeDamage`: guard `keys.attacker ~= self.parent` first; dropped the redundant
+  HasModifier; particle index stored in `local fx` and released.
+- mars checker `OnTakeDamage`: guard `keys.unit ~= self:GetParent()` first, then the inflictor test.
+- zuus `OnAbilityExecuted`: guard on `keys.unit`, then nil/IsItem/ultimate/zuus_cloud early returns,
+  then cursor + specials, then the unchanged Timers body (dedented one level). Added
+  `-- aoh-lint: ok` on `count = count + 1` (lint false positive: upvalue of a declared local).
+- Verified: `check.sh lua` OK, `aoh_lint.py 0019` 0 fail. Diff touches only the three files + this task.
+- [human] playtest: cast Thundergod's Wrath on Zuus, then a spell; it repeats once. Octarine
+  spell damage heals with the particle. Mars spear stops on Arena of Blood damage.
+
+## Review
+APPROVE
+Round 2 checklist:
+1. Spec: round-1 item 1 fixed — zuus_custom_thundergods_wrath.lua:37 now opens with
+   `if keys.unit ~= self:GetParent() then` / `return` / `end`, then `local parent`. DoD 2 holds for
+   all three handlers (octarine :62, mars :543, zuus :37); DoD 3/4/5 hold in the diff. No behaviour change.
+2. Scope: diff --stat lists only the three allowed files; no tests touched.
+3. Conventions: no new globals; `ABILITY_TYPE_ULTIMATE` kept per notes; aoh_lint 0 fail, 0 warn.
+4. Dota correctness: guards first; octarine particle released; Timers body unchanged (its
+   pre-existing missing `IsNull` stays out of scope).
+5. KV: not touched.
+6. Verification: ## Result claims (check OK, lint OK, guard first) match the diff and lint run;
+   `[human]` playtest listed for the owner, not claimed. qa re-runs check.sh.
+7. Hygiene: no prints, no TODOs, English.
+
+---
+REQUEST_CHANGES
+1. zuus_custom_thundergods_wrath.lua:37-38 — DoD 2 fails: the first statement of
+   `OnAbilityExecuted` is still `local parent = self:GetParent()`, so the grep `-A1` line is not
+   `if keys.unit ~= self:GetParent() then`. Make the guard the first statement exactly as DoD 2
+   says (`if keys.unit ~= self:GetParent() then return end`), then `local parent = self:GetParent()`
+   below it (the Timers closure still needs `parent`). Nothing else in that file needs to change.
+
+Checklist notes:
+- Spec: octarine (guard, HasModifier dropped, fx released) and mars match the notes and DoD 3/4.
+  Zuus DoD 5 holds (cursor + specials come after the guard and the nil check); only DoD 2 fails (item 1).
+  The unused `caster` local was removed, which is fine.
+- Scope: the diff touches only the three allowed files; no tests touched.
+- Conventions: no new globals; `ABILITY_TYPE_ULTIMATE` kept as the notes require; `-- aoh-lint: ok`
+  on `count = count + 1` is a valid suppression of a known false positive; aoh_lint 0 fail.
+- Dota correctness: no behaviour change. The octarine particle is now released. The Timers body is
+  unchanged as required (its missing `IsNull` check was already there, so it is out of scope).
+- KV: not touched.
+- Verification: the ## Result claims check/lint OK; lint confirmed. The claim "first statement is
+  the guard" does not hold for zuus (item 1). [human] items are listed for the owner, not claimed.
+- Hygiene: no prints, no TODOs, English.
+
+## QA
+PASS
+1. DoD 1: `check.sh lua` → CHECK RESULT: OK (logs/check-20261030-171744.log).
+2. DoD 2: grep -A1/-A2 shows the parent guard first with `return` in all three handlers (octarine :62, mars :543, zuus :37).
+3. DoD 3: no `HasModifier("modifier_item_custom_octarine_core")` left. DoD 4: `local fx = CreateParticle(...)` then `ReleaseParticleIndex(fx)` (:71-72).
+4. DoD 5: zuus `GetCursorPosition` and both `GetSpecialValueFor` come after the guard and the nil check (:55-57).
+5. DoD 6: aoh_lint 0 fail, 0 warn. DoD 7: diff --stat lists only the three allowed files plus this task file.
+
+For the human:
+- Cast Thundergod's Wrath on Zuus, then a normal spell: it repeats the casts.
+- Octarine Core spell damage still heals, and the particle shows.
+- Mars spear stops when Arena of Blood damages the parent.
 
 ## Notes from teamlead
 Exact sites (read them at these lines, they were current on 2026-10-30):

@@ -540,11 +540,11 @@ function modifier_mars_spear_of_mars_lua_checker:DeclareFunctions()
 end
 if IsServer() then
 	function modifier_mars_spear_of_mars_lua_checker:OnTakeDamage(keys)
-		local parent = self:GetParent()
-		if keys.inflictor and keys.unit then
-			if keys.unit == parent and keys.inflictor:GetAbilityName() == "mars_arena_of_blood" then
-				self:Destroy()
-			end
+		if keys.unit ~= self:GetParent() then
+			return
+		end
+		if keys.inflictor and keys.inflictor:GetAbilityName() == "mars_arena_of_blood" then
+			self:Destroy()
 		end
 	end
 end
