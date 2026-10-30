@@ -15,7 +15,7 @@
 
 		<snippet name="SkillBox">
 			<Panel class="SkillBox inactive" onmouseover="UIShowTextTooltipStyled({s:tooltip}, ShortTextTooltip)" onmouseout="UIHideTextTooltip()">
-				<Image id="SkillIcon" src=""/>
+				<Image id="SkillIcon"/>
 				<Label id="SkillLabel" text="{s:skill_name}"/>
 			</Panel>
 		</snippet>
