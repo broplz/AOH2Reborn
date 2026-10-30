@@ -19,7 +19,6 @@
 	"Ability13"	"special_bonus_attack_damage_40"
 	"Ability14"	"special_bonus_cleave_60"
 	"Ability15"	"special_bonus_intelligence_50"
-	"Ability16"	"special_bonus_unique_alchemist_3"
 	"AttributeStrengthGain"	"3.200000"
 	"AttributeAgilityGain"	"2.500000"
 }
@@ -38,7 +37,6 @@
 	"Ability3"	"rubick_null_field"
 	"Ability11"	"special_bonus_cast_range_100"
 	"Ability13"	"special_bonus_mp_regen_8"
-	"Ability14"	"special_bonus_unique_rubick_4"
 	"Ability16"	"special_bonus_agility_100"
 	"Ability17"	"special_bonus_cooldown_reduction_25"
 	"MovementTurnRate"	"0.800000"
@@ -51,7 +49,6 @@
 	"Ability11"	"special_bonus_lifesteal_10"
 	"Ability12"	"special_bonus_cooldown_reduction_15"
 	"Ability13"	"special_bonus_hp_regen_10"
-	"Ability15"	"special_bonus_unique_antimage"
 	"Ability17"	"special_bonus_agility_100"
 	"ArmorPhysical"	"0"
 	"MovementSpeed"	"350"
@@ -83,7 +80,6 @@
 	"Ability1"	"bloodseeker_custom_rupture"
 	"Ability3"	"bloodseeker_custom_thirst"
 	"Ability6"	"bloodseeker_custom_rampage"
-	"Ability10"	"special_bonus_unique_bloodseeker"
 	"Ability14"	"special_bonus_movement_speed_100"
 	"Ability15"	"special_bonus_lifesteal_10"
 	"Ability16"	"special_bonus_all_stats_20"
@@ -124,18 +120,15 @@
 {
 	"AttributeIntelligenceGain"	"2.600000"
 	"Ability3"	"centaur_custom_return"
-	"Ability10"	"special_bonus_unique_centaur_2"
 	"Ability11"	"special_bonus_movement_speed_25"
 	"Ability12"	"special_bonus_attack_base_damage_45"
 	"Ability13"	"special_bonus_magic_resistance_15"
-	"Ability17"	"special_bonus_unique_centaur_4"
 	"Ability16"	"special_bonus_strength_30"
 }
 "npc_dota_hero_chaos_knight"
 {
 	"AttributeStrengthGain"	"3.900000"
 	"MovementSpeed"	"340"
-	"Ability10"	"special_bonus_unique_chaos_knight_3"
 	"Ability11"	"special_bonus_hp_regen_12"
 	"Ability15"	"special_bonus_movement_speed_60"
 	"Ability17"	"special_bonus_all_stats_20"
@@ -161,7 +154,6 @@
 "npc_dota_hero_crystal_maiden"
 {
 	"Ability16"	"special_bonus_cooldown_reduction_25"
-	"Ability17"	"special_bonus_unique_crystal_maiden_2"
 }
 "npc_dota_hero_dark_seer"
 {
@@ -177,7 +169,6 @@
 {
 	"AttackRate"		"1.900000"
 	"Ability10"		"special_bonus_strength_10"
-	"Ability11"		"special_bonus_unique_dawnbreaker_celestial_hammer_cast_range"
 	"Ability16"		"special_bonus_cooldown_reduction_25"
 	"Ability17"		"special_bonus_intelligence_75"
 	"ArmorPhysical"		"4.000000"
@@ -214,7 +205,6 @@
 }
 "npc_dota_hero_dragon_knight"
 {
-	"Ability10"	"special_bonus_unique_dragon_knight_2"
 	"Ability17"	"special_bonus_attack_base_damage_200"
 	"AttackRate"	"1.600000"
 	"AttributeStrengthGain"	"3.900000"
@@ -267,8 +257,6 @@
 	"Ability10"	"special_bonus_cooldown_reduction_8"
 	"Ability11"	"special_bonus_strength_10"
 	"Ability13"	"special_bonus_attack_speed_40"
-	"Ability15"	"special_bonus_unique_gyrocopter_4"
-	"Ability16" "special_bonus_unique_gyrocopter_5"
 	"Ability17"	"gyrocopter_custom_bonus_unique_1"
 }
 "npc_dota_hero_huskar"
@@ -279,8 +267,6 @@
 }
 "npc_dota_hero_invoker"
 {
-	"Ability17"	"special_bonus_unique_invoker_9"
-	"Ability20"	"special_bonus_unique_invoker_11"
 	"Ability21"	"special_bonus_spell_amplify_20"
 	"Ability23"	"special_bonus_cooldown_reduction_20"
 	"Ability24"	"special_bonus_all_stats_20"
@@ -316,7 +302,6 @@
 "npc_dota_hero_legion_commander"
 {
 	"Ability6"	"legion_commander_warpath"
-	"Ability11"	"special_bonus_unique_legion_commander_5"
 	"Ability12"	"special_bonus_attack_speed_60"
 	"Ability13"	"special_bonus_cooldown_reduction_15"
 	"Ability14" "special_bonus_20_crit_15"
@@ -339,8 +324,6 @@
 }
 "npc_dota_hero_lich"
 {
-	"Ability10"	"special_bonus_unique_lich_3"
-	"Ability11"	"special_bonus_unique_lich_1"
 	"Ability12"	"special_bonus_cooldown_reduction_15"
 	"Ability13"	"special_bonus_movement_speed_45"
 	"Ability16"	"special_bonus_attack_base_damage_100"
@@ -378,7 +361,6 @@
 }
 "npc_dota_hero_magnataur"
 {
-	"Ability15"	"special_bonus_unique_magnus"
 	"Ability17"	"special_bonus_spell_amplify_100"
 }
 "npc_dota_hero_marci"
@@ -388,7 +370,6 @@
 	"Ability12"		"special_bonus_cooldown_reduction_10"
 	"Ability13"		"special_bonus_unique_marci_lunge_range"
 	"Ability14"		"special_bonus_unique_marci_guardian_lifesteal"
-	"Ability15"		"special_bonus_unique_marci_guardian_strong_dispel"
 	"Ability16"		"special_bonus_reincarnation_90"
 	"Ability17"		"special_bonus_magic_resistance_25"
 	"AttackRate"				"1.600000"
@@ -409,19 +390,13 @@
 {
 	"Ability1"	"mars_custom_spear"
 	"Ability10"	"special_bonus_attack_damage_25"
-	"Ability11"	"special_bonus_unique_mars_spear_cooldown"
-	"Ability12"	"special_bonus_unique_mars_spear_bonus_damage"
 	"Ability13"	"special_bonus_armor_6"
-	"Ability14"	"special_bonus_unique_mars_arena_of_blood_hp_regen"
-	"Ability15"	"special_bonus_unique_mars_spear_stun_duration"
-	"Ability16"	"special_bonus_unique_mars_gods_rebuke_extra_crit"
 	"Ability17"	"special_bonus_attack_base_damage_100"
 }
 "npc_dota_hero_medusa"
 {
 	"Ability10"	"special_bonus_attack_damage_25"
 	"Ability13"	"special_bonus_mp_regen_8"
-	"Ability14"	"special_bonus_unique_medusa_4"
 	"Ability16"	"special_bonus_intelligence_75"
 	"Ability17"	"special_bonus_30_crit_2"
 }
@@ -439,7 +414,6 @@
 }
 "npc_dota_hero_morphling"
 {
-	"Ability15"	"special_bonus_unique_morphling_5"
 	"Ability19"	"special_bonus_agility_20"
 	"Ability20"	"special_bonus_cooldown_reduction_15"
 	"Ability21"	"special_bonus_magic_resistance_25"
@@ -464,8 +438,6 @@
 	"Ability6"	"nevermore_custom_requiem"
 	"Ability12"	"special_bonus_all_stats_10"
 	"Ability13"	"special_bonus_attack_range_125"
-	"Ability14"	"special_bonus_unique_nevermore_5"
-	"Ability16"	"special_bonus_unique_nevermore_1"
 }
 "npc_dota_hero_night_stalker"
 {
@@ -482,7 +454,6 @@
 	"Ability6"	"nyx_assassin_custom_vendetta"
 	"Ability11"	"special_bonus_intelligence_10"
 	"Ability13"	"special_bonus_movement_speed_40"
-	"Ability15"	"special_bonus_unique_nyx_2"
 	"Ability17"	"special_bonus_cooldown_reduction_25"
 }
 "npc_dota_hero_obsidian_destroyer"
@@ -494,7 +465,6 @@
 "npc_dota_hero_ogre_magi"
 {
 	"Ability6"	"ogre_magi_custom_multicast"
-	"Ability12"	"special_bonus_unique_ogre_magi_2"
 	"Ability16"	"ogre_magi_custom_bonus_unique_1"
 	"Ability17"	"ogre_magi_custom_bonus_unique_2"
 }
@@ -511,7 +481,6 @@
 "npc_dota_hero_oracle"
 {
 	"Ability10"	"special_bonus_cast_range_150"
-	"Ability12"	"special_bonus_unique_oracle"
 	"Ability14"	"special_bonus_cooldown_reduction_15"
 	"Ability15"	"special_bonus_mp_regen_10"
 	"Ability17"	"special_bonus_all_stats_20"
@@ -540,13 +509,11 @@
 }
 "npc_dota_hero_puck"
 {
-	"Ability10"	"special_bonus_unique_puck_6"
 	"Ability16"	"special_bonus_attack_base_damage_100"
 }
 "npc_dota_hero_pudge"
 {
 	"Ability3"	"pudge_custom_reincarnation"
-	"Ability11"	"special_bonus_unique_pudge_2"
 	"Ability17"	"special_bonus_magic_resistance_35"
 	"AttributeStrengthGain"	"4.500000"
 	"StatusHealthRegen"	"1.25"
@@ -608,12 +575,10 @@
 }
 "npc_dota_hero_shadow_shaman"
 {
-	"Ability15"	"special_bonus_unique_shadow_shaman_4"
 	"Ability17"	"special_bonus_cooldown_reduction_25"
 }
 "npc_dota_hero_shredder"
 {
-	"Ability11"	"special_bonus_unique_timbersaw_3"
 	"Ability16"	"special_bonus_50_crit_175"
 	"Ability17"	"special_bonus_mp_regen_30"
 }
@@ -691,7 +656,6 @@
 "npc_dota_hero_sven"
 {
 	"Ability10"	"special_bonus_armor_6"
-	"Ability11"	"special_bonus_unique_sven_3"
 	"Ability12"	"special_bonus_cleave_40"
 	"Ability13"	"special_bonus_strength_15"
 	"Ability15"	"special_bonus_cooldown_reduction_15"
@@ -707,9 +671,7 @@
 	"Ability10"	"special_bonus_gold_income_90"
 	"Ability11"	"special_bonus_mp_regen_6"
 	"Ability12"	"special_bonus_gold_income_120"
-	"Ability13"	"special_bonus_unique_techies_3"
 	"Ability15"	"special_bonus_gold_income_150"
-	"Ability14"	"special_bonus_unique_techies_4"
 	"Ability16"	"special_bonus_spell_amplify_25"
 	"Ability17"	"special_bonus_gold_income_300"
 }
@@ -751,9 +713,6 @@
 "npc_dota_hero_treant"
 {
 	"MovementSpeed"	"280"
-	"Ability12"	"special_bonus_unique_treant_2"
-	"Ability14"	"special_bonus_unique_treant_8"
-	"Ability15"	"special_bonus_unique_treant_7"
 	"Ability16"	"special_bonus_cooldown_reduction_25"
 	"Ability17"	"special_bonus_100_crit_75"
 	"AttributeBaseStrength"	"33"
@@ -764,7 +723,6 @@
 }
 "npc_dota_hero_troll_warlord"
 {
-	"Ability15"	"special_bonus_unique_troll_warlord_4"
 	"Ability17"	"special_bonus_attack_base_damage_100"
 	"AttributeBaseAgility"	"26"
 }
@@ -777,7 +735,6 @@
 	"ArmorPhysical"	"1"
 	"AttributeBaseStrength"	"27"
 	"Ability17"	"special_bonus_attack_base_damage_100"
-	"Ability11"	"special_bonus_unique_tusk_6"
 }
 "npc_dota_hero_undying"
 {
@@ -791,7 +748,6 @@
 }
 "npc_dota_hero_ursa"
 {
-	"Ability10"	"special_bonus_unique_ursa_5"
 	"Ability11"	"special_bonus_strength_10"
 	"Ability16"	"special_bonus_magic_resistance_35"
 }
@@ -822,7 +778,6 @@
 "npc_dota_hero_void_spirit"
 {
 	"Ability1"	"void_spirit_temp_ability"
-	"Ability11"	"special_bonus_unique_void_spirit_3"
 	"Ability12"	"special_bonus_magic_resistance_20"
 	"Ability17"	"special_bonus_attack_base_damage_100"
 
@@ -835,18 +790,14 @@
 {
 	"Ability2"	"windrunner_custom_powershot"
 	"Ability4"	"windrunner_force_fire_toggle"
-	"Ability10"	"special_bonus_unique_windranger"
-	"Ability11"	"special_bonus_unique_windranger_9"
 	"Ability12"	"special_bonus_spell_amplify_25"
 	"Ability13"	"special_bonus_attack_range_125"
-	"Ability16"	"special_bonus_unique_windranger_3"
 	"AttributeAgilityGain"	"2.400000"
 	"AttributeIntelligenceGain"	"4.600000"
 	"AttributeStrengthGain"	"1.500000"
 }
 "npc_dota_hero_wisp"
 {
-	"Ability12"	"special_bonus_unique_wisp_4"
 	"Ability16"	"special_bonus_movement_speed_100"
 	"Ability17"	"special_bonus_gold_income_420"
 	"AttributeStrengthGain"	"2.000000"
