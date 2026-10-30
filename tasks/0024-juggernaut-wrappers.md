@@ -1,7 +1,7 @@
 ---
 id: 0024
 title: Juggernaut's 3 boss wrappers → ability_lua on bosses/_shared/telegraph.lua (split from backlog 0014)
-status: ready
+status: blocked
 epic: p2
 prefix: p2
 kind: code
@@ -19,8 +19,8 @@ checks: all
 tests: [telegraph]
 needs_approval: true
 returns: 0
-sessions: 0
-blocked_reason: 
+sessions: 1
+blocked_reason: aoh_lint.py:46 rejects the mandated `boss_x = telegraph.class(...)` global (DoD 2 vs DoD 6); lint fix is outside allowed_paths
 reviewed_sha: 
 qa_sha: 
 ---
@@ -58,6 +58,30 @@ K = `game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt`, B = `gam
 - Edit K with Edit on the exact entry; never Read K whole (Grep + Read offset/limit ≤ 400).
 
 ## Handoff
+Session 1 (developer-hard) — blocked on a spec contradiction (DoD 2 vs DoD 6), no strikes.
+
+Done (committed):
+- K: the three `*_wrapper` entries are `ability_lua` + `ScriptFile "abilities/bosses/<name>.lua"` +
+  `AbilityValues` with exactly the values from the notes; `AbilitySpecial`, `OnSpellStart`/`RunScript`
+  and `ability_index` dropped; every other key kept (blade_fury still has its POINT|AOE behavior as
+  before — telegraph's no_target kind ignores the cursor).
+- B: three files, each `local telegraph = require(...)`, one `-- luacheck: globals <name>` line
+  (same pattern as modifier_boss.lua:5 / telegraph.lua:17; without it luacheck W111 fails), and
+  `<name> = telegraph.class({ kind = …, spell = … })`.
+- Verified: `check.sh all` → CHECK RESULT: OK (all); `test.sh telegraph` → TEST RESULT: OK (10 passed);
+  Grep for AbilitySpecial/OnSpellStart/RunScript/ability_index finds nothing in the three entries.
+
+Blocker: `python3 scripts/agents/aoh_lint.py 0024` → 3 FAIL "global assignment … (only
+`<name> = class({})` may be global)". The rule (aoh_lint.py:46) exempts only `= class(`, while the
+notes, DoD 2 and telegraph.lua:5 require `= telegraph.class(`. Both fixes are outside allowed_paths:
+- preferred: aoh_lint.py regex also exempts `= <module>.class(` (e.g. `(?!(\w+\.)?class\()`), or
+- telegraph.lua gains a mixin (`boss_x = class({})` + `telegraph.mixin(boss_x, spec)`), which would
+  change DoD 2 and the notes.
+Not done on purpose: copying methods with a `pairs` loop in each wrapper (duplication, violates
+"Nothing else") or dodging the regex. Backlog line added under "Found by agents".
+Next: once the lint (or spec) is fixed, re-run aoh_lint 0024 — nothing else is pending; then fill
+## Result (callers: npc_units_custom.txt:451-470 AI and boss_juggernaut_init.lua use the names only,
+unchanged) and set review.
 
 ## Result
 
