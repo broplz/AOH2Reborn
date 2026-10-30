@@ -1,6 +1,7 @@
+local fx = require("core/fx")
+
 function manafill(keys)
-	local dagon_particle =
-		ParticleManager:CreateParticle("particles/items_fx/dagon.vpcf", PATTACH_ABSORIGIN_FOLLOW, keys.caster)
+	local dagon_particle = fx.attach("particles/items_fx/dagon.vpcf", PATTACH_ABSORIGIN_FOLLOW, keys.caster)
 	ParticleManager:SetParticleControlEnt(
 		dagon_particle,
 		1,
@@ -12,6 +13,7 @@ function manafill(keys)
 	)
 	local particle_effect_intensity = 300 --Control Point 2 in Dagon's particle effect takes a number between 400 and 800, depending on its level.
 	ParticleManager:SetParticleControl(dagon_particle, 2, Vector(particle_effect_intensity))
+	ParticleManager:ReleaseParticleIndex(dagon_particle)
 
 	keys.caster:EmitSound("DOTA_Item.Dagon.Activate")
 	keys.target:EmitSound("DOTA_Item.Dagon5.Target")
@@ -20,8 +22,7 @@ function manafill(keys)
 end
 
 function damage25(keys)
-	local dagon_particle =
-		ParticleManager:CreateParticle("particles/items_fx/dagon.vpcf", PATTACH_ABSORIGIN_FOLLOW, keys.caster)
+	local dagon_particle = fx.attach("particles/items_fx/dagon.vpcf", PATTACH_ABSORIGIN_FOLLOW, keys.caster)
 	ParticleManager:SetParticleControlEnt(
 		dagon_particle,
 		1,
@@ -33,6 +34,7 @@ function damage25(keys)
 	)
 	local particle_effect_intensity = 300 --Control Point 2 in Dagon's particle effect takes a number between 400 and 800, depending on its level.
 	ParticleManager:SetParticleControl(dagon_particle, 2, Vector(particle_effect_intensity))
+	ParticleManager:ReleaseParticleIndex(dagon_particle)
 
 	keys.caster:EmitSound("DOTA_Item.Dagon.Activate")
 	keys.target:EmitSound("DOTA_Item.Dagon5.Target")

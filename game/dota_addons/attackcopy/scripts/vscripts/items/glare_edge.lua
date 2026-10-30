@@ -1,6 +1,7 @@
 --[[Author: Nightborn
 	Date: August 27, 2016
 ]]
+local fx = require("core/fx")
 require("lib/my")
 require("lib/popup")
 
@@ -107,16 +108,9 @@ if IsServer() then
 				damage_type = DAMAGE_TYPE_MAGICAL,
 				victim = target,
 			})
-			local fx = ParticleManager:CreateParticle("particles/custom/glare_edge.vpcf", PATTACH_POINT_FOLLOW, target)
-			ParticleManager:SetParticleControlEnt(
-				fx,
-				0,
-				target,
-				PATTACH_POINT,
-				"attach_hitloc",
-				target:GetAbsOrigin(), -- unknown
-				true -- unknown, true
-			)
+			fx.once("particles/custom/glare_edge.vpcf", PATTACH_POINT_FOLLOW, target, {
+				[0] = { ent = target, attach = PATTACH_POINT, point = "attach_hitloc" },
+			})
 			create_popup({
 				target = target,
 				value = finaldamage,

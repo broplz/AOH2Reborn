@@ -1,59 +1,33 @@
+local fx = require("core/fx")
+
+local STAT_CHANGE = {
+	item_custom_stat_change_str = {
+		particle = "particles/econ/events/ti6/hero_levelup_ti6_flash_hit_magic.vpcf",
+		attribute = 0,
+	},
+	item_custom_stat_change_agi = {
+		particle = "particles/econ/events/ti8/hero_levelup_ti8_flash_hit_magic.vpcf",
+		attribute = 1,
+	},
+	item_custom_stat_change_int = {
+		particle = "particles/econ/events/ti7/hero_levelup_ti7_flash_hit_magic.vpcf",
+		attribute = 2,
+	},
+}
+
 item_custom_stat_change = class({})
 
 function item_custom_stat_change:OnSpellStart()
 	local caster = self:GetCaster()
-	local temp = 0
 	if caster:HasModifier("modifier_item_stat_change") then
 		caster:RemoveModifierByName("modifier_item_stat_change")
 	end
-	if self:GetAbilityName() == "item_custom_stat_change_str" then
-		local fx2 = ParticleManager:CreateParticle(
-			"particles/econ/events/ti6/hero_levelup_ti6_flash_hit_magic.vpcf",
-			PATTACH_ABSORIGIN_FOLLOW,
-			caster
-		)
-		ParticleManager:SetParticleControlEnt(
-			fx2,
-			0,
-			caster,
-			PATTACH_POINT_FOLLOW,
-			"attach_hitloc",
-			caster:GetAbsOrigin(),
-			true
-		)
-		temp = 0
-	elseif self:GetAbilityName() == "item_custom_stat_change_agi" then
-		local fx2 = ParticleManager:CreateParticle(
-			"particles/econ/events/ti8/hero_levelup_ti8_flash_hit_magic.vpcf",
-			PATTACH_ABSORIGIN_FOLLOW,
-			caster
-		)
-		ParticleManager:SetParticleControlEnt(
-			fx2,
-			0,
-			caster,
-			PATTACH_POINT_FOLLOW,
-			"attach_hitloc",
-			caster:GetAbsOrigin(),
-			true
-		)
-		temp = 1
-	elseif self:GetAbilityName() == "item_custom_stat_change_int" then
-		local fx2 = ParticleManager:CreateParticle(
-			"particles/econ/events/ti7/hero_levelup_ti7_flash_hit_magic.vpcf",
-			PATTACH_ABSORIGIN_FOLLOW,
-			caster
-		)
-		ParticleManager:SetParticleControlEnt(
-			fx2,
-			0,
-			caster,
-			PATTACH_POINT_FOLLOW,
-			"attach_hitloc",
-			caster:GetAbsOrigin(),
-			true
-		)
-		temp = 2
+	local choice = STAT_CHANGE[self:GetAbilityName()]
+	local temp = choice and choice.attribute or 0
+	if choice then
+		fx.once(choice.particle, PATTACH_ABSORIGIN_FOLLOW, caster, {
+			[0] = { ent = caster, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" },
+		})
 	end
 	self.modifier = caster:AddNewModifier(caster, self, "modifier_item_stat_change", {
 		attribute = temp,

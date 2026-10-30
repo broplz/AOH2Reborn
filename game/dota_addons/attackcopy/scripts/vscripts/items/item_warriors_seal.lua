@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 item_warriors_seal = class({})
 
 function item_warriors_seal:GetIntrinsicModifierName()
@@ -88,7 +90,7 @@ if IsServer() then
 				return nil
 			end
 			if self:GetStackCount() > 0 then
-				ParticleManager:CreateParticle(
+				fx.once(
 					"particles/econ/items/medusa/medusa_daughters/medusa_daughters_mana_shield_shell_impact_b.vpcf",
 					PATTACH_ABSORIGIN_FOLLOW,
 					self.parent
@@ -109,7 +111,7 @@ if IsServer() then
 		self.damage_reduction = ability:GetSpecialValueFor("damage_reduction")
 		self.interval = ability:GetSpecialValueFor("interval")
 		self.max_stacks = ability:GetSpecialValueFor("max_stacks")
-		ParticleManager:CreateParticle(
+		fx.once(
 			"particles/econ/items/medusa/medusa_daughters/medusa_daughters_mana_shield_end_b.vpcf",
 			PATTACH_ABSORIGIN_FOLLOW,
 			self.parent
