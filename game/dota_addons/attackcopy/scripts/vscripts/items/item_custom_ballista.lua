@@ -102,7 +102,7 @@ if IsServer() then
 				attacker = attacker,
 				damage = self.bonus_damage,
 				damage_type = DAMAGE_TYPE_PURE,
-				damage_flags = 16,
+				damage_flags = DOTA_DAMAGE_FLAG_REFLECTION,
 				victim = target,
 			})
 			create_popup({

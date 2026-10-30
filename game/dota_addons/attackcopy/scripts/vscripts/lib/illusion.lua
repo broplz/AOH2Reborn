@@ -12,7 +12,7 @@ function copy_skill_level(target, illusion, copy_ultimate)
 	for slot = 0, 15 do
 		local ability = target:GetAbilityByIndex(slot)
 		if ability ~= nil and ability:GetCastPoint() ~= 1337 then
-			if ability:GetAbilityType() ~= 1 or copy_ultimate then -- Not ultimate.
+			if ability:GetAbilityType() ~= ABILITY_TYPE_ULTIMATE or copy_ultimate then -- Not ultimate.
 				local abilityLevel = ability:GetLevel()
 				local abilityName = ability:GetAbilityName()
 				local illusionAbility = illusion:FindAbilityByName(abilityName)

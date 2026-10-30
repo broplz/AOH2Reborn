@@ -85,7 +85,11 @@ function on_ability_executed(keys)
 				and abilityName ~= "item_spirit_vessel"
 				and abilityName ~= "item_urn_of_shadows"
 			then
-				if used_ability and used_ability:GetCaster() == caster and used_ability:GetAbilityType() ~= 1 then -- not ultimate
+				if
+					used_ability
+					and used_ability:GetCaster() == caster
+					and used_ability:GetAbilityType() ~= ABILITY_TYPE_ULTIMATE
+				then -- not ultimate
 					Timers:CreateTimer(delay, function()
 						if used_ability and caster:IsAlive() then -- test again, object may have been deleted.
 							if

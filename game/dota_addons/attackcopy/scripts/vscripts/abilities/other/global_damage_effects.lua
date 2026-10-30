@@ -36,7 +36,7 @@ if IsServer() then
 	end
 
 	function modifier_global_damage_effects:OnTakeDamage(keys)
-		if keys.damage_flags ~= 16 then
+		if bit.band(keys.damage_flags, DOTA_DAMAGE_FLAG_REFLECTION) == 0 then
 			local attacker = keys.attacker
 			local id = attacker:GetPlayerOwnerID()
 			local victim = keys.unit
@@ -82,7 +82,7 @@ if IsServer() then
 						ParticleManager:ReleaseParticleIndex(particle)
 					end
 				end
-				if keys.damage_type ~= 1 and attacker:IsRealHero() and self.is_arcane[id] then
+				if keys.damage_type ~= DAMAGE_TYPE_PHYSICAL and attacker:IsRealHero() and self.is_arcane[id] then
 					local time_diff = GameRules:GetGameTime() - self.arcane_count[id][2]
 					if time_diff > 0.15 then
 						time_diff = time_diff + 0.15

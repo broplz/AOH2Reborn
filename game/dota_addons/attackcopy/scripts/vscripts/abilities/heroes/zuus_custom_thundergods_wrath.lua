@@ -49,7 +49,7 @@ if IsServer() then
 			used_ability
 			and keys.unit == parent
 			and not used_ability:IsItem()
-			and used_ability:GetAbilityType() ~= 1
+			and used_ability:GetAbilityType() ~= ABILITY_TYPE_ULTIMATE
 			and used_ability:GetName() ~= "zuus_cloud"
 		then
 			local count = 0

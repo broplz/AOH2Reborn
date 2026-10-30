@@ -64,7 +64,7 @@ if IsServer() then
 				attacker = attacker,
 				damage = 20 * _G.AOHGameSkills.currency[self.parent_id],
 				damage_type = DAMAGE_TYPE_MAGICAL,
-				damage_flags = 16,
+				damage_flags = DOTA_DAMAGE_FLAG_REFLECTION,
 				victim = target,
 			})
 			create_popup({

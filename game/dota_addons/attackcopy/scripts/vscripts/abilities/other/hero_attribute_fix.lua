@@ -295,7 +295,7 @@ end
 
 function modifier_builtin_blink_movement:OnOrder(keys)
 	if self.parent == keys.unit and self.skills[self.playerID][3][2] == 1 and self.ready then
-		if keys.order_type == 1 then
+		if keys.order_type == DOTA_UNIT_ORDER_MOVE_TO_POSITION then
 			local range = Vector(keys.new_pos.x, keys.new_pos.y, 0)
 				- Vector(self.parent:GetAbsOrigin().x, self.parent:GetAbsOrigin().y, 0)
 			local distance = math.sqrt(math.pow(range.x, 2) + math.pow(range.y, 2))
@@ -311,7 +311,7 @@ function modifier_builtin_blink_movement:OnOrder(keys)
 			else
 				self:Destroy()
 			end
-		elseif keys.order_type == 10 then
+		elseif keys.order_type == DOTA_UNIT_ORDER_HOLD_POSITION then
 			self:Destroy()
 		end
 	end

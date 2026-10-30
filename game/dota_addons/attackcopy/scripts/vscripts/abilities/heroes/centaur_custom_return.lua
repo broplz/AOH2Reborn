@@ -57,7 +57,11 @@ if IsServer() then
 		local unit = keys.unit
 		local attacker = keys.attacker
 
-		if unit == self.parent and unit ~= attacker and keys.damage_flags ~= 16 then
+		if
+			unit == self.parent
+			and unit ~= attacker
+			and bit.band(keys.damage_flags, DOTA_DAMAGE_FLAG_REFLECTION) == 0
+		then
 			local current_time = GameRules:GetGameTime()
 			local time_diff = current_time - self.time
 			if time_diff > 0.15 then
@@ -69,7 +73,7 @@ if IsServer() then
 					attacker = unit,
 					damage = damage,
 					damage_type = self.ability:GetAbilityDamageType(),
-					damage_flags = 16,
+					damage_flags = DOTA_DAMAGE_FLAG_REFLECTION,
 					victim = attacker,
 				})
 

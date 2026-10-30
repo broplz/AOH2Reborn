@@ -158,7 +158,7 @@ end
 if IsServer() then
 	function modifier_spectre_custom_dispersion:OnTakeDamage(event)
 		if event.unit == self.parent then
-			if event.damage_flags ~= 16 then
+			if bit.band(event.damage_flags, DOTA_DAMAGE_FLAG_REFLECTION) == 0 then
 				local post_damage = event.damage
 				local original_damage = event.original_damage
 				local unit = event.attacker
