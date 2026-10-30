@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 LinkLuaModifier("modifier_boss_meteor", "abilities/bosses/boss_meteor_init.lua", LUA_MODIFIER_MOTION_NONE)
 
 function init(keys)
@@ -29,30 +31,17 @@ if IsServer() then
 	function modifier_boss_meteor:OnCreated()
 		local parent = self:GetParent()
 		EmitSoundOnLocationWithCaster(parent:GetAbsOrigin(), "Hero_Invoker.ChaosMeteor.Cast", parent)
-		self.particle =
-			ParticleManager:CreateParticle("particles/custom/boss_meteor_fire_trail.vpcf", PATTACH_POINT, parent)
-		ParticleManager:SetParticleControlEnt(
-			self.particle,
-			0,
+		local hitloc = { ent = parent, attach = PATTACH_POINT_FOLLOW, point = "attach_hitloc" }
+		self.particle = fx.attach(
+			"particles/custom/boss_meteor_fire_trail.vpcf",
+			PATTACH_POINT,
 			parent,
-			PATTACH_POINT_FOLLOW,
-			"attach_hitloc",
-			parent:GetAbsOrigin(),
-			true
-		)
-		ParticleManager:SetParticleControlEnt(
-			self.particle,
-			3,
-			parent,
-			PATTACH_POINT_FOLLOW,
-			"attach_hitloc",
-			parent:GetAbsOrigin(),
-			true
+			{ [0] = hitloc, [3] = hitloc }
 		)
 	end
 
 	function modifier_boss_meteor:OnDestroy()
-		ParticleManager:DestroyParticle(self.particle, false)
+		fx.stop(self.particle, false)
 		EmitSoundOnLocationWithCaster(
 			self:GetParent():GetOrigin(),
 			"Hero_Invoker.ChaosMeteor.Destroy",

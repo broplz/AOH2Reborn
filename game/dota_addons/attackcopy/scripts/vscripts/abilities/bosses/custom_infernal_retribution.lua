@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 function infernal_retribution(keys)
 	local caster = keys.caster
 	local target = keys.attacker
@@ -12,11 +14,11 @@ function infernal_retribution(keys)
 		local dummy =
 			CreateUnitByName("npc_dummy_unit", target:GetAbsOrigin(), false, caster, caster, caster:GetTeamNumber())
 		ability:ApplyDataDrivenModifier(caster, dummy, "modifier_dummy", {})
-		local particleIndex = ParticleManager:CreateParticle(particle, PATTACH_ABSORIGIN, dummy)
+		local particleIndex = fx.attach(particle, PATTACH_ABSORIGIN, dummy)
 		EmitSoundOn("Hero_DoomBringer.Doom", target)
 
 		Timers:CreateTimer(delay, function()
-			local particleEndIndex = ParticleManager:CreateParticle(particle_end, PATTACH_ABSORIGIN, dummy)
+			fx.once(particle_end, PATTACH_ABSORIGIN, dummy)
 			local units = FindUnitsInRadius(
 				caster:GetTeam(),
 				dummy:GetAbsOrigin(),
@@ -38,7 +40,7 @@ function infernal_retribution(keys)
 				ApplyDamage(damage_table)
 				EmitSoundOn("Hero_Nevermore.Shadowraze.Arcana", u)
 			end
-			ParticleManager:DestroyParticle(particleIndex, true)
+			fx.stop(particleIndex, true)
 
 			dummy:ForceKill(false)
 		end)

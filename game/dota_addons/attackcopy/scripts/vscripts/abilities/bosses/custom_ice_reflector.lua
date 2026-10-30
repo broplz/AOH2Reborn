@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 function ice_reflector_activate(event)
 	local caster = event.caster
 	local ability = event.ability
@@ -36,23 +38,15 @@ function FrostArmorParticle(event)
 
 	-- Particle. Need to wait one frame for the older particle to be destroyed
 	Timers:CreateTimer(0.01, function()
-		target.FrostArmorParticle = ParticleManager:CreateParticle(particleName, PATTACH_OVERHEAD_FOLLOW, target)
-		ParticleManager:SetParticleControl(target.FrostArmorParticle, 0, target:GetAbsOrigin())
-		ParticleManager:SetParticleControl(target.FrostArmorParticle, 1, Vector(1, 0, 0))
-
-		ParticleManager:SetParticleControlEnt(
-			target.FrostArmorParticle,
-			2,
-			target,
-			PATTACH_ABSORIGIN_FOLLOW,
-			"attach_origin",
-			target:GetAbsOrigin(),
-			true
-		)
+		target.FrostArmorParticle = fx.attach(particleName, PATTACH_OVERHEAD_FOLLOW, target, {
+			[0] = target:GetAbsOrigin(),
+			[1] = Vector(1, 0, 0),
+			[2] = { ent = target, attach = PATTACH_ABSORIGIN_FOLLOW, point = "attach_origin" },
+		})
 	end)
 end
 
 function EndFrostArmorParticle(event)
 	local target = event.target
-	ParticleManager:DestroyParticle(target.FrostArmorParticle, false)
+	fx.stop(target.FrostArmorParticle, false)
 end

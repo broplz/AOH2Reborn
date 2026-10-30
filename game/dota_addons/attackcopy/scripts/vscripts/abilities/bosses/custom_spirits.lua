@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 --[[
 	Author: Ractidous
 	Date: 09.02.2015.
@@ -47,8 +49,7 @@ function ThinkSpirits(event)
 		)
 
 		-- Create particle FX
-		local pfx = ParticleManager:CreateParticle(event.spirit_particle_name, PATTACH_ABSORIGIN_FOLLOW, newSpirit)
-		newSpirit.spirit_pfx = pfx
+		newSpirit.spirit_pfx = fx.attach(event.spirit_particle_name, PATTACH_ABSORIGIN_FOLLOW, newSpirit)
 
 		-- Update the state
 		local spiritIndex = ability.spirits_numSpirits + 1
@@ -91,7 +92,10 @@ function ThinkSpirits(event)
 		v:SetAbsOrigin(absPos)
 
 		-- Update particle
-		ParticleManager:SetParticleControl(v.spirit_pfx, 1, Vector(currentRadius, 0, 0))
+		-- spirit_pfx is cleared once released (OnDestroySpirit), so skip dead spirits
+		if v.spirit_pfx then
+			ParticleManager:SetParticleControl(v.spirit_pfx, 1, Vector(currentRadius, 0, 0))
+		end
 	end
 
 	if ability.spirits_numSpirits == numSpiritsMax and numSpiritsAlive == 0 then
@@ -140,7 +144,8 @@ function OnDestroySpirit(event)
 	local spirit = event.target
 	local ability = event.ability
 
-	ParticleManager:DestroyParticle(spirit.spirit_pfx, false)
+	fx.stop(spirit.spirit_pfx, false)
+	spirit.spirit_pfx = nil
 
 	-- Create vision
 	ability:CreateVisibilityNode(spirit:GetAbsOrigin(), event.vision_radius, event.vision_duration)
