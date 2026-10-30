@@ -2,4 +2,3 @@
 boss_aghanim_spear: BaseClass aghanim_spear no longer exists in vanilla
 npc_units_custom.txt npc_boss_aghanim: Ability7 boss_aghanim_passive is defined neither in vanilla nor in our KV
 npc_units_custom.txt npc_skeletal_knight: Ability1 knight_effect is defined neither in vanilla nor in our KV
-skeleton_king_vampiric_aura: overridden vanilla ability does not exist any more
