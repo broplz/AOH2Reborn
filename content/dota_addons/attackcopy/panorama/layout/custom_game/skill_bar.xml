@@ -38,7 +38,7 @@
 							<Image class="CurrencyImageValue" src= "file://{images}/custom_game/icons/diamond.png"/>
 							<Label class="ValueLabel Equals" text="="/>
 							<Label id="CurrencyValueLabel" class="ValueLabel" text=""/>
-							<Image class="GoldImage" src= "file://{images}/hud/icon_gold_psd.vtex"/>
+							<Image class="GoldImage" src= "s2r://panorama/images/hud/icon_gold_psd.vtex"/>
 						</Panel>
 						<Panel id="BuyButtons">
 							<TextButton id="BuyButton" class="ButtonBevel" text="#buy" onactivate="buy()"/>
