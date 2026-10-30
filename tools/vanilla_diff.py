@@ -63,6 +63,8 @@ def vanilla():
         root, _ = kv.parse_file(f)
         for h in kv.entries(root):
             heroes.add(h.key)
+            # talents in a hero's Ability<N> slot are live even without a block (values are inline)
+            ab.update(r.value for r in ability_refs(h))
             defs = h.get("AbilityDefinitions")
             if defs:
                 for a in defs.children:
