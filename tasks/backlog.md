@@ -35,6 +35,7 @@ Audit and phase plan: docs/adr/0002-target-architecture.md → "AOH2Reborn — �
 (one line each: what, where, why it matters — the teamlead promotes these into tasks)
 - 0004: 6th W582 site `abilities/heroes/windrunner_force_fire_toggle.lua:89` `not target:GetTeam() ~= self.parent:GetTeam()` is always true (auto focus-fire also fires on allied/deny targets); blocks `check.sh lua --all-files` once 582 is un-ignored — add the file to 0004's allowed_paths with fix `target:GetTeam() ~= self.parent:GetTeam()` (behaviour change) or drop the clause (behaviour-identical).
 - 0022: `.claude/hooks/guard_paths.py` matches an allowed_paths entry ending in `/` (e.g. `tools/fixtures/kvgen/`) as a literal path, so no file inside that directory can be written; either the hook should treat a trailing `/` as `/**` or the teamlead should write `tools/fixtures/kvgen/**` (0022 is blocked on it).
+- 0014: `tests/test_telegraph.lua:94-126` `rawset`s `ParticleManager`, `FindUnitsInRadius`, `CreateUnitByName`, enums and Vector arithmetic into `_G` for every later test file, because the guard hook freezes `tests/dota_stub.lua` outside `kind: test` tasks; a `kind: test` task should move this surface (plus cast-order recorders and an ability stub) into the stub.
 - 0011: `abilities/heroes/dark_seer_custom_ion_shell.lua:62` `damage_flags = 0` → `DOTA_DAMAGE_FLAG_NONE` (trips 0011 DoD 1 grep). Also: Lua global is `ABILITY_TYPE_ULTIMATE`, not `DOTA_ABILITY_TYPE_ULTIMATE` — fix aoh-rules rule 4 text and any task DoD that cites it.
 
 ## For the owner
