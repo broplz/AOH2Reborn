@@ -89,13 +89,21 @@ function Timers:start()
 	ent:SetThink("Think", self, "timers", TIMERS_THINK)
 end
 
+-- Must never throw: an error inside an xpcall handler surfaces only as "error in error
+-- handling" and the original error is lost. Errors are not always strings (engine errors,
+-- error(table)), and the VScript sandbox does not guarantee the debug library.
+local function TimerErrorHandler(msg)
+	local text = tostring(msg)
+	if debug and debug.traceback then
+		return debug.traceback(text, 2)
+	end
+	return text
+end
+
 function Timers:Think()
 	--if GameRules:State_Get() >= DOTA_GAMERULES_STATE_POST_GAME then
 	--return
 	--end
-
-	-- Track game time, since the dt passed in to think is actually wall-clock time not simulation time.
-	local now = GameRules:GetGameTime()
 
 	-- Process timers
 	for k, v in pairs(Timers.timers) do
@@ -108,6 +116,7 @@ function Timers:Think()
 			bOldStyle = true
 		end
 
+		-- Track game time, since the dt passed in to think is actually wall-clock time not simulation time.
 		local now = GameRules:GetGameTime()
 		if not bUseGameTime then
 			now = Time()
@@ -129,15 +138,11 @@ function Timers:Think()
 			if v.context then
 				status, nextCall = xpcall(function()
 					return v.callback(v.context, v)
-				end, function(msg)
-					return msg .. "\n" .. debug.traceback() .. "\n"
-				end)
+				end, TimerErrorHandler)
 			else
 				status, nextCall = xpcall(function()
 					return v.callback(v)
-				end, function(msg)
-					return msg .. "\n" .. debug.traceback() .. "\n"
-				end)
+				end, TimerErrorHandler)
 			end
 
 			Timers.runningTimer = nil
@@ -170,12 +175,12 @@ function Timers:Think()
 end
 
 function Timers:HandleEventError(name, event, err)
-	print(err)
-
 	-- Ensure we have data
 	name = tostring(name or "unknown")
 	event = tostring(event or "unknown")
 	err = tostring(err or "unknown")
+
+	Warning(name .. " " .. event .. " error: " .. err .. "\n")
 
 	-- Tell everyone there was an error
 	--Say(nil, name .. ' threw an error on event '..event, false)
