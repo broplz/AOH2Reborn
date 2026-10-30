@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 function shifting_quake_damage(keys)
 	local caster = keys.caster
 	local target = keys.target
@@ -33,7 +35,7 @@ function shifting_quake(keys)
 		local dummy = CreateUnitByName("npc_dummy_unit", point_loc, false, caster, caster, caster:GetTeamNumber())
 		ability:ApplyDataDrivenModifier(caster, dummy, "modifier_dummy", {})
 		EmitSoundOn("Hero_ElderTitan.EchoStomp", dummy)
-		local particleIndex = ParticleManager:CreateParticle(particle, PATTACH_ABSORIGIN, dummy)
+		fx.once(particle, PATTACH_ABSORIGIN, dummy)
 		local units = FindUnitsInRadius(
 			caster:GetTeam(),
 			point_loc,

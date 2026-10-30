@@ -1,4 +1,5 @@
 require("lib/my")
+local fx = require("core/fx")
 
 LinkLuaModifier("modifier_dummy", "modifiers/modifier_dummy.lua", LUA_MODIFIER_MOTION_NONE)
 
@@ -60,17 +61,14 @@ if IsServer() then
 			self.caster:GetTeamNumber()
 		)
 		dummy:AddNewModifier(self.caster, self:GetAbility(), "modifier_dummy", {})
-		local fx = ParticleManager:CreateParticle("particles/custom/aoe_warning.vpcf", PATTACH_WORLDORIGIN, dummy)
-		ParticleManager:SetParticleControl(fx, 0, dummy:GetAbsOrigin())
-		ParticleManager:SetParticleControl(fx, 1, Vector(350, 1, 1))
-		ParticleManager:SetParticleControl(fx, 2, Vector(4, 1, 1))
-		ParticleManager:SetParticleControl(fx, 3, Vector(200, 10, 10))
+		fx.once("particles/custom/aoe_warning.vpcf", PATTACH_WORLDORIGIN, dummy, {
+			[0] = dummy:GetAbsOrigin(),
+			[1] = Vector(350, 1, 1),
+			[2] = Vector(4, 1, 1),
+			[3] = Vector(200, 10, 10),
+		})
 
-		local particleIndex1 = ParticleManager:CreateParticle(
-			"particles/units/heroes/hero_kunkka/kunkka_ghostship_marker.vpcf",
-			PATTACH_ABSORIGIN_FOLLOW,
-			dummy
-		)
+		fx.once("particles/units/heroes/hero_kunkka/kunkka_ghostship_marker.vpcf", PATTACH_ABSORIGIN_FOLLOW, dummy)
 		dummy:ForceKill(false)
 	end
 end

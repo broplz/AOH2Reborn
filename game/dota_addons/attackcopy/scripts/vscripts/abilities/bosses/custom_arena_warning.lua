@@ -1,6 +1,7 @@
 require("lib/timers")
 require("lib/timers")
 require("lib/my")
+local fx = require("core/fx")
 
 custom_arena_warning = class({})
 
@@ -13,7 +14,7 @@ function custom_arena_warning:OnSpellStart()
 		local caster_pos = caster:GetAbsOrigin()
 		find_item(caster, "item_black_king_bar_boss"):CastAbility()
 		find_item(caster, "item_black_king_bar_boss"):EndCooldown()
-		local particle = ParticleManager:CreateParticle(
+		fx.once(
 			"particles/econ/items/shadow_fiend/sf_fire_arcana/sf_fire_arcana_wings_rope_glow.vpcf",
 			PATTACH_ABSORIGIN_FOLLOW,
 			caster
@@ -23,8 +24,7 @@ function custom_arena_warning:OnSpellStart()
 		Timers:CreateTimer(delay, function()
 			caster:CastAbilityOnPosition(caster_pos, caster:FindAbilityByName("custom_arena"), -1)
 			caster:CastAbilityOnPosition(caster_pos, caster:FindAbilityByName("custom_arena"), -1)
-			local particle2 =
-				ParticleManager:CreateParticle("particles/custom/custom_arena.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster)
+			fx.once("particles/custom/custom_arena.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster)
 			EmitSoundOn("Hero_ElderTitan.EarthSplitter.Destroy", caster)
 			local damage_table = {}
 			damage_table.attacker = caster

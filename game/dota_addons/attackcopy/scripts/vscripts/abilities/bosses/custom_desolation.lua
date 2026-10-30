@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 function DesolationPoints(keys)
 	local caster = keys.caster
 	local target = keys.target_points[1]
@@ -16,7 +18,7 @@ function DesolationPoints(keys)
 		point_loc[i] = caster_pos + direction * (spacing * i)
 		local dummy = CreateUnitByName("npc_dummy_unit", point_loc[i], false, caster, caster, caster:GetTeamNumber())
 		ability:ApplyDataDrivenModifier(caster, dummy, "modifier_desolation_dummy", {})
-		local particleIndex = ParticleManager:CreateParticle(particle, PATTACH_ABSORIGIN, dummy)
+		fx.once(particle, PATTACH_ABSORIGIN, dummy)
 		Timers:CreateTimer(1.5, function()
 			dummy:RemoveSelf()
 			return nil

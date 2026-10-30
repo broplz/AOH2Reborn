@@ -1,7 +1,7 @@
 ---
 id: 0031
 title: core/fx migration, bosses batch A — Vector-only one-shot particles in arena warning, spirit walk warning, ghostship warning, desolation, elder titan shifting quake
-status: ready
+status: done
 epic: p4
 prefix: p4
 kind: code
@@ -19,9 +19,11 @@ allowed_paths:
 checks: lua
 tests: [fx]
 needs_approval: true
-returns: 0
+returns: 1
 sessions: 0
 blocked_reason: 
+reviewed_sha: 20a30c575f26d125fca0ca8d623ab26dffc645a8
+qa_sha: 20a30c575f26d125fca0ca8d623ab26dffc645a8
 ---
 
 ## Goal
@@ -68,7 +70,66 @@ Rules:
 ## Handoff
 
 ## Result
+Round 1: replaced the 7 unreleased `ParticleManager:CreateParticle` calls in the 5 files with `fx.once`
+(same particle, attach type, owner, control points); added `local fx = require("core/fx")` to each file;
+removed the legacy `local fx` in ghostship warning and the unused particle locals.
+Verified: `check.sh lua` OK, `test.sh fx` OK (6 passed), `aoh_lint.py 0031` 0 fail (exit 3 = needs approval only because of the [human] item), diff touches only the 5 files + task file.
+For the owner (DoD 8, not run): in a local lobby check the arena glow + ring, spirit-walk frost nova,
+ghostship circle + Kunkka marker, Desolation shadowrazes, Elder Titan stomps; the console should show no Lua errors.
 
 ## Review
+APPROVE
+Round 2: item 1 fixed. tasks/0031-fx-bosses-oneshot-a.md:76-77 now lists DoD 8 as a to-do for the
+owner ("not run"). The code is unchanged since round 1 (same code head, 20a30c5).
+1. Spec: all 7 sites use `fx.once` with the same particle, attach type, owner and CPs. The legacy
+   `local fx` in ghostship is gone. Each file has one `local fx = require("core/fx")`. Nothing extra.
+2. Scope: only the 5 allowed files and the task file changed. No tests touched.
+3. Conventions: no new globals. aoh_lint reports 0 fail and 0 warn. It says NEEDS APPROVAL only
+   because of the [human] item.
+4. Dota: `fx.once` releases the particle index. The dummy lifetimes are the same as before.
+5. KV: not touched.
+6. Verification: qa re-runs the check and test claims. The [human] item is listed, not claimed.
+7. Hygiene: clean.
+
+---
+Round 1:
+REQUEST_CHANGES
+1. tasks/0031-fx-bosses-oneshot-a.md:75-76 — ## Result states the DoD 8 `[human]` playtest as an
+   outcome ("... all still show; no Lua errors in the console"). Nobody can run the game in this
+   pipeline; ADR-0001 says agents list `[human]` items and never claim them. Rewrite as a to-do for
+   the owner, e.g. "For the owner (DoD 8, not run): in a local lobby check the arena glow + ring,
+   spirit-walk frost nova, ghostship circle + Kunkka marker, Desolation shadowrazes, Elder Titan
+   stomps; the console should show no Lua errors." No code change needed.
+
+Checklist notes (code is approvable as is):
+- Spec: all 7 sites from the teamlead notes are now `fx.once` with the same particle, attach, owner
+  and CPs (ghostship CP0–3 kept, as a `{ [cp] = Vector }` table); the legacy `local fx` in ghostship
+  is gone; `particle` name locals kept in desolation/shifting quake; one `local fx = require("core/fx")`
+  per file. Nothing extra.
+- Scope: only the 5 allowed files (+ task file); no tests touched.
+- Conventions: no new globals; out-of-scope globals/duplicate require left alone as the task says.
+  aoh_lint: 0 fail, 0 warn (NEEDS APPROVAL because of the [human] item).
+- Dota correctness: `core/fx.lua:26-27` `M.once` releases the index; one-shots on dummies removed
+  later behave as before.
+- KV: not touched.
+- Verification: check/test claims left for qa to re-run; the only false claim is item 1.
+- Hygiene: no prints, TODOs or dead code added.
 
 ## QA
+PASS
+1. DoD 1: CreateParticle count is 0 in all 5 files.
+2. DoD 2: `require("core/fx")` count is 1 in every file.
+3. DoD 3: no `^fx *=` and no `local fx = ParticleManager` matches.
+4. DoD 4: `check.sh lua` gives CHECK RESULT: OK.
+5. DoD 5: `test.sh fx` gives TEST RESULT: OK (6 passed).
+6. DoD 6: `aoh_lint.py 0031` has 0 fail, 0 warn. Exit 3 is only the [human] approval flag.
+7. DoD 7: `git diff --stat` lists the 5 allowed files and this task file only.
+8. I read the ghostship diff. CP0-3 values, the attach types and the owner are unchanged.
+
+For the human:
+- DoD 8: in a local lobby, check these effects and watch the console for Lua errors:
+  - arena boss warning glow and ring
+  - spirit-walk boss frost nova
+  - ghostship warning circle and Kunkka marker
+  - Desolation shadowrazes
+  - Elder Titan Shifting Quake stomps
