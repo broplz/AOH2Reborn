@@ -1,0 +1,14 @@
+"DOTAAbilities"
+{
+	"live_ability"
+	{
+		"AbilityCooldown"	"10"
+	}
+	"removed_talent"
+	{
+		"AbilityValues"
+		{
+			"value"	"5"
+		}
+	}
+}

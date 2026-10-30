@@ -5,11 +5,10 @@
 
 Needs tools/vanilla/ (python3 tools/vanilla_snapshot.py). Reports:
   FAIL  BaseClass of one of our entries that vanilla lacks (the entry is broken)
-  FAIL  a vanilla ability/item we override that no longer exists (dead override)
+  FAIL  a key of npc_abilities_override/npc_items_override that vanilla does not define (dead
+        override; a removed name can share its npc_ability_ids ID with a live one -> FATAL)
   FAIL  an Ability<N>/LinkedAbility in our heroes/units naming an ability that neither vanilla nor
         our custom KV defines (Dota dies with FATAL on hero/unit spawn)
-  WARN  a special_bonus_* we override as a stand-alone block while vanilla inlines it in the
-        owning ability (the override is probably a no-op — verify in tools)
   INFO  vanilla heroes missing from herolist.txt
 With --lua also greps vscripts for string literals naming vanilla abilities/modifiers/items
 that are gone. Baseline ratchet like kvcheck (tools/vanilla_diff.baseline).
@@ -25,6 +24,7 @@ import kvlib as kv  # noqa: E402
 
 OUR_BASES = {"ability_datadriven", "ability_lua", "item_datadriven", "item_lua"}
 CUSTOM_FILES = ("npc_abilities_custom.txt", "npc_items_custom.txt")
+OVERRIDE_FILES = ("npc_abilities_override.txt", "npc_items_override.txt")
 SLOT_FILES = ("npc_heroes_custom.txt", "npc_units_custom.txt")
 ABILITY_REF = re.compile(r"^(Ability\d+|LinkedAbility)$", re.I)
 
@@ -43,6 +43,11 @@ def dead_refs(fname, entries, defined):
     include npc_ability_ids.txt: it keeps names Valve has removed."""
     return [f"{fname} {e.key}: {r.key} {r.value} is defined neither in vanilla nor in our KV"
             for e in entries for r in ability_refs(e) if r.value not in defined]
+
+
+def dead_overrides(fname, entries, live):
+    """FAIL lines for override entries vanilla does not define (`live`: no npc_ability_ids.txt)."""
+    return [f"{fname} {e.key}: overridden name is not defined in vanilla" for e in entries if e.key not in live]
 
 
 def vanilla():
@@ -85,7 +90,7 @@ def main():
     ap.add_argument("--update-baseline", action="store_true")
     a = ap.parse_args()
     only = set(a.entries.split(",")) if a.entries else None
-    ab, items, heroes, inline, ids, build = vanilla()
+    ab, items, heroes, _, ids, build = vanilla()
     known_names = ab | items | ids
     fails, warns, infos = [], [], []
 
@@ -96,23 +101,17 @@ def main():
     def ours(name):
         return [e for e in entries_of(name) if not only or e.key in only]
 
-    defined = ab | items | {e.key for f in CUSTOM_FILES for e in entries_of(f)}
+    live = ab | items
+    defined = live | {e.key for f in CUSTOM_FILES for e in entries_of(f)}
     for f in SLOT_FILES:
         fails.extend(dead_refs(f, ours(f), defined))
+    for f in OVERRIDE_FILES:
+        fails.extend(dead_overrides(f, ours(f), live))
 
     for e in ours("npc_abilities_custom.txt") + ours("npc_items_custom.txt"):
         b = e.get("BaseClass")
         if b and b.value not in OUR_BASES and b.value not in known_names:
             fails.append(f"{e.key}: BaseClass {b.value} no longer exists in vanilla")
-    for e in ours("npc_abilities_override.txt"):
-        if e.key in known_names:
-            if e.key.startswith("special_bonus_") and e.key in inline and e.key not in ab:
-                warns.append(f"{e.key}: talent is inlined in the owning ability's AbilityValues in vanilla; a stand-alone override is likely a no-op")
-            continue
-        if e.key.startswith("special_bonus_") and e.key in inline:
-            warns.append(f"{e.key}: talent exists only inline in vanilla; stand-alone override is likely a no-op")
-        else:
-            fails.append(f"{e.key}: overridden vanilla ability does not exist any more")
     for e in ours("npc_items_custom.txt"):
         if not e.get("BaseClass") and e.key not in items and not e.key.startswith("item_recipe_"):
             warns.append(f"{e.key}: overrides a vanilla item that items.txt no longer has (engine-defined? verify)")
