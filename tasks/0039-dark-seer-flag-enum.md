@@ -1,7 +1,7 @@
 ---
 id: 0039
 title: dark_seer_custom_ion_shell damage_flags 0 → DOTA_DAMAGE_FLAG_NONE (0011 leftover)
-status: ready
+status: done
 epic: p1
 prefix: p1
 kind: code
@@ -18,8 +18,8 @@ needs_approval: false
 returns: 0
 sessions: 0
 blocked_reason: 
-reviewed_sha: 
-qa_sha: 
+reviewed_sha: 126ab642e5eab4c4dd7c590916420bd7e73fc288
+qa_sha: 126ab642e5eab4c4dd7c590916420bd7e73fc288
 ---
 
 ## Goal
@@ -45,7 +45,24 @@ shell damage table sets `damage_flags = 0`, a magic number. Use the enum `DOTA_D
 ## Handoff
 
 ## Result
+Round 1: `dark_seer_custom_ion_shell.lua:54` now `damage_flags = DOTA_DAMAGE_FLAG_NONE` (1 line, behaviour-identical).
+Verified: `check.sh lua` → OK; `aoh_lint.py 0039` → 0 fail, 0 warn. No [human] items.
 
 ## Review
+APPROVE
+1. Spec: `dark_seer_custom_ion_shell.lua:54` `damage_flags = 0` → `DOTA_DAMAGE_FLAG_NONE`, exactly the DoD 1/2 change; nothing else touched.
+2. Scope: only the allowed Lua file (+ task file); 1 line changed (DoD 5); no tests touched.
+3. Conventions: enum instead of magic number (rule 4); no new globals; aoh_lint 0 fail, 0 warn (DoD 4).
+4. Dota correctness: behaviour-identical (NONE == 0); the line sits inside the existing `if IsServer()` block.
+5. KV: not touched.
+6. Verification: the Result's claims match the diff and lint; check.sh is left to qa. No [human] items, correctly.
+7. Hygiene: clean.
 
 ## QA
+PASS
+1. DoD 1: grep "damage_flags = 0" → empty. DoD 2: only damage_flags hit is line 54 `= DOTA_DAMAGE_FLAG_NONE` (count 1).
+2. DoD 3: check.sh lua → CHECK RESULT: OK.
+3. DoD 4: aoh_lint 0039 → 0 fail, 0 warn.
+4. DoD 5: diff stat = allowed Lua file (1 line) + task file only.
+
+For the human: none.
