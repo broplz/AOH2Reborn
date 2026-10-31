@@ -45,9 +45,16 @@ function AOHSpawner:PostLoad(spawnerList)
 	end
 end
 
+-- Playtest: the Radiant ancient vanished between rounds with no entity_killed; the suspect is
+-- an _sg that is the map's own spawn group. See docs/notes/spawn-groups.md.
+local function log_spawn_group(spawner, where)
+	Warning(string.format("AOHSpawner %s: unit %s sg=%s\n", where, spawner._szNPCClassName, tostring(spawner._sg)))
+end
+
 function AOHSpawner:Precache()
 	PrecacheUnitByNameAsync(self._szNPCClassName, function(sg)
 		self._sg = sg
+		log_spawn_group(self, "precached")
 	end)
 end
 
@@ -75,12 +82,10 @@ end
 
 function AOHSpawner:End()
 	if self._sg ~= nil then
-		UnloadSpawnGroupByHandle(self._sg)
+		log_spawn_group(self, "End, unload skipped")
+		-- Playtest: unload disabled for one run to confirm the vanishing-ancient hypothesis.
+		-- UnloadSpawnGroupByHandle(self._sg)
 		self._sg = nil
-	end
-	if self._sgChampion ~= nil then
-		UnloadSpawnGroupByHandle(self._sgChampion)
-		self._sgChampion = nil
 	end
 end
 

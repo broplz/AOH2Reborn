@@ -95,7 +95,8 @@ function M.protect_class(class_table, name)
 	print("[safe_call] protect_class applied: " .. name)
 end
 
--- KV files whose datadriven RunScript blocks name global Lua functions.
+-- KV files whose datadriven RunScript blocks name Lua functions. The engine runs a ScriptFile
+-- in a private scope, so these names never reach _G and protect_all cannot hook them.
 local RUNSCRIPT_KV_FILES = {
 	"scripts/npc/npc_abilities_custom.txt",
 	"scripts/npc/npc_items_custom.txt",
@@ -113,7 +114,8 @@ local function collect_runscript_functions(kv, names)
 	end
 end
 
-local function runscript_functions()
+-- The set of Function names every RunScript block in RUNSCRIPT_KV_FILES calls.
+function M.runscript_functions()
 	local names = {}
 	for _, path in ipairs(RUNSCRIPT_KV_FILES) do
 		collect_runscript_functions(LoadKeyValues(path), names)
@@ -121,13 +123,10 @@ local function runscript_functions()
 	return names
 end
 
--- Diagnostic layer, on the global table because the engine loads ability, item, LinkLuaModifier
--- and RunScript files lazily:
--- * protect_class on every table made by class() once it is stored in a global. A global that
---   already exists is not new, so a class re-created by script_reload stays unwrapped.
--- * protect on every global function a RunScript names. These live in a shadow table read
---   through __index, so each redefinition (one name is shared by several ScriptFiles) passes
---   __newindex and is wrapped too.
+-- Diagnostic layer: protect_class on every table made by class() once it is stored in a global.
+-- The engine loads ability, item and LinkLuaModifier scripts lazily, so the hook sits on the
+-- global table rather than on a loader. A global that already exists is not new, so a class
+-- re-created by script_reload stays unwrapped.
 function M.protect_all()
 	-- luacheck: globals class
 	local made_by_class = setmetatable({}, { __mode = "k" })
@@ -137,35 +136,9 @@ function M.protect_all()
 		made_by_class[c] = true
 		return c
 	end
-	local runscript = runscript_functions()
-	local shadow = {}
 	local mt = getmetatable(_G) or {}
 	local base_newindex = mt.__newindex or rawset
-	local base_index = mt.__index or function() end
-	local function store_runscript(key, value)
-		if shadow[key] == nil then
-			print("[safe_call] protect applied: RunScript " .. key)
-		end
-		shadow[key] = type(value) == "function" and wrap("RunScript " .. key, value) or value
-	end
-	for key in pairs(runscript) do
-		local value = rawget(_G, key)
-		if value ~= nil then
-			rawset(_G, key, nil)
-			store_runscript(key, value)
-		end
-	end
-	mt.__index = function(t, key)
-		if runscript[key] then
-			return shadow[key]
-		end
-		return base_index(t, key)
-	end
 	mt.__newindex = function(t, key, value)
-		if runscript[key] then
-			store_runscript(key, value)
-			return
-		end
 		base_newindex(t, key, value)
 		if made_by_class[value] then
 			M.protect_class(value, tostring(key))

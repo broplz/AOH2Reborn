@@ -6,3 +6,4 @@ learned the hard way that the next session must not rediscover. One file per top
 source (patch, Valve issue, test in tests/) when there is one. Any pipeline role may append.
 
 - `apicheck.md` — engine call arity check, dota-data source and version, API signature changes.
+- `spawn-groups.md` — what PrecacheUnitByNameAsync hands its callback, when UnloadSpawnGroupByHandle is safe.
