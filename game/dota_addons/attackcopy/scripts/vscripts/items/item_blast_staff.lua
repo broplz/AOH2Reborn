@@ -47,7 +47,7 @@ if IsServer() then
 			fx.once("particles/custom/blast_staff_explosion.vpcf", PATTACH_ABSORIGIN_FOLLOW, target, {
 				[3] = target:GetAbsOrigin(),
 			})
-			local damage = self:GetSpecialValueFor("int_multiplier") * parent:GetIntellect()
+			local damage = self:GetSpecialValueFor("int_multiplier") * parent:GetIntellect(false)
 
 			ApplyDamage({
 				ability = self,

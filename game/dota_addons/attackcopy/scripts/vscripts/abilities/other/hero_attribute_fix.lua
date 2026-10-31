@@ -98,13 +98,13 @@ function modifier_atr_fix:GetModifierHealthBonus()
 end
 
 function modifier_atr_fix:GetModifierConstantManaRegen()
-	local parent_int = self.parent:GetIntellect()
+	local parent_int = self.parent:GetIntellect(false)
 	local m_regen = parent_int * 0.05
 	return m_regen
 end
 
 function modifier_atr_fix:GetModifierSpellAmplify_Percentage()
-	local parent_int = self.parent:GetIntellect()
+	local parent_int = self.parent:GetIntellect(false)
 	local amp = parent_int * 0.21
 	return amp
 end

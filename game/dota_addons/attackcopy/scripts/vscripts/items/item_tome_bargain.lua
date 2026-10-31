@@ -11,7 +11,7 @@ function item_tome_bargain:OnSpellStart()
 		local tome = caster:AddNewModifier(caster, self, "modifier_item_tome_bargain", {})
 		tome:SetStackCount(1)
 	end
-	self:SpendCharge()
+	self:SpendCharge(0)
 end
 
 LinkLuaModifier("modifier_item_tome_bargain", "items/item_tome_bargain.lua", LUA_MODIFIER_MOTION_NONE)

@@ -86,7 +86,7 @@ function end_screen_get_data(isWinner)
 
 					str = hero:GetStrength(),
 					agi = hero:GetAgility(),
-					int = hero:GetIntellect(),
+					int = hero:GetIntellect(false),
 
 					level = hero:GetLevel(),
 					items = {},

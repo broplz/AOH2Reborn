@@ -16,7 +16,7 @@ if IsServer() then
 			caster:FindModifierByName(self.modifier_name):SetStackCount(bonus)
 		end
 
-		self:SpendCharge()
+		self:SpendCharge(0)
 	end
 end
 

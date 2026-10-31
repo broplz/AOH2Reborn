@@ -135,7 +135,7 @@ if IsServer() then
 			self:SetStackCount(0)
 			self:StartIntervalThink(-1)
 		end
-		self:SetStackCount((self.parent:GetIntellect() - self:GetStackCount()) * self.bonus * 0.01)
+		self:SetStackCount((self.parent:GetIntellect(false) - self:GetStackCount()) * self.bonus * 0.01)
 	end
 end
 

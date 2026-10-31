@@ -145,7 +145,7 @@ function modifier_skill_atronach:GetModifierExtraManaPercentage()
 end
 
 function modifier_skill_atronach:GetModifierConstantManaRegen()
-	local parent_int = self.parent:GetIntellect()
+	local parent_int = self.parent:GetIntellect(false)
 	local m_regen = parent_int * 0.075
 	return -m_regen
 end

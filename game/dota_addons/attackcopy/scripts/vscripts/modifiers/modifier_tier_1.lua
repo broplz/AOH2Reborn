@@ -70,7 +70,7 @@ function modifier_skill_equalizer:OnIntervalThink()
 			self.health_modifier:SetStackCount(-diff)
 			self.mana_modifier:SetStackCount(diff)
 		else
-			local diff = self.parent:GetIntellect() * 0.1 * 0.66
+			local diff = self.parent:GetIntellect(false) * 0.1 * 0.66
 			self.health_modifier:SetStackCount(diff * 1.5)
 			self.mana_modifier:SetStackCount(-diff)
 		end

@@ -89,8 +89,8 @@ if IsServer() then
 		if attacker == self.parent and not target:IsNull() then
 			if self.chance >= RandomInt(0, 99) and self.parent:GetMana() > self.manacost then
 				if target:HasModifier("modifier_huskar_burning_spear_debuff") or not self.parent:IsIllusion() then
-					self.ability:UseResources(true, false, false)
-					Timers:CreateTimer((1 / self.parent:GetAttacksPerSecond()) * 0.1875, function()
+					self.ability:UseResources(true, false, false, false)
+					Timers:CreateTimer((1 / self.parent:GetAttacksPerSecond(false)) * 0.1875, function()
 						target:EmitSoundParams("Hero_Huskar.Life_Break", 0, 0.3, 0)
 						local info = {
 							Target = target,

@@ -50,7 +50,7 @@ end
 function modifier_mana_amp_custom_active:OnCreated()
 	local parent = self:GetParent()
 	local ability = self:GetAbility()
-	self:SetStackCount(ability:GetSpecialValueFor("mana_amp") * parent:GetIntellect())
+	self:SetStackCount(ability:GetSpecialValueFor("mana_amp") * parent:GetIntellect(false))
 end
 
 LinkLuaModifier(

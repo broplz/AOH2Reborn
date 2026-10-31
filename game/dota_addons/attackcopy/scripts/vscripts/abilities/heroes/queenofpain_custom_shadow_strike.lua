@@ -71,7 +71,9 @@ end
 
 if IsServer() then
 	function modifier_queenofpain_custom_shadow_strike:OnCreated(keys)
-		self.tick_damage = self:GetCaster():GetIntellect() * self:GetAbility():GetSpecialValueFor("int_pct_tick") * 0.01
+		self.tick_damage = self:GetCaster():GetIntellect(false)
+			* self:GetAbility():GetSpecialValueFor("int_pct_tick")
+			* 0.01
 
 		self:StartIntervalThink(1.0)
 	end

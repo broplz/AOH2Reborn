@@ -43,7 +43,7 @@ if IsServer() then
 		if self.pull:IsCooldownReady() then
 			self.parent:SetCursorCastTarget(ai_random_alive_hero())
 			self.pull:OnSpellStart()
-			self.pull:UseResources(false, false, true)
+			self.pull:UseResources(false, false, false, true)
 		end
 		self.combat_timer = self.combat_timer + self.interval
 		if self.combat_timer > self.degen_time then

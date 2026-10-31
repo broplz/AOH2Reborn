@@ -92,12 +92,12 @@ if IsServer() then
 			if not self.parent:HasModifier("modifier_windrunner_focusfire") then
 				self.parent:SetCursorCastTarget(target)
 				self.focus_fire:OnSpellStart()
-				self.focus_fire:UseResources(true, false, true)
+				self.focus_fire:UseResources(true, false, false, true)
 			else
 				self.parent
 					:FindModifierByName("modifier_windrunner_focusfire")
 					:SetDuration(self.focus_fire:GetDuration(), true)
-				self.focus_fire:UseResources(true, false, true)
+				self.focus_fire:UseResources(true, false, false, true)
 			end
 		end
 	end

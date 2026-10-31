@@ -124,7 +124,7 @@ if IsServer() then
 	end
 
 	function modifier_gyrocopter_custom_rocket_barrage_effect:OnRefresh()
-		local newSpeed = self.parent:GetAttacksPerSecond()
+		local newSpeed = self.parent:GetAttacksPerSecond(false)
 		if newSpeed ~= self.speed then
 			self.update = true
 			self.speed = newSpeed
@@ -138,7 +138,7 @@ if IsServer() then
 		self.base_radius = self.ability:GetSpecialValueFor("radius")
 		self.radius = self.base_radius + self.parent:GetCastRangeBonus()
 		self.maxCount = 1
-		self.speed = self.parent:GetAttacksPerSecond()
+		self.speed = self.parent:GetAttacksPerSecond(false)
 		self.update = false
 		if self.parent:HasModifier("modifier_item_aghanims_shard") then
 			self.maxCount = 2

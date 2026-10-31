@@ -246,7 +246,7 @@ if IsServer() then
 						self.echo:OnSpellStart()
 						self.echo:SetChanneling(true)
 						self.echo:EndChannel(true)
-						self.echo:UseResources(true, false, false)
+						self.echo:UseResources(true, false, false, false)
 					end)
 				end
 			elseif

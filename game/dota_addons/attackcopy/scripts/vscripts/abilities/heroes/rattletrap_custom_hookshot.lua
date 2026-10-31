@@ -23,7 +23,7 @@ if IsServer() then
 			caster:SetCursorCastTarget(target)
 			caster:AddNewModifier(caster, self, "modifier_rattletrap_custom_hookshot_dash", {})
 
-			self:UseResources(false, false, true)
+			self:UseResources(false, false, false, true)
 		end
 	end
 

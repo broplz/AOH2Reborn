@@ -13,5 +13,5 @@ function item_tome_selling:OnSpellStart()
 			end
 		end
 	end
-	self:SpendCharge()
+	self:SpendCharge(0)
 end

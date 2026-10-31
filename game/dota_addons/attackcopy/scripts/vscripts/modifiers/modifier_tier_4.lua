@@ -98,9 +98,9 @@ if IsServer() then
 		local attribute = parent:GetPrimaryAttribute()
 		local total = 0
 		if attribute == 0 then
-			total = parent:GetIntellect() + parent:GetAgility()
+			total = parent:GetIntellect(false) + parent:GetAgility()
 		elseif attribute == 1 then
-			total = parent:GetStrength() + parent:GetIntellect()
+			total = parent:GetStrength() + parent:GetIntellect(false)
 		else
 			total = parent:GetStrength() + parent:GetAgility()
 		end
@@ -112,9 +112,9 @@ if IsServer() then
 		local attribute = parent:GetPrimaryAttribute()
 		local total = 0
 		if attribute == 0 then
-			total = parent:GetIntellect() + parent:GetAgility()
+			total = parent:GetIntellect(false) + parent:GetAgility()
 		elseif attribute == 1 then
-			total = parent:GetStrength() + parent:GetIntellect()
+			total = parent:GetStrength() + parent:GetIntellect(false)
 		else
 			total = parent:GetStrength() + parent:GetAgility()
 		end

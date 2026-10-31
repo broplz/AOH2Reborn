@@ -90,7 +90,7 @@ if IsServer() then
 							time_diff = 1
 						end
 						local mana = attacker:GetMana()
-						local int = attacker:GetIntellect()
+						local int = attacker:GetIntellect(false)
 
 						local final_damage = self.arcane_count[id][0]
 							+ (keys.original_damage * self.arcane_count[id][1] * 0.01) * time_diff

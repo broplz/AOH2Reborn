@@ -151,7 +151,7 @@ function modifier_diff_doom_thinker:OnDestroy(kv)
 		elseif self.caster:GetPrimaryAttribute() == 1 then
 			attribute = self.caster:GetAgility()
 		else
-			attribute = self.caster:GetIntellect()
+			attribute = self.caster:GetIntellect(false)
 		end
 		self.damage = self.damage + self.damage_attribute * attribute
 		-- Damage enemies
