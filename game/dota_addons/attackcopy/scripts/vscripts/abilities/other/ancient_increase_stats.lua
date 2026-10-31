@@ -25,45 +25,18 @@ if IsServer() then
 		self.round = 0
 		self:StartIntervalThink(2)
 	end
-	-- Playtest: a zero max HP means the specials read as 0; log what each getter returns.
-	local function warn_zero_max_health(modifier, round, maxHealth)
-		local ability = modifier:GetAbility()
-		Warning(
-			string.format(
-				"ancient_increase_stats: round %d max HP %.0f <= 0, HP left as is; level %d, cached base/per_round %s/%s, "
-					.. "GetSpecialValueFor %s/%s, GetLevelSpecialValueFor(0) %s/%s\n",
-				round,
-				maxHealth,
-				ability:GetLevel(),
-				tostring(modifier.health_base),
-				tostring(modifier.health_per_round),
-				tostring(ability:GetSpecialValueFor("health_base")),
-				tostring(ability:GetSpecialValueFor("health_per_round")),
-				tostring(ability:GetLevelSpecialValueFor("health_base", 0)),
-				tostring(ability:GetLevelSpecialValueFor("health_per_round", 0))
-			)
-		)
-	end
+	-- A zero max HP means the specials read as 0 (legacy AbilitySpecial); leave HP alone then.
 	local function rescale_health(modifier, round)
 		local parent = modifier.parent
 		local maxHealth = modifier.health_base + (modifier.health_per_round * round)
 		if maxHealth <= 0 then
-			warn_zero_max_health(modifier, round, maxHealth)
+			Warning(
+				string.format("ancient_increase_stats: round %d max HP %.0f <= 0, HP left as is\n", round, maxHealth)
+			)
 			return
 		end
 		local ratio = parent:GetHealth() / parent:GetMaxHealth()
 		local health = math.max(1, math.floor(maxHealth * ratio))
-		-- Playtest: this rescale is the only SetHealth on the ancient; log it to match a HP jump.
-		Warning(
-			string.format(
-				"ancient_increase_stats: round %d HP %d/%d -> %d/%.0f\n",
-				round,
-				parent:GetHealth(),
-				parent:GetMaxHealth(),
-				health,
-				maxHealth
-			)
-		)
 		parent:SetMaxHealth(maxHealth)
 		parent:SetBaseMaxHealth(maxHealth)
 		parent:SetHealth(health)

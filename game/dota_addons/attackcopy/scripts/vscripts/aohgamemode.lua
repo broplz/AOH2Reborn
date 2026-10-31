@@ -2,7 +2,7 @@ local safe_call = require("lib/safe_call")
 
 -- Diagnostic: report errors in every class method (modifiers, abilities, items, game mode).
 -- Before the other requires, so their classes are covered too. Set to false to switch it off.
-local AOH_SAFE_CALL_ALL = true
+local AOH_SAFE_CALL_ALL = false
 if AOH_SAFE_CALL_ALL then
 	safe_call.protect_all()
 end
@@ -125,7 +125,7 @@ local function find_radiant_ancient()
 	Warning("Radiant ancient not found: no dota_goodguys_fort and no Radiant npc_dota_fort\n")
 end
 
--- Playtest: one console line on the ancient, to tell gradual damage from a SetHealth/ForceKill jump.
+-- One console line on the ancient's state, logged before a defeat is declared.
 local function log_ancient_state(tag, ancient)
 	if not ancient then
 		Warning(tag .. ": Ancient nil, GameTime=" .. GameRules:GetGameTime() .. "\n")
@@ -724,7 +724,6 @@ local round_end_sounds = { [0] = "AOH.Horn1", "AOH.Horn2", "AOH.Horn3", "AOH.Hor
 -- Evaluate the state of the game
 function AOHGameMode:OnThink()
 	if GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
-		log_ancient_state("OnThink", self._entAncient)
 		self:_CheckForDefeat()
 		removed_expired_items(self._flItemExpireTime)
 		if self._flPrepTimeEnd ~= nil then

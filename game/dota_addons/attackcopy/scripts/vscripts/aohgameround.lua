@@ -123,10 +123,6 @@ function AOHGameRound:End()
 		killed[#killed + 1] = clear_round_unit(unit)
 	end
 	Warning("AOHGameRound:End ForceKill: " .. table.concat(killed, ", ") .. "\n")
-
-	for _, spawner in pairs(self._vSpawners) do
-		spawner:End()
-	end
 end
 
 function AOHGameRound:Think()
