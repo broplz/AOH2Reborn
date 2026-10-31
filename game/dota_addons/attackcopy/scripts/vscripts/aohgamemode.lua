@@ -1,3 +1,12 @@
+local safe_call = require("lib/safe_call")
+
+-- Diagnostic: report errors in every class method (modifiers, abilities, items, game mode).
+-- Before the other requires, so their classes are covered too. Set to false to switch it off.
+local AOH_SAFE_CALL_ALL = true
+if AOH_SAFE_CALL_ALL then
+	safe_call.protect_all()
+end
+
 require("AOHGameRound")
 require("AOHSpawner")
 require("AOHGameSkills")
@@ -11,7 +20,6 @@ require("lib/parsers")
 require("lib/end_screen")
 require("lib/data")
 require("lib/notifications")
-local safe_call = require("lib/safe_call")
 
 LinkLuaModifier("modifier_boss", "modifiers/modifier_boss.lua", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_main_boss", "modifiers/modifier_main_boss.lua", LUA_MODIFIER_MOTION_NONE)
@@ -754,6 +762,18 @@ function AOHGameMode:_CheckForDefeat()
 				self._ischeckingdefeat = true
 			end
 		else
+			local ancient = self._entAncient
+			if ancient then
+				Warning(
+					string.format(
+						"_CheckForDefeat: Ancient IsNull=%s IsAlive=%s GetHealth=%s entindex=%s\n",
+						tostring(ancient:IsNull()),
+						tostring(not ancient:IsNull() and ancient:IsAlive()),
+						tostring(not ancient:IsNull() and ancient:GetHealth()),
+						tostring(not ancient:IsNull() and ancient:entindex())
+					)
+				)
+			end
 			declare_winner(
 				DOTA_TEAM_BADGUYS,
 				self._entAncient and "Radiant ancient is dead" or "Radiant ancient not found"

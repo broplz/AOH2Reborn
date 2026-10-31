@@ -31,20 +31,92 @@ function M.traceback(err)
 	return "(error could not be described)"
 end
 
+local function pack(...)
+	return select("#", ...), { ... }
+end
+
+-- All results pass through: class methods wrapped by protect_class may return several values.
+local function wrap(name, fn, on_error)
+	return function(...)
+		local n, args = pack(...)
+		local count, results = pack(xpcall(function()
+			return fn(unpack(args, 1, n))
+		end, M.traceback))
+		if results[1] then
+			return unpack(results, 2, count)
+		end
+		Warning(name .. " error: " .. results[2] .. "\n")
+		return on_error
+	end
+end
+
 function M.protect(name, fn, on_error)
 	-- The log shows which engine-invoked handlers actually got wrapped.
 	print("[safe_call] protect applied: " .. name)
-	return function(...)
-		local n, args = select("#", ...), { ... }
-		local ok, result = xpcall(function()
-			return fn(unpack(args, 1, n))
-		end, M.traceback)
-		if ok then
-			return result
-		end
-		Warning(name .. " error: " .. result .. "\n")
-		return on_error
+	return wrap(name, fn, on_error)
+end
+
+-- A failing GetModifier* getter reads as 0, the engine's "no bonus"; any other method as nil.
+local function class_method_on_error(key)
+	if key:match("^GetModifier") then
+		return 0
 	end
+	return nil
+end
+
+local function wrap_method(name, key, value)
+	if type(value) == "function" and type(key) == "string" then
+		return wrap(name .. ":" .. key, value, class_method_on_error(key))
+	end
+	return value
+end
+
+local protected_classes = setmetatable({}, { __mode = "k" })
+
+-- Wraps every method of a class table, the ones it has now and the ones defined later
+-- (`function modifier_x:OnCreated()` runs after `modifier_x = class({})`).
+function M.protect_class(class_table, name)
+	if protected_classes[class_table] then
+		return
+	end
+	protected_classes[class_table] = true
+	for key, value in pairs(class_table) do
+		rawset(class_table, key, wrap_method(name, key, value))
+	end
+	-- A copy: class() may share one metatable between tables.
+	local mt = {}
+	for k, v in pairs(getmetatable(class_table) or {}) do
+		mt[k] = v
+	end
+	mt.__newindex = function(t, key, value)
+		rawset(t, key, wrap_method(name, key, value))
+	end
+	setmetatable(class_table, mt)
+	print("[safe_call] protect_class applied: " .. name)
+end
+
+-- Diagnostic layer: protect_class on every table made by class() once it is stored in a global.
+-- The engine loads ability, item and LinkLuaModifier scripts lazily, so the hook sits on the
+-- global table rather than on a loader. A global that already exists is not new, so a class
+-- re-created by script_reload stays unwrapped.
+function M.protect_all()
+	-- luacheck: globals class
+	local made_by_class = setmetatable({}, { __mode = "k" })
+	local base_class = class
+	class = function(...)
+		local c = base_class(...)
+		made_by_class[c] = true
+		return c
+	end
+	local mt = getmetatable(_G) or {}
+	local base_newindex = mt.__newindex or rawset
+	mt.__newindex = function(t, key, value)
+		base_newindex(t, key, value)
+		if made_by_class[value] then
+			M.protect_class(value, tostring(key))
+		end
+	end
+	setmetatable(_G, mt)
 end
 
 return M

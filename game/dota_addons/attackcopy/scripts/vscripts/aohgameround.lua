@@ -87,12 +87,15 @@ end
 
 -- Buildings stay: towers, and the Dire ancient, whose death is Dota's own victory condition
 -- (killing it ended the game after round 1).
+-- Returns the unit name when the unit was killed, nil for a building.
 local function clear_round_unit(unit)
 	if unit:IsBuilding() then
-		return
+		return nil
 	end
+	local name = unit:GetUnitName()
 	unit:ForceKill(false)
 	UTIL_Remove(unit)
+	return name
 end
 
 function AOHGameRound:End()
@@ -101,6 +104,7 @@ function AOHGameRound:End()
 	end
 	self._vEventHandles = {}
 
+	local killed = {}
 	for _, unit in
 		pairs(
 			FindUnitsInRadius(
@@ -116,8 +120,9 @@ function AOHGameRound:End()
 			)
 		)
 	do
-		clear_round_unit(unit)
+		killed[#killed + 1] = clear_round_unit(unit)
 	end
+	Warning("AOHGameRound:End ForceKill: " .. table.concat(killed, ", ") .. "\n")
 
 	for _, spawner in pairs(self._vSpawners) do
 		spawner:End()
