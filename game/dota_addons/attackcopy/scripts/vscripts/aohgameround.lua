@@ -1,6 +1,7 @@
 require("AOHSpawner")
 require("lib/my")
 require("lib/notifications")
+local safe_call = require("lib/safe_call")
 
 if AOHGameRound == nil then
 	AOHGameRound = class({})
@@ -50,8 +51,16 @@ function AOHGameRound:Begin(goldRatio, expRatio)
 
 	self._vEnemiesRemaining = {}
 	self._vEventHandles = {
-		ListenToGameEvent("npc_spawned", Dynamic_Wrap(AOHGameRound, "OnNPCSpawned"), self),
-		ListenToGameEvent("entity_killed", Dynamic_Wrap(AOHGameRound, "OnEntityKilled"), self),
+		ListenToGameEvent(
+			"npc_spawned",
+			safe_call.protect("round npc_spawned", Dynamic_Wrap(AOHGameRound, "OnNPCSpawned")),
+			self
+		),
+		ListenToGameEvent(
+			"entity_killed",
+			safe_call.protect("round entity_killed", Dynamic_Wrap(AOHGameRound, "OnEntityKilled")),
+			self
+		),
 	}
 
 	self._vPlayerStats = {}

@@ -89,16 +89,7 @@ function Timers:start()
 	ent:SetThink("Think", self, "timers", TIMERS_THINK)
 end
 
--- Must never throw: an error inside an xpcall handler surfaces only as "error in error
--- handling" and the original error is lost. Errors are not always strings (engine errors,
--- error(table)), and the VScript sandbox does not guarantee the debug library.
-local function TimerErrorHandler(msg)
-	local text = tostring(msg)
-	if debug and debug.traceback then
-		return debug.traceback(text, 2)
-	end
-	return text
-end
+local TimerErrorHandler = require("lib/safe_call").traceback
 
 function Timers:Think()
 	--if GameRules:State_Get() >= DOTA_GAMERULES_STATE_POST_GAME then

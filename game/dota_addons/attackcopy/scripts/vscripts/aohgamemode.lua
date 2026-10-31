@@ -11,6 +11,7 @@ require("lib/parsers")
 require("lib/end_screen")
 require("lib/data")
 require("lib/notifications")
+local safe_call = require("lib/safe_call")
 
 LinkLuaModifier("modifier_boss", "modifiers/modifier_boss.lua", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_main_boss", "modifiers/modifier_main_boss.lua", LUA_MODIFIER_MOTION_NONE)
@@ -72,6 +73,21 @@ if AOHGameMode == nil then
 	AOHGameMode.dps_interval = 0.8
 	AOHGameMode.update_index = 0
 	_G.AOHGameMode = AOHGameMode
+end
+
+local GAME_EVENT_LISTENERS = {
+	{ "npc_spawned", "OnEntitySpawned" },
+	{ "entity_killed", "OnEntityKilled" },
+	{ "game_rules_state_change", "OnGameRulesStateChange" },
+	{ "dota_item_picked_up", "OnItemPickedUp" },
+	{ "dota_holdout_revive_complete", "OnHoldoutReviveComplete" },
+	{ "player_chat", "OnPlayerChat" },
+}
+
+-- Every game end goes through here, so the console always says why it ended.
+local function declare_winner(team, reason)
+	Warning("SetGameWinner(" .. team .. "): " .. reason .. ", round " .. tostring(AOHGameMode._nRoundNumber) .. "\n")
+	GameRules:SetGameWinner(team)
 end
 
 function AOHGameMode:InitGameMode()
@@ -156,15 +172,14 @@ function AOHGameMode:InitGameMode()
 	GameRules:GetGameModeEntity():SetCustomAttributeDerivedStatValue(DOTA_ATTRIBUTE_STRENGTH_HP_REGEN, 0.25)
 	GameRules:GetGameModeEntity():SetCustomAttributeDerivedStatValue(DOTA_ATTRIBUTE_INTELLIGENCE_MANA_REGEN, 0.1)
 
-	ListenToGameEvent("npc_spawned", Dynamic_Wrap(AOHGameMode, "OnEntitySpawned"), self)
-	ListenToGameEvent("entity_killed", Dynamic_Wrap(AOHGameMode, "OnEntityKilled"), self)
-	ListenToGameEvent("game_rules_state_change", Dynamic_Wrap(AOHGameMode, "OnGameRulesStateChange"), self)
-	ListenToGameEvent("dota_item_picked_up", Dynamic_Wrap(AOHGameMode, "OnItemPickedUp"), self)
-	ListenToGameEvent("dota_holdout_revive_complete", Dynamic_Wrap(AOHGameMode, "OnHoldoutReviveComplete"), self)
-	ListenToGameEvent("player_chat", Dynamic_Wrap(AOHGameMode, "OnPlayerChat"), self)
+	for _, listener in ipairs(GAME_EVENT_LISTENERS) do
+		local event, method = listener[1], listener[2]
+		ListenToGameEvent(event, safe_call.protect(event, Dynamic_Wrap(AOHGameMode, method)), self)
+	end
 	GameRules:GetGameModeEntity():SetThink("OnThink", self, 0.75)
 
-	GameRules:GetGameModeEntity():SetDamageFilter(Dynamic_Wrap(AOHGameMode, "OnDamageDealt"), self)
+	GameRules:GetGameModeEntity()
+		:SetDamageFilter(safe_call.protect("DamageFilter", Dynamic_Wrap(AOHGameMode, "OnDamageDealt")), self)
 end
 
 function AOHGameMode:AtRoundStart()
@@ -403,14 +418,14 @@ function AOHGameMode:EndVote()
 					ParticleManager:ReleaseParticleIndex(fx)
 					Timers:CreateTimer(3, function()
 						target:EmitSound("Ability.LightStrikeArray")
-						local fx = ParticleManager:CreateParticle(
+						local strike_fx = ParticleManager:CreateParticle(
 							"particles/units/heroes/hero_lina/lina_spell_light_strike_array.vpcf",
 							PATTACH_WORLDORIGIN,
 							target
 						)
-						ParticleManager:SetParticleControl(fx, 0, point)
-						ParticleManager:SetParticleControl(fx, 1, Vector(400, 1, 1))
-						ParticleManager:ReleaseParticleIndex(fx)
+						ParticleManager:SetParticleControl(strike_fx, 0, point)
+						ParticleManager:SetParticleControl(strike_fx, 1, Vector(400, 1, 1))
+						ParticleManager:ReleaseParticleIndex(strike_fx)
 
 						local targets = FindUnitsInRadius(
 							target:GetTeamNumber(), -- int, your team number
@@ -490,7 +505,7 @@ function AOHGameMode:EndVote()
 	end
 end
 -- Initiates variables that need to be set to values
-function AOHGameMode:InitVariables()
+local function init_variables(self)
 	AOHGameMode.difficulty_listener =
 		CustomGameEventManager:RegisterListener("difficulty_clicked", Dynamic_Wrap(AOHGameMode, "DifficultyClicked"))
 	AOHGameSkills:Init()
@@ -560,6 +575,7 @@ function AOHGameMode:InitVariables()
 	end
 	GameRules:GetGameModeEntity():SetThink("GoldIncome", self, 1)
 end
+AOHGameMode.InitVariables = safe_call.protect("InitVariables", init_variables)
 
 function AOHGameMode:GoldIncome()
 	for _, v in pairs(AOHGameMode.Players) do
@@ -685,7 +701,10 @@ function AOHGameMode:OnThink()
 			end
 		end
 		if AOHGameMode._nRoundNumber > #self._vRounds - self._negativeRounds then
-			GameRules:SetGameWinner(DOTA_TEAM_GOODGUYS)
+			declare_winner(
+				DOTA_TEAM_GOODGUYS,
+				"rounds exhausted (" .. #self._vRounds .. " rounds, " .. self._negativeRounds .. " negative)"
+			)
 			return false
 		end
 	elseif GameRules:State_Get() >= DOTA_GAMERULES_STATE_POST_GAME then -- Safe guard catching any state that may exist beyond DOTA_GAMERULES_STATE_POST_GAME
@@ -707,7 +726,10 @@ function AOHGameMode:_CheckForDefeat()
 				self._ischeckingdefeat = true
 			end
 		else
-			GameRules:SetGameWinner(DOTA_TEAM_BADGUYS)
+			declare_winner(
+				DOTA_TEAM_BADGUYS,
+				self._entAncient and "Radiant ancient is dead" or "Radiant ancient missing"
+			)
 		end
 	end
 end
@@ -727,6 +749,7 @@ function AOHGameMode:CheckForDefeatDelay()
 		end
 	else
 		if are_all_heroes_dead() then
+			Warning("Defeat: all heroes dead through the countdown, killing the Radiant ancient\n")
 			self._entAncient:ForceKill(false)
 		else
 			Notifications:TopToAll({ text = "CLEAR", style = { color = "green" }, duration = 1 })
@@ -792,6 +815,22 @@ end
 
 function AOHGameMode:OnEntityKilled(event)
 	local killedUnit = EntIndexToHScript(event.entindex_killed)
+	-- A fort's death is Dota's own game end, with no SetGameWinner call of ours.
+	if killedUnit and killedUnit:GetClassname() == "npc_dota_fort" then
+		local attacker = event.entindex_attacker and EntIndexToHScript(event.entindex_attacker)
+		local inflictor = event.entindex_inflictor and EntIndexToHScript(event.entindex_inflictor)
+		Warning(
+			"Fort killed: "
+				.. killedUnit:GetName()
+				.. " by "
+				.. (attacker and attacker:GetUnitName() or "nil")
+				.. " with "
+				.. (inflictor and inflictor:GetName() or "nil")
+				.. ", round "
+				.. tostring(AOHGameMode._nRoundNumber)
+				.. "\n"
+		)
+	end
 	if killedUnit and killedUnit:IsRealHero() then
 		create_ressurection_tombstone(killedUnit)
 	end
@@ -885,7 +924,7 @@ function AOHGameMode:OnPlayerChat(keys)
 			})
 		end
 		if AOHGameMode._debug == true and keys.text == "-debugend" then
-			GameRules:SetGameWinner(DOTA_TEAM_GOODGUYS)
+			declare_winner(DOTA_TEAM_GOODGUYS, "-debugend chat command")
 		end
 		if AOHGameMode._debug == true and string.sub(keys.text, 1, 4) == "-rnd" then
 			local rnd = tonumber(string.sub(keys.text, 6, keys.text:len()))
