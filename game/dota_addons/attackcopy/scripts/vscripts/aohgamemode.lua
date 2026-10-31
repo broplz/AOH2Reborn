@@ -86,9 +86,13 @@ local GAME_EVENT_LISTENERS = {
 
 -- The method name stays the think's context name, as the string form of SetThink had it, so
 -- re-registering still replaces the think. retry is the think's usual return value.
+-- The function form of SetThink is documented as fn(entity), so self is bound here and the
+-- engine's arguments are ignored; the method is looked up per call, as the string form did.
 local function set_think(mode, method, delay, retry)
-	GameRules:GetGameModeEntity()
-		:SetThink(safe_call.protect(method, Dynamic_Wrap(AOHGameMode, method), retry), mode, method, delay)
+	local think = safe_call.protect(method, function()
+		return AOHGameMode[method](mode)
+	end, retry)
+	GameRules:GetGameModeEntity():SetThink(think, mode, method, delay)
 end
 
 -- Every game end goes through here, so the console always says why it ended.
