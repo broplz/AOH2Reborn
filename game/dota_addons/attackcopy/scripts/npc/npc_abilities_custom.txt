@@ -5331,28 +5331,12 @@
     "AbilityBehavior"			    "DOTA_ABILITY_BEHAVIOR_PASSIVE"
     "AbilityTextureName"		    "omniknight_repel"
     "MaxLevel"					    "1"
-    "AbilitySpecial"
+    "AbilityValues"
     {
-        "01"
-        {
-            "var_type"			    "FIELD_FLOAT"
-            "health_base"	        "0"			
-        }
-        "02"
-        {
-            "var_type"			    "FIELD_FLOAT"
-            "health_per_round"	    "450"
-        }
-        "03"
-        {
-            "var_type"			    "FIELD_FLOAT"
-            "armor_base"	        "0"			
-        }
-        "04"
-        {
-            "var_type"			    "FIELD_FLOAT"
-            "armor_per_round"	    "0.75"
-        }
+        "health_base"	        "0"
+        "health_per_round"	    "450"
+        "armor_base"	        "0"
+        "armor_per_round"	    "0.75"
     }
 }
 "tower_increase_stats"
