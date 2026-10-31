@@ -31,7 +31,18 @@ if IsServer() then
 			if round and round > self.round then
 				self.parent:AddNewModifier(self.parent, nil, "modifier_ancient_regen", { duration = 5 })
 				local maxHealth = self.health_base + (self.health_per_round * round)
-				health = maxHealth * self.parent:GetHealthPercent() * 0.01
+				local health = maxHealth * self.parent:GetHealthPercent() * 0.01
+				-- Playtest: this rescale is the only SetHealth on the ancient; log it to match a HP jump.
+				Warning(
+					string.format(
+						"ancient_increase_stats: round %d HP %d/%d -> %.0f/%.0f\n",
+						round,
+						self.parent:GetHealth(),
+						self.parent:GetMaxHealth(),
+						health,
+						maxHealth
+					)
+				)
 
 				self.parent:SetMaxHealth(maxHealth)
 				self.parent:SetBaseMaxHealth(maxHealth)

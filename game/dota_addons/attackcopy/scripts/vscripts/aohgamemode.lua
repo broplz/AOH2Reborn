@@ -125,6 +125,29 @@ local function find_radiant_ancient()
 	Warning("Radiant ancient not found: no dota_goodguys_fort and no Radiant npc_dota_fort\n")
 end
 
+-- Playtest: one console line on the ancient, to tell gradual damage from a SetHealth/ForceKill jump.
+local function log_ancient_state(tag, ancient)
+	if not ancient then
+		Warning(tag .. ": Ancient nil, GameTime=" .. GameRules:GetGameTime() .. "\n")
+		return
+	end
+	if ancient:IsNull() then
+		Warning(tag .. ": Ancient IsNull, GameTime=" .. GameRules:GetGameTime() .. "\n")
+		return
+	end
+	Warning(
+		string.format(
+			"%s: Ancient HP=%d/%d IsAlive=%s entindex=%d GameTime=%.1f\n",
+			tag,
+			ancient:GetHealth(),
+			ancient:GetMaxHealth(),
+			tostring(ancient:IsAlive()),
+			ancient:entindex(),
+			GameRules:GetGameTime()
+		)
+	)
+end
+
 function AOHGameMode:InitGameMode()
 	AOHGameMode._nRoundNumber = 1
 	self._negativeRounds = 0
@@ -701,6 +724,7 @@ local round_end_sounds = { [0] = "AOH.Horn1", "AOH.Horn2", "AOH.Horn3", "AOH.Hor
 -- Evaluate the state of the game
 function AOHGameMode:OnThink()
 	if GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
+		log_ancient_state("OnThink", self._entAncient)
 		self:_CheckForDefeat()
 		removed_expired_items(self._flItemExpireTime)
 		if self._flPrepTimeEnd ~= nil then
@@ -762,18 +786,7 @@ function AOHGameMode:_CheckForDefeat()
 				self._ischeckingdefeat = true
 			end
 		else
-			local ancient = self._entAncient
-			if ancient then
-				Warning(
-					string.format(
-						"_CheckForDefeat: Ancient IsNull=%s IsAlive=%s GetHealth=%s entindex=%s\n",
-						tostring(ancient:IsNull()),
-						tostring(not ancient:IsNull() and ancient:IsAlive()),
-						tostring(not ancient:IsNull() and ancient:GetHealth()),
-						tostring(not ancient:IsNull() and ancient:entindex())
-					)
-				)
-			end
+			log_ancient_state("_CheckForDefeat", self._entAncient)
 			declare_winner(
 				DOTA_TEAM_BADGUYS,
 				self._entAncient and "Radiant ancient is dead" or "Radiant ancient not found"
