@@ -2883,30 +2883,18 @@
 	"BaseClass"						"item_flicker"
 	"AbilityTextureName"			"flicker"
 	"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_ROOT_DISABLES"
-	"AbilityCooldown"				"0.0"
+	"AbilityCooldown"				"3.0"
 	"AbilityManaCost"				"0"
 	"ItemCost"						"0"
 	"ItemIsNeutralDrop"				"0"
 	"ItemSellable"					"0"
 	"ItemPurchasable"				"0"
 	"Model"							"models/props_gameplay/neutral_box.vmdl"
-	"AbilitySpecial"
+	"AbilityValues"
 	{
-		"01"
-		{
-			"var_type"				"FIELD_INTEGER"
-			"range"					"350"
-		}
-		"02"
-		{
-			"var_type"				"FIELD_INTEGER"
-			"min_range"				"350"
-		}
-		"03"
-		{
-			"var_type"				"FIELD_INTEGER"
-			"bonus_movement_speed"			"0"
-		}
+		"range"					"350"
+		"min_range"				"350"
+		"bonus_movement_speed"	"0"
 	}
 }
 "item_radiance_boss"
