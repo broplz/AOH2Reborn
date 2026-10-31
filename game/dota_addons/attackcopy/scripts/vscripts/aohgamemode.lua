@@ -84,6 +84,13 @@ local GAME_EVENT_LISTENERS = {
 	{ "player_chat", "OnPlayerChat" },
 }
 
+-- The method name stays the think's context name, as the string form of SetThink had it, so
+-- re-registering still replaces the think. retry is the think's usual return value.
+local function set_think(mode, method, delay, retry)
+	GameRules:GetGameModeEntity()
+		:SetThink(safe_call.protect(method, Dynamic_Wrap(AOHGameMode, method), retry), mode, method, delay)
+end
+
 -- Every game end goes through here, so the console always says why it ended.
 local function declare_winner(team, reason)
 	Warning("SetGameWinner(" .. team .. "): " .. reason .. ", round " .. tostring(AOHGameMode._nRoundNumber) .. "\n")
@@ -176,7 +183,7 @@ function AOHGameMode:InitGameMode()
 		local event, method = listener[1], listener[2]
 		ListenToGameEvent(event, safe_call.protect(event, Dynamic_Wrap(AOHGameMode, method)), self)
 	end
-	GameRules:GetGameModeEntity():SetThink("OnThink", self, 0.75)
+	set_think(self, "OnThink", 0.75, 1.1)
 
 	GameRules:GetGameModeEntity()
 		:SetDamageFilter(safe_call.protect("DamageFilter", Dynamic_Wrap(AOHGameMode, "OnDamageDealt")), self)
@@ -361,7 +368,7 @@ function AOHGameMode:EndVote()
 		end
 	end
 	AOHGameMode.dps_interval = AOHGameMode.dps_interval / AOHGameMode.player_count
-	GameRules:GetGameModeEntity():SetThink("OnUpdateThink", self, 2)
+	set_think(self, "OnUpdateThink", 2, AOHGameMode.dps_interval)
 	CustomGameEventManager:UnregisterListener(AOHGameMode.difficulty_listener)
 	AOHGameMode._difficulty = math.floor((difficultyTotal / AOHGameMode.player_count) + 0.5)
 	for choice = 0, 3 do
@@ -506,8 +513,10 @@ function AOHGameMode:EndVote()
 end
 -- Initiates variables that need to be set to values
 local function init_variables(self)
-	AOHGameMode.difficulty_listener =
-		CustomGameEventManager:RegisterListener("difficulty_clicked", Dynamic_Wrap(AOHGameMode, "DifficultyClicked"))
+	AOHGameMode.difficulty_listener = CustomGameEventManager:RegisterListener(
+		"difficulty_clicked",
+		safe_call.protect("difficulty_clicked", Dynamic_Wrap(AOHGameMode, "DifficultyClicked"))
+	)
 	AOHGameSkills:Init()
 
 	for playerID = 0, DOTA_DEFAULT_MAX_TEAM - 1 do
@@ -573,7 +582,7 @@ local function init_variables(self)
 	for _, v in pairs(AOHGameMode.Players) do
 		v:SetGold(totalGold / AOHGameMode.player_count, true)
 	end
-	GameRules:GetGameModeEntity():SetThink("GoldIncome", self, 1)
+	set_think(self, "GoldIncome", 1, 7)
 end
 AOHGameMode.InitVariables = safe_call.protect("InitVariables", init_variables)
 
@@ -722,7 +731,7 @@ function AOHGameMode:_CheckForDefeat()
 	if GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
 		if self._entAncient and self._entAncient:IsAlive() then
 			if are_all_heroes_dead() and not self._ischeckingdefeat then
-				GameRules:GetGameModeEntity():SetThink("CheckForDefeatDelay", self, 0.5)
+				set_think(self, "CheckForDefeatDelay", 0.5, 1)
 				self._ischeckingdefeat = true
 			end
 		else

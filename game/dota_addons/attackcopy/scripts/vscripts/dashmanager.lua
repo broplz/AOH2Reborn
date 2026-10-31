@@ -1,9 +1,11 @@
+local safe_call = require("lib/safe_call")
+
 if DashManager == nil then
 	_G.DashManager = class({})
 end
 
 function DashManager:Init()
-	CustomGameEventManager:RegisterListener("dash", Dynamic_Wrap(DashManager, "Dash"))
+	CustomGameEventManager:RegisterListener("dash", safe_call.protect("dash", Dynamic_Wrap(DashManager, "Dash")))
 end
 
 -- keys.PlayerID is set by the engine; the payload's unit list is client-controlled.

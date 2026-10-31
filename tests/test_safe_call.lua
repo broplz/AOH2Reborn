@@ -35,4 +35,14 @@ function M.test_error_is_reported_with_name_and_swallowed()
 	T.truthy(lines[1]:find("^entity_killed error: table:"), lines[1])
 end
 
+function M.test_think_keeps_its_interval_after_an_error()
+	local wrapped = safe_call.protect("OnThink", function()
+		error("boom")
+	end, 1.1)
+	local lines = capture_warnings(function()
+		T.eq(wrapped(), 1.1)
+	end)
+	T.eq(#lines, 1)
+end
+
 return M

@@ -3,6 +3,7 @@ require("modifiers/modifier_tier_2")
 require("modifiers/modifier_tier_3")
 require("modifiers/modifier_tier_4")
 require("modifiers/modifier_tier_5")
+local safe_call = require("lib/safe_call")
 
 if AOHGameSkills == nil then
 	_G.AOHGameSkills = class({})
@@ -85,10 +86,17 @@ if AOHGameSkills == nil then
 	}
 end
 
+local CLIENT_EVENT_LISTENERS = {
+	{ "skill_selected", "SkillSelected" },
+	{ "credits_clicked", "CreditsClicked" },
+	{ "credit_transaction", "Transaction" },
+}
+
 function AOHGameSkills:Init()
-	CustomGameEventManager:RegisterListener("skill_selected", Dynamic_Wrap(AOHGameSkills, "SkillSelected"))
-	CustomGameEventManager:RegisterListener("credits_clicked", Dynamic_Wrap(AOHGameSkills, "CreditsClicked"))
-	CustomGameEventManager:RegisterListener("credit_transaction", Dynamic_Wrap(AOHGameSkills, "Transaction"))
+	for _, listener in ipairs(CLIENT_EVENT_LISTENERS) do
+		local event, method = listener[1], listener[2]
+		CustomGameEventManager:RegisterListener(event, safe_call.protect(event, Dynamic_Wrap(AOHGameSkills, method)))
+	end
 	for playerID = 0, DOTA_DEFAULT_MAX_TEAM - 1 do
 		if PlayerResource:IsValidPlayerID(playerID) then
 			if PlayerResource:HasSelectedHero(playerID) then

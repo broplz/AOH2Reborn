@@ -1,10 +1,12 @@
---- Error visibility for code the engine calls directly (ListenToGameEvent, Set*Filter), where the
--- xpcall in lib/timers does not reach and an error vanishes without a trace.
+--- Error visibility for code the engine calls directly (ListenToGameEvent, Set*Filter, SetThink,
+-- CustomGameEventManager listeners), where the xpcall in lib/timers does not reach and an error
+-- vanishes without a trace.
 --
 --   local safe_call = require("lib/safe_call")
 --   ListenToGameEvent("entity_killed", safe_call.protect("entity_killed", Dynamic_Wrap(X, "OnKilled")), self)
 --
--- protect() only reports: a failed call returns nothing, which a filter reads as false, as before.
+-- protect() only reports: a failed call returns on_error, nothing by default, which a filter
+-- reads as false, as before. A think passes its usual interval, so an error does not unschedule it.
 local M = {}
 
 -- Must never throw: an error inside an xpcall handler surfaces only as "error in error
@@ -18,7 +20,7 @@ function M.traceback(err)
 	return text
 end
 
-function M.protect(name, fn)
+function M.protect(name, fn, on_error)
 	return function(...)
 		local n, args = select("#", ...), { ... }
 		local ok, result = xpcall(function()
@@ -28,6 +30,7 @@ function M.protect(name, fn)
 			return result
 		end
 		Warning(name .. " error: " .. result .. "\n")
+		return on_error
 	end
 end
 
