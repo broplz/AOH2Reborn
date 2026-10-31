@@ -101,15 +101,26 @@ local function declare_winner(team, reason)
 	GameRules:SetGameWinner(team)
 end
 
+-- By the map name first, then any Radiant fort, so a renamed map entity still has an ancient.
+local function find_radiant_ancient()
+	local named = Entities:FindByName(nil, "dota_goodguys_fort")
+	if named then
+		return named
+	end
+	local fort = Entities:FindByClassname(nil, "npc_dota_fort")
+	while fort do
+		if fort:GetTeamNumber() == DOTA_TEAM_GOODGUYS then
+			return fort
+		end
+		fort = Entities:FindByClassname(fort, "npc_dota_fort")
+	end
+	Warning("Radiant ancient not found: no dota_goodguys_fort and no Radiant npc_dota_fort\n")
+end
+
 function AOHGameMode:InitGameMode()
 	AOHGameMode._nRoundNumber = 1
 	self._negativeRounds = 0
 	self._currentRound = nil
-	self._entAncient = Entities:FindByName(nil, "dota_goodguys_fort")
-	self._entAncient:AddAbility("global_damage_effects")
-	if not self._entAncient then
-		print("Ancient entity not found!")
-	end
 	self._hasVoted = {}
 	self._goldRatio = 1
 	self._expRatio = 1
@@ -612,6 +623,10 @@ function AOHGameMode:OnGameRulesStateChange()
 		self:_RevealShop()
 	elseif nNewState == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
 		self._flPrepTimeEnd = GameRules:GetGameTime() + self._flPrepTimeBetweenRounds + 8
+		self._entAncient = find_radiant_ancient()
+		if self._entAncient then
+			self._entAncient:AddAbility("global_damage_effects")
+		end
 		self:InitVariables()
 	elseif nNewState == DOTA_GAMERULES_STATE_POST_GAME then
 		GameRules:SetSafeToLeave(true)
@@ -741,7 +756,7 @@ function AOHGameMode:_CheckForDefeat()
 		else
 			declare_winner(
 				DOTA_TEAM_BADGUYS,
-				self._entAncient and "Radiant ancient is dead" or "Radiant ancient missing"
+				self._entAncient and "Radiant ancient is dead" or "Radiant ancient not found"
 			)
 		end
 	end

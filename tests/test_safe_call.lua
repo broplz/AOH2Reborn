@@ -45,4 +45,19 @@ function M.test_think_keeps_its_interval_after_an_error()
 	T.eq(#lines, 1)
 end
 
+function M.test_failing_handler_still_reports()
+	local wrapped = safe_call.protect("OnThink", function()
+		error(setmetatable({}, {
+			__tostring = function()
+				error("bad tostring")
+			end,
+		}))
+	end, 1.1)
+	local lines = capture_warnings(function()
+		T.eq(wrapped(), 1.1)
+	end)
+	T.eq(#lines, 1)
+	T.truthy(lines[1]:find("^OnThink error: %(error could not be described%)"), lines[1])
+end
+
 return M
