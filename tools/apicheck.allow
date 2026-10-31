@@ -1,0 +1,43 @@
+# tools/apicheck.py skips these: `Name` everywhere, `Name path` only in that file (path relative to
+# scripts/vscripts/). Owner decision 2026-10-31.
+
+# Our own callbacks/methods that share an api.json name; we call them with our own signature.
+GetModifierBaseDamageOutgoing_Percentage
+GetModifierCastRangeBonusStacking
+GetModifierDamageOutgoing_Percentage
+GetModifierEvasion_Constant
+GetModifierHealAmplify_PercentageTarget
+GetModifierHPRegenAmplify_Percentage
+GetModifierIgnoreCastAngle
+GetModifierIncomingDamage_Percentage
+GetModifierLifestealRegenAmplify_Percentage
+GetModifierMagicalResistanceBonus
+GetModifierModelScale
+GetModifierPercentageCasttime
+GetModifierPercentageCooldown
+GetModifierPercentageManacost
+GetModifierPhysicalArmorBonus
+GetModifierPreAttack_CriticalStrike
+GetModifierSpellAmplify_Percentage
+GetModifierSpellLifestealRegenAmplify_Percentage
+GetModifierTotal_ConstantBlock
+GetModifierTotalDamageOutgoing_Percentage
+GetOverrideAnimation
+LaunchSpear
+OnChannelFinish
+OnCreated
+OnDestroy
+OnRefresh
+OnRemoved
+OnSpellStart
+Precache
+GetModifierPercentageCooldownStacking lib/my.lua
+
+# 0053: suspicious arities of our callbacks, file-scoped until that task decides.
+Destroy abilities/heroes/mars_spear_of_mars_lua.lua
+UpdateHorizontalMotion abilities/other/hero_attribute_fix.lua
+OnProjectileHit abilities/heroes/gyrocopter_custom_rocket_barrage.lua
+OnProjectileHit abilities/heroes/rattletrap_custom_battery_assault.lua
+GetUnitLifetimeFraction abilities/heroes/grimstroke_custom_phantoms_embrace.lua
+GetUnitLifetimeFraction items/item_conduit.lua
+GetUnitLifetimeFraction lib/modifiers/modifier_generic_summon_timer.lua

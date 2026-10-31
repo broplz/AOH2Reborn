@@ -8,6 +8,8 @@
 #      feature branch from tasks/backlog.md, else main) plus tests/ — the legacy tree is linted
 #      file by file as tasks touch it. --all-files lints everything (phase-0 "format the repo" task, CI nightly).
 #      luacheck runs through the ratchet: legacy warnings in tools/luacheck.baseline, only NEW ones fail.
+#      + tools/apicheck.py over the whole vscripts tree: engine call arity vs dota-data api.json
+#      (skips with a note when tools/vanilla/dota-data is absent; exceptions in tools/apicheck.allow).
 # kv:  tools/kvcheck.py (syntax, duplicate keys/entries, ScriptFile) with its baseline ratchet,
 #      + tools/vanilla_diff.py when tools/vanilla/ has a snapshot.
 # Exit 0 OK · 1 FAIL · 5 a required tool is missing (brew install luacheck stylua).
@@ -45,6 +47,8 @@ if [ "$WHAT" = all ] || [ "$WHAT" = lua ]; then
     step "stylua --check"
     run stylua stylua --check "${FILES[@]}"
   fi
+  step "apicheck"
+  run apicheck python3 tools/apicheck.py
 fi
 if [ "$WHAT" = all ] || [ "$WHAT" = kv ]; then
   step "kvcheck"
