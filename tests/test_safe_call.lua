@@ -1,4 +1,4 @@
--- luacheck: globals Warning class modifier_safe_call_test
+-- luacheck: globals Warning class LoadKeyValues modifier_safe_call_test safe_call_runscript_test
 local safe_call = require("lib/safe_call")
 
 local M = {}
@@ -86,10 +86,24 @@ function M.test_protect_class_wraps_existing_and_later_methods()
 	T.truthy(lines[2]:find("^modifier_t:GetModifierBonus error:"), lines[2])
 end
 
-function M.test_protect_all_covers_classes_stored_in_globals()
-	local saved_class, saved_mt = class, getmetatable(_G)
+-- Runs fn under protect_all with LoadKeyValues returning kv, then restores the globals it touched.
+local function with_protect_all(kv, globals, fn)
+	local saved_class, saved_mt, saved_load = class, getmetatable(_G), LoadKeyValues
+	LoadKeyValues = function()
+		return kv
+	end
 	safe_call.protect_all()
-	local ok, err = pcall(function()
+	local ok, err = pcall(fn)
+	class, LoadKeyValues = saved_class, saved_load
+	setmetatable(_G, saved_mt)
+	for _, name in ipairs(globals) do
+		rawset(_G, name, nil)
+	end
+	assert(ok, err)
+end
+
+function M.test_protect_all_covers_classes_stored_in_globals()
+	with_protect_all({}, { "modifier_safe_call_test" }, function()
 		modifier_safe_call_test = class({})
 		modifier_safe_call_test.GetModifierBonus = failing
 		local lines = capture_warnings(function()
@@ -98,10 +112,34 @@ function M.test_protect_all_covers_classes_stored_in_globals()
 		T.eq(#lines, 1)
 		T.truthy(lines[1]:find("^modifier_safe_call_test:GetModifierBonus error:"), lines[1])
 	end)
-	class = saved_class
-	setmetatable(_G, saved_mt)
-	rawset(_G, "modifier_safe_call_test", nil)
-	assert(ok, err)
+end
+
+function M.test_protect_all_covers_every_definition_of_a_runscript_function()
+	local kv = {
+		boss_x = {
+			Modifiers = {
+				modifier_x = {
+					OnIntervalThink = {
+						RunScript = {
+							ScriptFile = "abilities/bosses/x.lua",
+							Function = "safe_call_runscript_test",
+						},
+					},
+				},
+			},
+		},
+	}
+	with_protect_all(kv, {}, function()
+		safe_call_runscript_test = failing
+		safe_call_runscript_test = function(keys)
+			error("second " .. keys.n)
+		end
+		local lines = capture_warnings(function()
+			T.eq(safe_call_runscript_test({ n = 2 }), nil)
+		end)
+		T.eq(#lines, 1)
+		T.truthy(lines[1]:find("^RunScript safe_call_runscript_test error: .*second 2"), lines[1])
+	end)
 end
 
 return M
