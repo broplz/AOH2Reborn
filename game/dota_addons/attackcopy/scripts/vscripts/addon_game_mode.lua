@@ -46,7 +46,11 @@ function Precache(context)
 		"soundevents/game_sounds_custom.vsndevts",
 	}
 
-	local units = {}
+	-- Units Lua spawns at GAME_IN_PROGRESS (courier, solo Goon); unprecached they render as ERROR.
+	local units = {
+		"npc_courier_replacement",
+		"npc_playerhelp",
+	}
 
 	do_precache(items, function(e)
 		PrecacheItemByNameSync(e, context)
