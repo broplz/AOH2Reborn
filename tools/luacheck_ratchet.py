@@ -17,6 +17,8 @@ BASELINE = os.path.join(ROOT, "tools", "luacheck.baseline")
 DEFAULT_PATHS = ["game/dota_addons/attackcopy/scripts/vscripts", "tests"]
 HEADER = "# luacheck baseline: known legacy warnings (normalized, no line numbers). Shrink with --prune; never add by hand.\n"
 POS = re.compile(r":\d+:\d+:")
+# "shadowing upvalue 'x' on line 130": a line reference in the message moves with every edit above it.
+LINE_REF = re.compile(r"\bon line \d+")
 
 
 def lint(paths):
@@ -31,15 +33,15 @@ def lint(paths):
 
 
 def normalize(line):
-    # "path:1:2: (W111) msg" -> "path: (W111) msg"
-    return POS.sub(":", line, count=1)
+    # "path:1:2: (W111) msg on line 3" -> "path: (W111) msg on line N"
+    return LINE_REF.sub("on line N", POS.sub(":", line, count=1))
 
 
 def read_baseline():
     if not os.path.exists(BASELINE):
         return Counter()
     with open(BASELINE, encoding="utf-8") as f:
-        return Counter(l.rstrip("\n") for l in f if l.strip() and not l.startswith("#"))
+        return Counter(normalize(l.rstrip("\n")) for l in f if l.strip() and not l.startswith("#"))
 
 
 def write_baseline(counter):
