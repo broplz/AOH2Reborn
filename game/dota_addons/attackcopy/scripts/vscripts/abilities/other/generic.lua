@@ -687,7 +687,11 @@ function modifier_target_delay:GetAttributes()
 	return MODIFIER_ATTRIBUTE_MULTIPLE
 end
 
+-- Server only: the client gets no keys.duration, and the particles are created on the server.
 function modifier_target_delay:OnCreated(keys)
+	if not IsServer() then
+		return
+	end
 	self.parent = self:GetParent()
 	local caster = self:GetCaster()
 	self.fx =
@@ -726,6 +730,9 @@ function modifier_target_delay:OnCreated(keys)
 end
 
 function modifier_target_delay:OnDestroy()
+	if not IsServer() then
+		return
+	end
 	self.parent = self:GetParent()
 	ParticleManager:DestroyParticle(self.fx, false)
 	ParticleManager:DestroyParticle(self.fx2, false)
