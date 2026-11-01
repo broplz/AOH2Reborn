@@ -1,11 +1,5 @@
 # kvcheck baseline: known legacy FAILs (normalized, no line numbers). Remove a line when a task fixes it.
 game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: ScriptFile not found: abilities/heroes/riki_custom_dagger.lua
-game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key '01' in boss_enigma_black_hole/AbilitySpecial
-game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key '01' in skill_transfusion/AbilitySpecial
-game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key '02' in boss_enigma_black_hole/AbilitySpecial
-game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key '03' in boss_enigma_black_hole/AbilitySpecial
-game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key '04' in boss_enigma_black_hole/AbilitySpecial
-game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key '06' in watch_tower_increase_stats/AbilitySpecial
 game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key 'ApplyModifier' in pugna_custom_nether_ward/OnSpellStart/SpawnUnit/OnSpawn
 game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key 'AttachEffect' in nyx_assassin_custom_spiked_carapace/Modifiers/modifier_spiked_carapaced_stun_datadriven/OnCreated
 game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key 'CASTER' in legion_arcana/Modifiers/modifier_arcana/OnCreated/AttachEffect/ControlPointEntities
@@ -19,11 +13,6 @@ game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key 
 game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key 'SpawnUnit' in pugna_custom_nether_ward/OnSpellStart
 game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key 'TARGET' in chen_custom_holy_persuasion/OnSpellStart/FireEffect/ControlPointEntities
 game/dota_addons/attackcopy/scripts/npc/npc_abilities_custom.txt: duplicate key 'TARGET' in necrolyte_custom_reapers_scythe/OnSpellStart/DelayedAction/Action/FireEffect/ControlPointEntities
-game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key '01' in item_tome_bargain/AbilitySpecial
-game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key '01' in item_tome_selling/AbilitySpecial
-game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key '05' in item_plain_ring/AbilitySpecial
-game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key '05' in item_suicidal_mask/AbilitySpecial
-game/dota_addons/attackcopy/scripts/npc/npc_items_custom.txt: duplicate key '10' in item_suicidal_mask/AbilitySpecial
 game/dota_addons/attackcopy/scripts/npc/npc_units_custom.txt: duplicate key 'Ability2' in npc_boss_luna/Creature/OffensiveAbilities
 game/dota_addons/attackcopy/scripts/npc/npc_units_custom.txt: duplicate key 'Wearable5' in npc_boss_skeleton_king/Creature/AttachWearables
 game/dota_addons/attackcopy/scripts/npc/npc_units_custom.txt: duplicate key 'Wearable5' in npc_boss_skeleton_king_angry/Creature/AttachWearables

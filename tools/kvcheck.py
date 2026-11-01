@@ -5,7 +5,7 @@
     tools/kvcheck.py --entries a,b        only these entries (by name) across all files
     tools/kvcheck.py --show <entry>       print one entry's block with line numbers (agents use this
                                           instead of reading a 20k-line file)
-    tools/kvcheck.py --strict             AbilitySpecial / LinkedSpecialBonus / backslash paths are FAIL, not WARN
+    tools/kvcheck.py --strict             LinkedSpecialBonus / backslash paths are FAIL, not WARN
     tools/kvcheck.py --update-baseline    record today's FAIL lines in tools/kvcheck.baseline (owner only)
 
 Ratchet: FAIL lines listed in tools/kvcheck.baseline (legacy defects the phase-1 tasks remove one
@@ -13,8 +13,9 @@ by one) are reported as KNOWN and do not fail the run; anything new does. A task
 known defect also removes its line from the baseline.
 
 Checks: syntax (balanced braces, key without value), duplicated top-level entries, duplicated
-keys inside a block, ScriptFile that does not exist or uses backslashes, AbilitySpecial and
-LinkedSpecialBonus (legacy format), ability_datadriven (WARN; ADR-0002 phases them out),
+keys inside a block, ScriptFile that does not exist or uses backslashes, LinkedSpecialBonus
+(legacy format), AbilitySpecial blocks above the per-file ratchet ABILITY_SPECIAL_BASELINE (FAIL;
+the engine reads them as 0), ability_datadriven (WARN; ADR-0002 phases them out),
 ability_lua without ScriptFile. Wrappers that RunScript a generic.lua function: ability_index
 must resolve (literal or %var in AbilityValues; AbilitySpecial reads as 0) to a spell in that
 function's table, and every unit with the wrapper must have that spell.
@@ -27,8 +28,10 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import kvlib as kv  # noqa: E402
 
-LEGACY_KEYS = {"abilityspecial": "AbilitySpecial (legacy; use AbilityValues)",
-               "linkedspecialbonus": "LinkedSpecialBonus (legacy; inline the talent in AbilityValues)"}
+LEGACY_KEYS = {"linkedspecialbonus": "LinkedSpecialBonus (legacy; inline the talent in AbilityValues)"}
+# AbilitySpecial reads as 0 in the current engine (0054). Ratchet: blocks allowed per file, every
+# other file 0; a batch that migrates a file lowers its number here.
+ABILITY_SPECIAL_BASELINE = {"npc_abilities_override.txt": 509}
 
 
 def has_key_deep(node, key):
@@ -49,10 +52,13 @@ def check_file(path, only=None, strict=False):
     root, problems = kv.parse_file(path)
     for p in problems:
         fails.append(f"{rel}:{p}")
-    seen = {}
+    seen, specials = {}, []
     for e in kv.entries(root):
         if only and e.key not in only:
             continue
+        special = has_key_deep(e, "AbilitySpecial")
+        if special:
+            specials.append(f"{e.key}:{special.line}")
         if e.key in seen:
             fails.append(f"{rel}:{e.line}: duplicated entry {e.key} (first at line {seen[e.key]}; one copy is ignored by the engine)")
         seen.setdefault(e.key, e.line)
@@ -76,6 +82,10 @@ def check_file(path, only=None, strict=False):
             node = has_key_deep(e, k)
             if node:
                 (fails if strict else warns).append(f"{rel}:{node.line}: {e.key}: {msg}")
+    allowed = ABILITY_SPECIAL_BASELINE.get(os.path.basename(path), 0)
+    if len(specials) > allowed:
+        fails.append(f"{rel}: {len(specials)} AbilitySpecial blocks, ratchet allows {allowed} (reads as 0; "
+                     f"use AbilityValues, tools/kv_values_migrate.py): {', '.join(specials[allowed:][:5])}")
     return fails, warns, seen
 
 
