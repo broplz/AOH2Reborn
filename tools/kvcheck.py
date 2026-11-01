@@ -15,10 +15,13 @@ known defect also removes its line from the baseline.
 Checks: syntax (balanced braces, key without value), duplicated top-level entries, duplicated
 keys inside a block, ScriptFile that does not exist or uses backslashes, AbilitySpecial and
 LinkedSpecialBonus (legacy format), ability_datadriven (WARN; ADR-0002 phases them out),
-ability_lua without ScriptFile.
+ability_lua without ScriptFile. Wrappers that RunScript a generic.lua function: ability_index
+must resolve (literal or %var in AbilityValues; AbilitySpecial reads as 0) to a spell in that
+function's table, and every unit with the wrapper must have that spell.
 """
 import argparse
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -76,6 +79,96 @@ def check_file(path, only=None, strict=False):
     return fails, warns, seen
 
 
+GENERIC_LUA = "abilities/other/generic.lua"
+
+
+def generic_tables():
+    """generic.lua → ({table: {index: spell}}, {function: table}) from its spells_* lists."""
+    tables, funcs, current, idx, func = {}, {}, None, 0, None
+    with open(os.path.join(kv.VSCRIPTS, GENERIC_LUA), encoding="utf-8") as f:
+        for line in f:
+            m = re.match(r"local (spells_\w+) = \{", line)
+            if m:
+                current, idx = m.group(1), 0
+                tables[current] = {}
+                continue
+            if current:
+                if line.startswith("}"):
+                    current = None
+                    continue
+                s = re.search(r'(?:\[(\d+)\]\s*=\s*)?"([^"]+)"', line)
+                if s:
+                    idx = int(s.group(1)) if s.group(1) else idx
+                    tables[current][idx] = s.group(2)
+                    idx += 1
+                continue
+            m = re.match(r"function (\w+)\(keys\)", line)
+            if m:
+                func = m.group(1)
+            m = re.search(r"FindAbilityByName\((spells_\w+)\[keys\.ability_index\]\)", line)
+            if m and func:
+                funcs[func] = m.group(1)
+    return tables, funcs
+
+
+def runscripts(node):
+    for c in node.children:
+        if c.value is None:
+            if c.key.lower() == "runscript":
+                yield c
+            yield from runscripts(c)
+
+
+def resolve_index(entry, raw):
+    """(index, problem) for a RunScript ability_index value."""
+    if raw.isdigit():
+        return int(raw), None
+    name = raw.lstrip("%")
+    values = entry.get("AbilityValues")
+    node = values.get(name) if values else None
+    if node and node.value is not None:
+        return int(float(node.value)), None
+    if has_key_deep(entry.get("AbilitySpecial") or kv.Node("", 0), name):
+        return None, f"ability_index {raw} is in AbilitySpecial, which reads as 0"
+    return None, f"ability_index {raw} not found in AbilityValues"
+
+
+def unit_abilities(path):
+    root, _ = kv.parse_file(path)
+    return {u.key: {c.value for c in u.children if re.fullmatch(r"Ability\d+", c.key) and c.value}
+            for u in kv.entries(root)}
+
+
+def check_generic_wrappers(only=None):
+    tables, funcs = generic_tables()
+    units = {}
+    for name in ("npc_units_custom.txt", "npc_heroes_custom.txt"):
+        units.update(unit_abilities(os.path.join(kv.NPC_DIR, name)))
+    path = os.path.join(kv.NPC_DIR, "npc_abilities_custom.txt")
+    rel = os.path.relpath(path, kv.ROOT)
+    root, _ = kv.parse_file(path)
+    fails = []
+    for e in kv.entries(root):
+        if only and e.key not in only:
+            continue
+        for rs in runscripts(e):
+            sf, fn, ai = rs.get("ScriptFile"), rs.get("Function"), rs.get("ability_index")
+            if not (sf and fn and ai and sf.value.replace("\\", "/") == GENERIC_LUA and fn.value in funcs):
+                continue
+            table = funcs[fn.value]
+            index, problem = resolve_index(e, ai.value)
+            spell = tables[table].get(index) if problem is None else None
+            if problem is None and spell is None:
+                problem = f"ability_index {index} is not in {table}"
+            if problem:
+                fails.append(f"{rel}:{ai.line}: {e.key}: {problem} ({fn.value} gets nil from FindAbilityByName)")
+                continue
+            for unit, abilities in sorted(units.items()):
+                if e.key in abilities and spell not in abilities:
+                    fails.append(f"{rel}:{ai.line}: {e.key} on {unit} casts {spell} ({table}[{index}]), which {unit} lacks")
+    return fails
+
+
 def show(entry):
     for name in kv.KV_FILES:
         path = os.path.join(kv.NPC_DIR, name)
@@ -119,6 +212,7 @@ def main():
             continue
         f, w, seen = check_file(path, only, a.strict)
         total_f += f; total_w += w; n_entries += len(seen)
+    total_f += check_generic_wrappers(only)
     baseline_path = os.path.join(kv.ROOT, "tools", "kvcheck.baseline")
     norm = lambda l: __import__("re").sub(r":\d+:", ":", __import__("re").sub(r"\(first at line \d+\)|line \d+", "", l)).strip()  # noqa: E731
     if a.update_baseline:

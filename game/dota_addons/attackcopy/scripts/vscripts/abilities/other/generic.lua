@@ -37,6 +37,8 @@ local spells_aoe = {
 	"boss_invoker_trance",
 	"boss_phantom_lancer_spiritlance", -- index 30
 	"boss_phantom_lancer_doppelganger",
+	"custom_dark_artistry",
+	"custom_torrent_tide",
 }
 local spells_target = {
 	[0] = "boss_wisp_friendly_electric_vortex", -- DEPRECATED
@@ -63,6 +65,7 @@ local spells_target = {
 	"boss_storm_spirit_sigil",
 	"boss_beastmaster_primal_roar",
 	"boss_death_prophet_spirit_siphon",
+	"custom_sunray", -- index 24
 }
 
 --Fires a warning aoe to a point and casts the spell immediately
