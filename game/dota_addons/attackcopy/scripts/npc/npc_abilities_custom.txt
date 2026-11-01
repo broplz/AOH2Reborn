@@ -5272,28 +5272,12 @@
     "BaseClass"						"ability_datadriven"
     "AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_PASSIVE"
     "AbilityTextureName"			"fountain"
-    "AbilitySpecial"
+    "AbilityValues"
     {
-        "01"
-        {
-            "var_type"					"FIELD_INTEGER"
-            "radius"					"230"
-        }
-		"02"
-        {
-            "var_type"					"FIELD_FLOAT"
-            "healing"					"4.0"
-        }
-		"03"
-        {
-            "var_type"					"FIELD_FLOAT"
-            "mp_healing"					"3.0"
-        }
-		"04"
-        {
-            "var_type"					"FIELD_INTEGER"
-            "damage_taken"					"100"
-        }
+        "radius"					"230"
+        "healing"					"4.0"
+        "mp_healing"				"3.0"
+        "damage_taken"				"100"
     }
     "Modifiers"
     {
