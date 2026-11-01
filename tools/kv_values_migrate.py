@@ -9,12 +9,19 @@
     ... --write                                     rewrite the file in place
 
 "01" { "var_type" "FIELD_FLOAT" "radius" "190" } becomes "radius" "190"; a sub-block with more
-keys (LinkedSpecialBonus, RequiresScepter, ...) becomes "radius" { "value" "190" ... }. An entry
-that already has AbilityValues, repeats a name or nests deeper is skipped and reported. Migrated
-entries can still carry notes for review: non-numeric values, %var with no definition in the
-entry, nested form, empty or duplicated sub-block keys.
+keys (RequiresScepter, CalculateSpellDamageTooltip, ...) becomes "radius" { "value" "190" ... }.
+LinkedSpecialBonus becomes the current vanilla form, the talent inlined in the base value:
+"radius" { "value" "190" "special_bonus_x" "+N" }, N from the talent's own value (our files, then
+vanilla) or, for a vanilla talent with no block, from the vanilla ability that inlines it. A ""
+value means "the top-level key": with a talent it becomes "AbilityCastRange" { "value" "<top-level
+or vanilla BaseClass value>" "special_bonus_x" "+N" }, without one it is dropped. An AbilitySpecial
+with no values is removed, not written as an empty AbilityValues. An entry that already has
+AbilityValues, repeats a name or nests deeper is skipped and reported. Migrated entries can still
+carry notes for review: non-numeric values, %var with no definition in the entry, nested form,
+unresolved talents, dropped "" values, empty or duplicated sub-block keys.
 """
 import argparse
+import glob
 import os
 import re
 import sys
@@ -27,6 +34,83 @@ import kvcheck  # noqa: E402
 NUMBER = re.compile(r"[-+]?(\d+\.?\d*|\.\d+)f?")
 VAR_REF = re.compile(r"%(\w+)")
 SKIP_KINDS = ("already has AbilityValues", "name repeats", "unexpected nesting")
+LINK, LINK_FIELD = "linkedspecialbonus", "linkedspecialbonusfield"
+OUR_ABILITY_FILES = ("npc_abilities_custom.txt", "npc_abilities_override.txt")
+VANILLA_ABILITY_FILES = ("npc_abilities.txt", "heroes/*.txt")
+VALUE_BLOCKS = ("AbilityValues", "AbilitySpecial")
+
+
+def blocks_by_name(paths):
+    """Every named block (abilities sit at different depths in vanilla files); first one wins."""
+    index = {}
+
+    def walk(node):
+        for c in node.children:
+            if c.value is None:
+                index.setdefault(c.key, c)
+                walk(c)
+    for path in paths:
+        walk(kv.parse_file(path)[0])
+    return index
+
+
+def plain(node):
+    """A key's value: "x" "1" → "1"; vanilla "x" { "value" "1" ... } → "1"."""
+    if node is None:
+        return None
+    return node.value if node.value is not None else plain(node.get("value"))
+
+
+def lookup(ability, key):
+    """A key's value in an ability: top level, then its value blocks (key spelling, value)."""
+    for holder in [ability] + [ability.get(b) for b in VALUE_BLOCKS if ability.get(b)]:
+        node = holder.get(key) if holder is ability else kvcheck.has_key_deep(holder, key)
+        if plain(node) is not None:
+            return node.key, plain(node)
+    return None, None
+
+
+class Talents:
+    """Talent values for LinkedSpecialBonus: our talent blocks, vanilla talent blocks, vanilla inlines."""
+
+    def __init__(self):
+        self.ours = blocks_by_name(os.path.join(kv.NPC_DIR, f) for f in OUR_ABILITY_FILES)
+        vanilla = [p for g in VANILLA_ABILITY_FILES for p in sorted(glob.glob(os.path.join(kv.VANILLA, g)))]
+        self.vanilla = blocks_by_name(vanilla)
+        self.inlined = defaultdict(list)  # talent -> [(vanilla ability, key, "+N")]
+        for name, ability in self.vanilla.items():
+            values = ability.get("AbilityValues")
+            for key in (values.children if values else []):
+                for c in key.children:
+                    if c.value is not None and c.key.startswith("special_bonus_"):
+                        self.inlined[c.key].append((name, key.key, c.value))
+
+    def bonus(self, entry, key, talent, field):
+        """("+N", where) or (None, why)."""
+        for source, index in (("ours", self.ours), ("vanilla talent", self.vanilla)):
+            if talent in index:
+                _, value = lookup(index[talent], field)
+                if value is not None:
+                    return signed(value), source
+        base = entry.get("BaseClass").value if entry.get("BaseClass") else ""
+        same_key = [r for r in self.inlined.get(talent, []) if r[1].lower() == key.lower()]
+        for pick in ([r for r in same_key if r[0] == base], same_key):
+            if len({r[2] for r in pick}) == 1:
+                return signed(pick[0][2]), f"vanilla {pick[0][0]}.{pick[0][1]}"
+        return None, f"no {talent}.{field} block and no vanilla '{key}' inlining it with one value"
+
+    def top_level(self, entry, key):
+        """("Key", value) for a "" sub-block: the entry's top-level key, else its vanilla BaseClass's."""
+        node = entry.get(key)
+        if node is not None and node.value:
+            return node.key, node.value
+        base = entry.get("BaseClass")
+        ability = self.vanilla.get(base.value) if base else None
+        return lookup(ability, key) if ability else (None, None)
+
+
+def signed(value):
+    return value if value[:1] in "+-" else "+" + value
 
 
 def block_end(lines, start):
@@ -53,8 +137,8 @@ def var_refs(node):
             yield from ((m, c.line) for m in VAR_REF.findall(c.value))
 
 
-def values_block(entry, special, indent):
-    """(new AbilityValues lines or None, skip kind or None, [(note kind, detail)])."""
+def values_block(entry, special, indent, talents):
+    """(new AbilityValues lines, [] to drop the block, or None; skip kind or None; [(note kind, detail)])."""
     out, names, notes = [f'{indent}"AbilityValues"', f"{indent}{{"], set(), []
     if entry.get("AbilityValues"):
         return None, "already has AbilityValues", notes
@@ -70,18 +154,35 @@ def values_block(entry, special, indent):
             notes.append(("empty sub-block", f"line {sub.line}"))
             continue
         name, rest = fields[0], fields[1:]
-        if name.key in names:
-            return None, "name repeats", [("", f"{name.key!r} line {name.line}")]
-        names.add(name.key)
-        if not numeric(name.value):
-            notes.append(("non-numeric value", f"{name.key}={name.value!r} line {name.line}"))
+        link = {c.key.lower(): c.value for c in rest if c.key.lower() in (LINK, LINK_FIELD)}
+        rest = [c for c in rest if c.key.lower() not in link]
+        key, value, bonus = name.key, name.value, None
+        if link:
+            bonus, where = talents.bonus(entry, key, link[LINK], link.get(LINK_FIELD, "value"))
+            notes.append(("talent inlined" if bonus else "talent not resolved, link dropped",
+                          f"{key}: {link[LINK]} {bonus or ''} ({where})"))
+            if bonus:
+                rest.append(kv.Node(link[LINK], 0))
+                rest[-1].value = bonus
+        if value == "":
+            key, value = talents.top_level(entry, key) if bonus else (None, None)
+            if value is None:
+                notes.append(("empty value dropped", f"{name.key} line {name.line}"))
+                continue
+        if key in names:
+            return None, "name repeats", [("", f"{key!r} line {name.line}")]
+        names.add(key)
+        if not numeric(value):
+            notes.append(("non-numeric value", f"{key}={value!r} line {name.line}"))
         if not rest:
-            out.append(f'{indent}\t"{name.key}"\t\t"{name.value}"')
+            out.append(f'{indent}\t"{key}"\t\t"{value}"')
             continue
-        notes.append(("nested form (extra keys)", f"{name.key}: {', '.join(c.key for c in rest)}"))
-        out += [f'{indent}\t"{name.key}"', f"{indent}\t{{", f'{indent}\t\t"value"\t\t"{name.value}"']
+        notes.append(("nested form (extra keys)", f"{key}: {', '.join(c.key for c in rest)}"))
+        out += [f'{indent}\t"{key}"', f"{indent}\t{{", f'{indent}\t\t"value"\t\t"{value}"']
         out += [f'{indent}\t\t"{c.key}"\t\t"{c.value}"' for c in rest]
         out.append(f"{indent}\t}}")
+    if not names:
+        return [], None, notes
     out.append(f"{indent}}}")
     for ref, line in var_refs(entry):
         if ref not in names:
@@ -130,6 +231,7 @@ def main():
         wanted |= generic_wrappers(root)
     lines = kv.read_text(path).split("\n")
     edits, skipped, notes, blocks = [], [], [], []
+    talents = Talents()
     for e in kv.entries(root):
         special = e.get("AbilitySpecial")
         if special is None or not (a.all or e.key in wanted):
@@ -137,7 +239,7 @@ def main():
         blocks.append(e.key)
         start = special.line - 1
         indent = lines[start][: len(lines[start]) - len(lines[start].lstrip())]
-        new, skip, entry_notes = values_block(e, special, indent)
+        new, skip, entry_notes = values_block(e, special, indent, talents)
         if skip:
             skipped.append((e.key, skip, entry_notes[0][1] if entry_notes else ""))
             continue
