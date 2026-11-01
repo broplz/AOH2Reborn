@@ -5333,7 +5333,7 @@
     "MaxLevel"					    "1"
     "AbilityValues"
     {
-        "health_base"	        "0"
+        "health_base"	        "100000"	// matches the unit's StatusHealth; balance: to be tuned
         "health_per_round"	    "450"
         "armor_base"	        "0"
         "armor_per_round"	    "0.75"
