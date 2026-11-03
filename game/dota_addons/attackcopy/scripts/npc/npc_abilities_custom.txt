@@ -2147,7 +2147,7 @@
     {
     	"duration"		"3.2"
     	"radius"		"800"
-    	"eyes_radius"		"800"
+    	"damage"		"150"
     }
 }
 "custom_flame_guard"
