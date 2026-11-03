@@ -112,7 +112,6 @@ function Precache(context)
 		"particles/items2_fx/veil_of_discord.vpcf",
 		"particles/items3_fx/lotus_orb_shield.vpcf",
 		"particles/items3_fx/octarine_core_lifesteal.vpcf",
-		"particles/msg_fx/msg_damage.vpcf",
 		"particles/neutral_fx/ghost_base_attack.vpcf",
 		"particles/neutral_fx/harpy_chain_lightning.vpcf",
 		"particles/neutral_fx/mud_golem_hurl_boulder.vpcf",
@@ -373,6 +372,8 @@ function Precache(context)
 	end)
 
 	PrecacheResource("particle_folder", "particles/custom", context)
+	-- lib/popup.lua builds "particles/msg_fx/msg_" .. type at runtime
+	PrecacheResource("particle_folder", "particles/msg_fx", context)
 
 	do_precache(particles, function(e)
 		PrecacheResource("particle", e, context)

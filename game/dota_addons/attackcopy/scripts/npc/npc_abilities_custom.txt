@@ -898,10 +898,10 @@
     "AbilityCastPoint"				"0.7"
     "AbilityCooldown"				"10.0"
     "AbilityDuration"				"1.0"
-    "AbilityDamage"					"1500"
     "AbilityManaCost"				"0"
     "AbilityValues"
     {
+    	"fissure_damage"		"1500"
     	"fissure_range"		"2000"
     	"fissure_duration"		"2.0"
     	"fissure_radius"		"215"
@@ -1155,10 +1155,10 @@
 	"AbilityCastRange"				"1200"
 	"AbilityCastPoint"				"0.3"
 	"AbilityCooldown"				"5.0"
-	"AbilityDamage"					"500"
 	"AbilityManaCost"				"50"
 	"AbilityValues"
 	{
+		"damage"		"500"
 		"projectile_speed"		"450"
 		"projectile_max_time"		"1.0"
 		"split_radius"		"500"
@@ -1736,10 +1736,10 @@
     "AbilityCastPoint"				"0.1"
     "AbilityCooldown"				"7.0"
     "AbilityDuration"				"1.0"
-    "AbilityDamage"					"900"
     "AbilityManaCost"				"0"
     "AbilityValues"
     {
+    	"damage"		"900"
     	"starfall_radius"		"900"
     	"starfall_secondary_radius"		"600"
     	"interval_scepter"		"6.0"
@@ -1882,10 +1882,10 @@
     "AbilityCastRange"				"0"
     "AbilityCastPoint"				"0.21"
     "AbilityCooldown"				"6"
-    "AbilityDamage"					"320"
     "AbilityManaCost"				"0"
     "AbilityValues"
     {
+    	"crush_damage"		"320"
     	"crush_radius"		"300"
     }
 }
@@ -2365,10 +2365,10 @@
     "AbilityCastRange"				"800"
     "AbilityCastPoint"				"0.35"
     "AbilityCooldown"				"15.0"
-    "AbilityDamage"					"100"
     "AbilityManaCost"				"0"
     "AbilityValues"
     {
+    	"base_damage"		"100"
     	"hero_duration"		"0.5"
     	"creep_duration"		"0.5"
     	"hero_damage"		"95"
@@ -6432,11 +6432,11 @@
 		"AbilityCastPoint"				"0.3"
 		"AbilityCooldown"				"8.0"
 		"AbilityDuration"				"3.5"
-		"AbilityDamage"					"200"
 		"AbilityManaCost"				"125"
 		"AbilityModifierSupportValue"	"0.3"	// Primarily about the damage
 		"AbilityValues"
 		{
+			"damage"		"200"
 			"radius"		"225"
 			"slow_movement_speed"		"-30"
 			"slow_attack_speed"		"-30"
@@ -8745,7 +8745,6 @@
 	"AbilityCooldown"				"15"
 	// Damage.
 	//-------------------------------------------------------------------------------------------------------------
-	"AbilityDamage"					"1000"
 	// Cost
 	//-------------------------------------------------------------------------------------------------------------
 	"AbilityManaCost"				"0"
@@ -8756,6 +8755,7 @@
 	//-------------------------------------------------------------------------------------------------------------
 	"AbilityValues"
 	{
+		"damage"		"1000"
 		"blast_speed"		"1000"
 		"blast_stun_duration"		"1.5"
 		"blast_dot_duration"		"2.0"
@@ -11412,12 +11412,12 @@
 		"AbilitySound"					"Hero_Zuus.LightningBolt"
 		"AbilityCastRange"				"850"
 		"AbilityCastPoint"				"0.4"
-		"AbilityDamage"					"950"
 		"AbilityCooldown"				"10.0"
 		"AbilityManaCost"				"0"
 		"AbilityModifierSupportValue"	"0.1"	// just a ministun
 		"AbilityValues"
 		{
+			"damage"		"950"
 			"true_sight_radius"		"750"
 			"sight_radius_day"		"750"
 			"sight_radius_night"		"750"
