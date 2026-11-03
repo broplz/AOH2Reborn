@@ -26,8 +26,8 @@ end
 function DashManager:Dash(keys)
 	-- Panorama sometimes sends the event without pos.
 	if keys.pos == nil then
-		Warning("DashManager:Dash: event without pos, ignored; keys:\n")
-		DeepPrintTable(keys)
+		Warning("DashManager:Dash: event without pos, ignored; {id, pos, units}:\n")
+		DeepPrintTable({ id = keys.id, pos = keys.pos, units = keys.units })
 		return
 	end
 	local temp_vector = Vector(keys.pos["0"], keys.pos["1"], keys.pos["2"])
