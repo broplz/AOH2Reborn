@@ -12768,10 +12768,10 @@
 		"AbilityCastRange"				"1500"
 		"AbilityCastPoint"				"0.12"
 		"AbilityCooldown"				"6"
-		"AbilityDamage"					"275"
 		"AbilityManaCost"				"0"		
 		"AbilityValues"
 		{
+			"damage"		"275"
 			"start_radius"		"130"
 			"end_radius"		"190"
 			"range"		"1000"
