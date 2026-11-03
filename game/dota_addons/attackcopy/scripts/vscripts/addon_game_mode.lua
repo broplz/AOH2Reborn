@@ -115,6 +115,8 @@ function Precache(context)
 		"particles/items2_fx/refresher.vpcf",
 		"particles/items2_fx/urn_of_shadows_heal.vpcf",
 		"particles/items2_fx/veil_of_discord.vpcf",
+		"particles/items3_fx/blink_swift_end.vpcf",
+		"particles/items3_fx/blink_swift_start.vpcf",
 		"particles/items3_fx/lotus_orb_shield.vpcf",
 		"particles/items3_fx/octarine_core_lifesteal.vpcf",
 		"particles/neutral_fx/ghost_base_attack.vpcf",

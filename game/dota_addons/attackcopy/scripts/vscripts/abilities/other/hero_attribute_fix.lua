@@ -191,8 +191,10 @@ if IsServer() then
 
 			local is_dash_attack = false
 
+			-- Swift Blink look; candidate path, not in the vanilla KV dump (see the task report).
+			-- "particles/custom/blink_cooldown_screen.vpcf",
 			local fx = ParticleManager:CreateParticleForPlayer(
-				"particles/custom/blink_cooldown_screen.vpcf",
+				"particles/items3_fx/blink_swift_end.vpcf",
 				PATTACH_RENDERORIGIN_FOLLOW,
 				self.parent,
 				self.parent:GetPlayerOwner()
@@ -355,15 +357,6 @@ if IsServer() then
 				PATTACH_ABSORIGIN_FOLLOW,
 				self.parent
 			)
-			ParticleManager:SetParticleControlEnt(
-				self.fx,
-				0,
-				self.parent,
-				PATTACH_ABSORIGIN_FOLLOW,
-				"follow_origin",
-				self.parent:GetAbsOrigin(),
-				true
-			)
 			self:StartIntervalThink(0.1)
 			local enemies = FindUnitsInRadius(
 				self.parent:GetTeamNumber(), -- int, your team number
@@ -385,18 +378,24 @@ if IsServer() then
 			self:SetStackCount(0)
 		else
 			self:SetStackCount(40)
-			self.fx =
-				ParticleManager:CreateParticle("particles/custom/dash.vpcf", PATTACH_ABSORIGIN_FOLLOW, self.parent)
-			ParticleManager:SetParticleControlEnt(
-				self.fx,
-				0,
-				self.parent,
+			-- Swift Blink look; candidate path, not in the vanilla KV dump (see the task report).
+			-- self.fx = ParticleManager:CreateParticle("particles/custom/dash.vpcf", PATTACH_ABSORIGIN_FOLLOW, self.parent)
+			self.fx = ParticleManager:CreateParticle(
+				"particles/items3_fx/blink_swift_start.vpcf",
 				PATTACH_ABSORIGIN_FOLLOW,
-				"follow_origin",
-				self.parent:GetAbsOrigin(),
-				true
+				self.parent
 			)
 		end
+		-- No attachment name: "follow_origin" is not an attachment our models have.
+		ParticleManager:SetParticleControlEnt(
+			self.fx,
+			0,
+			self.parent,
+			PATTACH_ABSORIGIN_FOLLOW,
+			nil,
+			self.parent:GetAbsOrigin(),
+			true
+		)
 		if self:ApplyHorizontalMotionController() == false then
 			self:Destroy()
 		end
