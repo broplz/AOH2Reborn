@@ -73,3 +73,5 @@ Audit and phase plan: docs/adr/0002-target-architecture.md → "AOH2Reborn — �
 - accept docs/adr/0001-ai-team.md and docs/adr/0002-target-architecture.md (status Proposed → Accepted) before the first `run_queue.py --plan`
 - answer docs/reports/decisions-needed.md (playtest machine, Workshop account)
 - brew install luacheck stylua lua@5.1; python3 tools/vanilla_snapshot.py; `claude` once in the repo to trust it (hooks)
+
+- [human] playtest-9: assert item_recipe_* при компиляции resourcecompiler ушёл (e8cae7d, ItemPurchasable 0 без источника)
