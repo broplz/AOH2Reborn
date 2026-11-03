@@ -75,3 +75,7 @@ Audit and phase plan: docs/adr/0002-target-architecture.md → "AOH2Reborn — �
 - brew install luacheck stylua lua@5.1; python3 tools/vanilla_snapshot.py; `claude` once in the repo to trust it (hooks)
 
 - [human] playtest-9: assert item_recipe_* при компиляции resourcecompiler ушёл (e8cae7d, ItemPurchasable 0 без источника)
+
+- [human] playtest-9: FATAL GrowCount 32767 ушёл, игра доходит до PRE_GAME (61e3727)
+- [human] playtest-9: звук у boss lightning_bolt / ravage / telekinesis / caustic_finale (ушёл hero precache; при тишине добавить vsndevts tidehunter, rubick, sand_king)
+- [human] playtest-9: партиклы героев игроков после пика рисуются
