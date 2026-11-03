@@ -132,7 +132,6 @@ function Precache(context)
 		"particles/status_fx/status_effect_spirit_bear.vpcf",
 		"particles/status_fx/status_effect_terrorblade_reflection.vpcf",
 		"particles/status_fx/status_effect_void_spirit_aether_remnant.vpcf",
-		"particles/string/here.vpcf",
 		"particles/test_particle/channel_field_2.vpcf",
 		"particles/ui_mouseactions/ping_waypoint.vpcf",
 		"particles/units/heroes/hero_abaddon/abaddon_aphotic_shield_explosion.vpcf",
