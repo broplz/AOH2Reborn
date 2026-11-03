@@ -580,12 +580,16 @@ function Precache(context)
 		"npc_dota_neutral_black_dragon",
 		"npc_dota_observer_wards",
 	}
-	-- Plus the heroes players can pick: herolist.txt entries enabled with "1".
-	for hero, enabled in pairs(LoadKeyValues("scripts/npc/herolist.txt")) do
-		if tostring(enabled) == "1" then
+	-- Plus our heroes players can pick (npc_heroes_custom.txt entries enabled with "1" in
+	-- herolist.txt), and the two custom heroes herolist does not list.
+	local herolist = LoadKeyValues("scripts/npc/herolist.txt")
+	for hero in pairs(LoadKeyValues("scripts/npc/npc_heroes_custom.txt")) do
+		if tostring(herolist[hero]) == "1" then
 			units[#units + 1] = hero
 		end
 	end
+	units[#units + 1] = "npc_dota_vengefulspirit_new"
+	units[#units + 1] = "npc_dota_hero_clinkz_frostivus2018"
 
 	do_precache(items, function(e)
 		PrecacheItemByNameSync(e, context)
