@@ -1,3 +1,5 @@
+local fx = require("core/fx")
+
 LinkLuaModifier("modifier_atr_fix", "abilities/other/hero_attribute_fix.lua", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_builtin_blink", "abilities/other/hero_attribute_fix.lua", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_builtin_blink_cooldown", "abilities/other/hero_attribute_fix.lua", LUA_MODIFIER_MOTION_NONE)
@@ -191,15 +193,14 @@ if IsServer() then
 
 			local is_dash_attack = false
 
-			-- Swift Blink look; candidate path, not in the vanilla KV dump (see the task report).
-			-- "particles/custom/blink_cooldown_screen.vpcf",
-			local fx = ParticleManager:CreateParticleForPlayer(
-				"particles/items3_fx/blink_swift_end.vpcf",
-				PATTACH_RENDERORIGIN_FOLLOW,
-				self.parent,
-				self.parent:GetPlayerOwner()
-			)
-			ParticleManager:SetParticleControl(fx, 6, Vector(cooldown, 0, 0))
+			-- Off for the Swift Blink look (the dash effects live in modifier_builtin_blink_movement).
+			-- local fx = ParticleManager:CreateParticleForPlayer(
+			-- 	"particles/custom/blink_cooldown_screen.vpcf",
+			-- 	PATTACH_RENDERORIGIN_FOLLOW,
+			-- 	self.parent,
+			-- 	self.parent:GetPlayerOwner()
+			-- )
+			-- ParticleManager:SetParticleControl(fx, 6, Vector(cooldown, 0, 0))
 			if self.blink_count == 0 then
 				ProjectileManager:ProjectileDodge(self.parent)
 				self.parent:EmitSound("DOTA_Item.BlinkDagger.Activate")
@@ -351,12 +352,17 @@ if IsServer() then
 			PlayerResource:SetCameraTarget(self.playerID, self.parent)
 		end
 
+		-- CP0 follows the hero's origin, no attachment name ("follow_origin" is not one our models have).
+		local follow_origin = { [0] = { ent = self.parent, attach = PATTACH_ABSORIGIN_FOLLOW } }
+		fx.once(
+			"particles/items3_fx/blink_swift_start.vpcf",
+			PATTACH_WORLDORIGIN,
+			self.parent,
+			{ [0] = self.parent:GetAbsOrigin() }
+		)
 		if keys.is_dash_attack == 1 then
-			self.fx = ParticleManager:CreateParticle(
-				"particles/custom/dash_damage.vpcf",
-				PATTACH_ABSORIGIN_FOLLOW,
-				self.parent
-			)
+			self.fx =
+				fx.attach("particles/custom/dash_damage.vpcf", PATTACH_ABSORIGIN_FOLLOW, self.parent, follow_origin)
 			self:StartIntervalThink(0.1)
 			local enemies = FindUnitsInRadius(
 				self.parent:GetTeamNumber(), -- int, your team number
@@ -378,24 +384,14 @@ if IsServer() then
 			self:SetStackCount(0)
 		else
 			self:SetStackCount(40)
-			-- Swift Blink look; candidate path, not in the vanilla KV dump (see the task report).
 			-- self.fx = ParticleManager:CreateParticle("particles/custom/dash.vpcf", PATTACH_ABSORIGIN_FOLLOW, self.parent)
-			self.fx = ParticleManager:CreateParticle(
-				"particles/items3_fx/blink_swift_start.vpcf",
+			self.fx = fx.attach(
+				"particles/items3_fx/blink_swift_buff.vpcf",
 				PATTACH_ABSORIGIN_FOLLOW,
-				self.parent
+				self.parent,
+				follow_origin
 			)
 		end
-		-- No attachment name: "follow_origin" is not an attachment our models have.
-		ParticleManager:SetParticleControlEnt(
-			self.fx,
-			0,
-			self.parent,
-			PATTACH_ABSORIGIN_FOLLOW,
-			nil,
-			self.parent:GetAbsOrigin(),
-			true
-		)
 		if self:ApplyHorizontalMotionController() == false then
 			self:Destroy()
 		end
@@ -405,7 +401,13 @@ if IsServer() then
 		if self.isHero == true then
 			PlayerResource:SetCameraTarget(self.parent:GetPlayerOwnerID(), nil)
 		end
-		ParticleManager:DestroyParticle(self.fx, false)
+		fx.stop(self.fx)
+		fx.once(
+			"particles/items3_fx/blink_swift_end.vpcf",
+			PATTACH_WORLDORIGIN,
+			self.parent,
+			{ [0] = self.parent:GetAbsOrigin() }
+		)
 		Timers:CreateTimer(0.05, function()
 			self.parent:StopSound("AOH.DashLoop")
 		end)
@@ -525,16 +527,11 @@ if IsServer() then
 	function modifier_builtin_blink_dashattack:OnAttackLanded(keys)
 		local attacker = keys.attacker
 		if attacker == self:GetParent() then
-			local fx =
-				ParticleManager:CreateParticle("particles/custom/wavedash_crit.vpcf", PATTACH_POINT_FOLLOW, keys.target)
-			ParticleManager:SetParticleControlEnt(
-				fx,
-				0,
+			fx.once(
+				"particles/custom/wavedash_crit.vpcf",
+				PATTACH_POINT_FOLLOW,
 				keys.target,
-				PATTACH_POINT,
-				"attach_hitloc",
-				keys.target:GetAbsOrigin(), -- unknown
-				true -- unknown, true
+				{ [0] = { ent = keys.target, attach = PATTACH_POINT, point = "attach_hitloc" } }
 			)
 			Timers:CreateTimer(0.1, function()
 				self:Destroy()
