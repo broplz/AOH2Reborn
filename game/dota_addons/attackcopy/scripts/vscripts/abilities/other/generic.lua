@@ -78,6 +78,21 @@ local function cast_gone(caster, spell, lock)
 	return gone
 end
 
+-- How long a cast loop keeps re-issuing the cast before it gives up.
+local CAST_TIMEOUT = 5
+
+-- True once the spell has not gone on cooldown by the deadline: the cast keeps failing, and the
+-- loop's Stop/recast every tick would hold the boss in place forever. Frees the boss for attack_move.
+local function cast_timed_out(caster, spell, lock, deadline)
+	if GameRules:GetGameTime() < deadline then
+		return false
+	end
+	Warning("cast gave up: " .. spell:GetAbilityName() .. " on " .. caster:GetUnitName() .. "\n")
+	lock:Destroy()
+	caster:Stop()
+	return true
+end
+
 --Fires a warning aoe to a point and casts the spell immediately
 function generate_warning_aoe_noanim(keys)
 	local caster = keys.caster
@@ -226,6 +241,7 @@ function generic_aoe_noincrement(keys)
 			end
 			caster:SetForwardVector((point - caster:GetAbsOrigin()):Normalized())
 			local lock = caster:AddNewModifier(caster, ability, "modifier_casting_locked", { duration = -1 })
+			local deadline = GameRules:GetGameTime() + CAST_TIMEOUT
 			spell:EndCooldown()
 			caster:CastAbilityOnPosition(point, spell, caster:GetPlayerOwnerID())
 			Timers:CreateTimer(spell:GetCastPoint() + 0.1, function()
@@ -234,6 +250,8 @@ function generic_aoe_noincrement(keys)
 				end
 				if not spell:IsCooldownReady() then
 					lock:Destroy()
+				elseif cast_timed_out(caster, spell, lock, deadline) then
+					return nil
 				elseif caster:GetCurrentActiveAbility() == nil then
 					caster:CastAbilityOnPosition(point, spell, caster:GetPlayerOwnerID())
 					return spell:GetCastPoint() + 0.1
@@ -351,6 +369,7 @@ function generic_aoe(keys)
 			end
 			caster:SetForwardVector((point - caster:GetAbsOrigin()):Normalized())
 			local lock = caster:AddNewModifier(caster, ability, "modifier_casting_locked", { duration = -1 })
+			local deadline = GameRules:GetGameTime() + CAST_TIMEOUT
 			spell:EndCooldown()
 			caster:CastAbilityOnPosition(point, spell, caster:GetPlayerOwnerID())
 			Timers:CreateTimer(spell:GetCastPoint() + 0.1, function()
@@ -362,6 +381,8 @@ function generic_aoe(keys)
 					if count_temp == total - 1 then
 						caster:AddNewModifier(caster, ability, "modifier_weak", { duration = 0.5 })
 					end
+				elseif cast_timed_out(caster, spell, lock, deadline) then
+					return nil
 				elseif caster:GetCurrentActiveAbility() == nil and not caster:IsSilenced() then
 					caster:FaceTowards(point)
 					caster:Stop()
@@ -427,6 +448,7 @@ function generic_aoe_notarget(keys)
 			caster:AddNewModifier(caster, ability, "modifier_casting_locked", { duration = 0.5 })
 			spell:EndCooldown()
 			local lock = caster:AddNewModifier(caster, ability, "modifier_casting_locked", { duration = -1 })
+			local deadline = GameRules:GetGameTime() + CAST_TIMEOUT
 			caster:CastAbilityNoTarget(spell, -1)
 			Timers:CreateTimer(spell:GetCastPoint() + 0.1, function()
 				if cast_gone(caster, spell, lock) then
@@ -434,6 +456,8 @@ function generic_aoe_notarget(keys)
 				end
 				if not spell:IsCooldownReady() then
 					lock:Destroy()
+				elseif cast_timed_out(caster, spell, lock, deadline) then
+					return nil
 				elseif caster:GetCurrentActiveAbility() == nil then
 					caster:CastAbilityNoTarget(spell, -1)
 					return spell:GetCastPoint() + 0.1
@@ -546,13 +570,17 @@ function generic_target(keys)
 				AddFOWViewer(caster:GetTeamNumber(), target:GetAbsOrigin() + norm * maximum_distance, 100, 2, false)
 				modifier = temp_target:AddNewModifier(caster, keys.ability, "modifier_dummy", { duration = -1 })
 			end
+			-- modifier_dummy:OnDestroy kills the npc_target dummy.
+			local function drop_dummy()
+				if modifier and not modifier:IsNull() then
+					modifier:Destroy()
+				end
+			end
+			local deadline = GameRules:GetGameTime() + CAST_TIMEOUT
 			caster:CastAbilityOnTarget(temp_target, spell, -1)
 			Timers:CreateTimer(function()
 				if cast_gone(caster, spell, lock) then
-					-- modifier_dummy:OnDestroy kills the npc_target dummy.
-					if modifier and not modifier:IsNull() then
-						modifier:Destroy()
-					end
+					drop_dummy()
 					return nil
 				end
 				if not spell:IsCooldownReady() then
@@ -563,6 +591,9 @@ function generic_target(keys)
 					if count_temp == total - 1 then
 						caster:AddNewModifier(caster, ability, "modifier_weak", { duration = 0.5 })
 					end
+				elseif cast_timed_out(caster, spell, lock, deadline) then
+					drop_dummy()
+					return nil
 				elseif caster:GetCurrentActiveAbility() == nil and not caster:IsSilenced() then
 					caster:FaceTowards(point)
 					caster:Stop()
