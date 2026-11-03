@@ -121,6 +121,9 @@ function generic_aoe_noanim(keys)
 	end
 	EmitSoundOn("Hero_Mars.Spear.Cast", caster)
 	Timers:CreateTimer(delay - spell:GetCastPoint(), function()
+		if cast_gone(caster, spell) then
+			return nil
+		end
 		spell:EndCooldown()
 		caster:CastAbilityOnPosition(point, spell, -1)
 	end)
@@ -153,6 +156,9 @@ function generic_aoe_noincrement(keys)
 	local heroes = nil
 	ParticleManager:ReleaseParticleIndex(signifier)
 	Timers:CreateTimer(function()
+		if cast_gone(caster, spell) then
+			return nil
+		end
 		if
 			caster:IsChanneling()
 			or caster:IsCommandRestricted()
@@ -208,6 +214,9 @@ function generic_aoe_noincrement(keys)
 			rate = 1 / keys.delay - spell:GetCastPoint(),
 		})
 		Timers:CreateTimer(delay - spell:GetCastPoint(), function()
+			if cast_gone(caster, spell) then
+				return nil
+			end
 			if
 				caster:IsChanneling()
 				or caster:GetCurrentActiveAbility() ~= nil
@@ -272,6 +281,9 @@ function generic_aoe(keys)
 	local heroes = nil
 	ParticleManager:ReleaseParticleIndex(signifier)
 	Timers:CreateTimer(function()
+		if cast_gone(caster, spell) then
+			return nil
+		end
 		if
 			caster:IsChanneling()
 			or caster:IsCommandRestricted()
@@ -327,6 +339,9 @@ function generic_aoe(keys)
 			rate = 1 / keys.delay - spell:GetCastPoint(),
 		})
 		Timers:CreateTimer(delay - spell:GetCastPoint(), function()
+			if cast_gone(caster, spell) then
+				return nil
+			end
 			if
 				caster:IsChanneling()
 				or caster:GetCurrentActiveAbility() ~= nil
@@ -378,6 +393,9 @@ function generic_aoe_notarget(keys)
 	local ticket = ticket_concession:RequestTicket()
 	ParticleManager:ReleaseParticleIndex(signifier)
 	Timers:CreateTimer(function()
+		if cast_gone(caster, spell) then
+			return nil
+		end
 		if
 			caster:IsChanneling()
 			or caster:GetCurrentActiveAbility() ~= nil
@@ -396,6 +414,9 @@ function generic_aoe_notarget(keys)
 		})
 		caster:AddNewModifier(caster, ability, "modifier_anim", { duration = keys.delay - spell:GetCastPoint() })
 		Timers:CreateTimer(delay - spell:GetCastPoint(), function()
+			if cast_gone(caster, spell) then
+				return nil
+			end
 			if
 				caster:IsChanneling()
 				or caster:GetCurrentActiveAbility() ~= nil
@@ -445,6 +466,9 @@ function generic_target(keys)
 		delay = delay * 0.8
 	end
 	Timers:CreateTimer(function()
+		if cast_gone(caster, spell) then
+			return nil
+		end
 		if
 			caster:IsChanneling()
 			or caster:GetCurrentActiveAbility() ~= nil
@@ -567,6 +591,9 @@ function generic_target_aoe(keys)
 	local ticket = ticket_concession:RequestTicket()
 	ParticleManager:ReleaseParticleIndex(signifier)
 	Timers:CreateTimer(function()
+		if cast_gone(caster, spell) then
+			return nil
+		end
 		if
 			caster:IsChanneling()
 			or caster:GetCurrentActiveAbility() ~= nil
@@ -601,6 +628,9 @@ function generic_target_aoe(keys)
 			rate = 1 / keys.delay - spell:GetCastPoint(),
 		})
 		Timers:CreateTimer(delay - spell:GetCastPoint(), function()
+			if cast_gone(caster, spell) then
+				return nil
+			end
 			if
 				caster:IsChanneling()
 				or caster:GetCurrentActiveAbility() ~= nil
@@ -627,6 +657,9 @@ function generic_target_random(keys)
 		ParticleManager:CreateParticle("particles/custom/boss_block.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster)
 	ParticleManager:ReleaseParticleIndex(signifier)
 	Timers:CreateTimer(function()
+		if cast_gone(caster, spell) then
+			return nil
+		end
 		if caster:IsChanneling() or caster:GetCurrentActiveAbility() ~= nil or caster:IsCommandRestricted() then
 			return 0.5
 		end
@@ -643,6 +676,9 @@ function generic_target_random(keys)
 		caster:AddNewModifier(caster, ability, "modifier_anim", { duration = keys.delay - spell:GetCastPoint() })
 		caster:EmitSoundParams("Hero_VoidSpirit.Pulse.Cast", 0, 0.5, 0)
 		Timers:CreateTimer(delay - spell:GetCastPoint(), function()
+			if cast_gone(caster, spell) then
+				return nil
+			end
 			if
 				caster:IsChanneling()
 				or caster:GetCurrentActiveAbility() ~= nil
