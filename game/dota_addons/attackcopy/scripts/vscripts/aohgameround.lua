@@ -135,21 +135,47 @@ function AOHGameRound:ChooseRandomSpawnInfo()
 	return self._gameMode:ChooseRandomSpawnInfo()
 end
 
+local ENEMY_REPORT_INTERVAL = 10
+
+-- A unit removed without dying (UTIL_Remove, vanilla summons such as weaver swarm beetles)
+-- never fires entity_killed and would hold the round open forever. Dead units stay: a
+-- reincarnating boss is not alive either.
+local function drop_removed_enemies(enemies)
+	for i = #enemies, 1, -1 do
+		if enemies[i]:IsNull() then
+			table.remove(enemies, i)
+		end
+	end
+end
+
+-- The remaining-enemies count: name, IsAlive and entindex of every unit still holding the round.
+local function report_enemies(round)
+	local now = GameRules:GetGameTime()
+	if round._nextEnemyReport and now < round._nextEnemyReport then
+		return
+	end
+	round._nextEnemyReport = now + ENEMY_REPORT_INTERVAL
+	local lines = {}
+	for _, unit in ipairs(round._vEnemiesRemaining) do
+		lines[#lines + 1] =
+			string.format("%s alive=%s ent=%d", unit:GetUnitName(), tostring(unit:IsAlive()), unit:entindex())
+	end
+	Warning(
+		string.format("Round %d: %d enemies remaining: %s\n", round._nRoundNumber, #lines, table.concat(lines, ", "))
+	)
+end
+
 function AOHGameRound:IsFinished()
 	for _, spawner in pairs(self._vSpawners) do
 		if not spawner:IsFinishedSpawning() then
 			return false
 		end
 	end
-	local nEnemiesRemaining = #self._vEnemiesRemaining
-	if nEnemiesRemaining == 0 then
+	drop_removed_enemies(self._vEnemiesRemaining)
+	if #self._vEnemiesRemaining == 0 then
 		return true
 	end
-
-	if self._lastEnemiesRemaining ~= nEnemiesRemaining then
-		self._lastEnemiesRemaining = nEnemiesRemaining
-		debug_print(string.format("%d enemies remaining in the round...", #self._vEnemiesRemaining))
-	end
+	report_enemies(self)
 	return false
 end
 

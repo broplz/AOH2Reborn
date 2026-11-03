@@ -549,6 +549,10 @@ function generic_target(keys)
 			caster:CastAbilityOnTarget(temp_target, spell, -1)
 			Timers:CreateTimer(function()
 				if cast_gone(caster, spell, lock) then
+					-- modifier_dummy:OnDestroy kills the npc_target dummy.
+					if modifier and not modifier:IsNull() then
+						modifier:Destroy()
+					end
 					return nil
 				end
 				if not spell:IsCooldownReady() then
