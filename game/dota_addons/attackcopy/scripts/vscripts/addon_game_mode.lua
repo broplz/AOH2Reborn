@@ -13,7 +13,83 @@ function Precache(context)
 		"item_tombstone",
 	}
 
-	local models = {}
+	-- Every "Model" of npc_units_custom/npc_heroes_custom, the models Lua swaps in (SetModel,
+	-- SetOriginalModel) and hero forms vanilla abilities switch to. Paths found neither in
+	-- tools/vanilla nor in the addon are left out (see the task report).
+	local models = {
+		"models/creeps/neutral_creeps/n_creep_ghost_a/n_creep_ghost_a.vmdl",
+		"models/creeps/neutral_creeps/n_creep_ghost_b/n_creep_ghost_b.vmdl",
+		"models/creeps/neutral_creeps/n_creep_kobold/kobold_a/n_creep_kobold_a.vmdl",
+		"models/creeps/neutral_creeps/n_creep_kobold/kobold_b/n_creep_kobold_b.vmdl",
+		"models/creeps/neutral_creeps/n_creep_kobold/kobold_c/n_creep_kobold_c.vmdl",
+		"models/creeps/neutral_creeps/n_creep_troll_skeleton/n_creep_skeleton_melee.vmdl",
+		"models/creeps/neutral_creeps/n_creep_worg_large/n_creep_worg_large.vmdl",
+		"models/development/invisiblebox.vmdl",
+		"models/gameplay/aghanim_crystal.vmdl",
+		"models/gameplay/aghanim_staff.vmdl",
+		"models/heroes/abyssal_underlord/abyssal_underlord_v2.vmdl",
+		"models/heroes/aghanim/aghanim_model.vmdl",
+		"models/heroes/ancient_apparition/ancient_apparition.vmdl",
+		"models/heroes/beastmaster/beastmaster.vmdl",
+		"models/heroes/chaos_knight/chaos_knight.vmdl",
+		"models/heroes/clinkz/clinkz.vmdl",
+		"models/heroes/clinkz/clinkz_archer.vmdl",
+		"models/heroes/crystal_maiden/crystal_maiden_arcana.vmdl",
+		"models/heroes/death_prophet/death_prophet.vmdl",
+		"models/heroes/doom/doom.vmdl",
+		"models/heroes/dragon_knight/dragon_knight.vmdl",
+		"models/heroes/elder_titan/elder_titan.vmdl",
+		"models/heroes/ember_spirit/ember_spirit.vmdl",
+		"models/heroes/enigma/enigma.vmdl",
+		"models/heroes/faceless_void/faceless_void.vmdl",
+		"models/heroes/grimstroke/grimstroke.vmdl",
+		"models/heroes/grimstroke/ink_phantom.vmdl",
+		"models/heroes/invoker/forge_spirit.vmdl",
+		"models/heroes/invoker/invoker.vmdl",
+		"models/heroes/juggernaut/juggernaut.vmdl",
+		"models/heroes/kunkka/kunkka.vmdl",
+		"models/heroes/legion_commander/legion_commander.vmdl",
+		"models/heroes/leshrac/leshrac.vmdl",
+		"models/heroes/lich/lich.vmdl",
+		"models/heroes/lone_druid/lone_druid.vmdl",
+		"models/heroes/lone_druid/spirit_bear.vmdl",
+		"models/heroes/luna/luna.vmdl",
+		"models/heroes/mirana/mirana.vmdl",
+		"models/heroes/nerubian_assassin/nerubian_assassin.vmdl",
+		"models/heroes/oracle/oracle.vmdl",
+		"models/heroes/phantom_lancer/phantom_lancer.vmdl",
+		"models/heroes/phoenix/phoenix_bird.vmdl",
+		"models/heroes/rattletrap/rattletrap.vmdl",
+		"models/heroes/shadow_demon/shadow_demon.vmdl",
+		"models/heroes/shadow_fiend/shadow_fiend.vmdl",
+		"models/heroes/shredder/shredder.vmdl",
+		"models/heroes/slardar/slardar.vmdl",
+		"models/heroes/spectre/spectre.vmdl",
+		"models/heroes/spirit_breaker/spirit_breaker.vmdl",
+		"models/heroes/storm_spirit/storm_spirit.vmdl",
+		"models/heroes/techies/techies.vmdl",
+		"models/heroes/terrorblade/demon.vmdl", -- custom_metamorphosis ModelSwapStart
+		"models/heroes/terrorblade/terrorblade.vmdl",
+		"models/heroes/tidehunter/tidehunter.vmdl",
+		"models/heroes/treant_protector/treant_protector.vmdl",
+		"models/heroes/tuskarr/tuskarr_sigil.vmdl",
+		"models/heroes/undying/undying.vmdl",
+		"models/heroes/undying/undying_flesh_golem.vmdl", -- undying_flesh_golem hero form
+		"models/heroes/undying/undying_minion.vmdl",
+		"models/heroes/ursa/ursa.vmdl",
+		"models/heroes/void_spirit/void_spirit.vmdl",
+		"models/heroes/weaver/weaver.vmdl",
+		"models/heroes/winterwyvern/winterwyvern.vmdl",
+		"models/heroes/wisp/wisp.vmdl",
+		"models/heroes/witchdoctor/witchdoctor.vmdl",
+		"models/heroes/witchdoctor/witchdoctor_ward.vmdl",
+		"models/heroes/wraith_king/wraith_king.vmdl",
+		"models/heroes/zeus/zeus_sigil.vmdl",
+		"models/items/wards/lich_black_pool_watcher/lich_black_pool_watcher.vmdl",
+		"models/items/wards/ward_clockwerk_watcher/ward_clockwerk_watcher.vmdl",
+		"models/props_gameplay/donkey_wings.vmdl",
+		"models/props_structures/outpost.vmdl",
+	}
 
 	-- Particles Lua/KV create outside particles/custom (vanilla, plus ours at other paths);
 	-- suspected cause of "Attempting to use invalid particle definition" in playtest-6 logs.
@@ -357,10 +433,19 @@ function Precache(context)
 		"soundevents/game_sounds_custom.vsndevts",
 	}
 
-	-- Units Lua spawns at GAME_IN_PROGRESS (courier, solo Goon); unprecached they render as ERROR.
+	-- Units spawned at runtime, by Lua (courier, solo Goon, Storm's sigil) or by vanilla abilities
+	-- on our bosses (Undying's zombies and tombstone); unprecached they render as ERROR.
 	local units = {
 		"npc_courier_replacement",
 		"npc_playerhelp",
+		"npc_storm_sigil",
+		"npc_dota_unit_undying_zombie",
+		"npc_dota_unit_undying_zombie_torso",
+		"npc_dota_unit_tombstone1",
+		"npc_dota_unit_tombstone2",
+		"npc_dota_unit_tombstone3",
+		"npc_dota_unit_tombstone4",
+		"npc_dota_unit_tombstone5",
 	}
 
 	do_precache(items, function(e)
@@ -368,7 +453,7 @@ function Precache(context)
 	end)
 
 	do_precache(models, function(e)
-		PrecacheModel(e, context)
+		PrecacheResource("model", e, context)
 	end)
 
 	PrecacheResource("particle_folder", "particles/custom", context)
