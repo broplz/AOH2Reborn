@@ -1420,6 +1420,7 @@
 	"ModelScale"				"1.7"
 	"Level"						"7"
 	"ConsideredHero"			"1"
+	"AbilityLayout"				"5"
 	"Ability1"					"boss_storm_spirit_thundercall"
 	"Ability2"					"boss_storm_spirit_lightning_bolt"
 	"Ability3"					"boss_storm_spirit_lightning_bolt_wrapper"			// Ability 3.

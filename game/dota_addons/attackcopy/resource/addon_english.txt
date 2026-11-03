@@ -1630,11 +1630,6 @@
 "DOTA_Tooltip_ability_boss_storm_spirit_overload_abilityduration"					"DURATION:"
 "DOTA_Tooltip_ability_boss_storm_spirit_overload_overload_damage"					"DAMAGE:"
 
-"DOTA_Tooltip_ability_boss_storm_spirit_sigil"							"Storm Sigil"
-"DOTA_Tooltip_ability_boss_storm_spirit_sigil_Description"				"Summons a storm sigil that chases an enemy. Sigils rapidly call down lightning around them, and are fragile."
-"DOTA_Tooltip_ability_boss_storm_spirit_sigil_damage"					"DAMAGE:"
-"DOTA_Tooltip_ability_boss_storm_spirit_sigil_lightning_radius"			"RADIUS:"
-
 "DOTA_Tooltip_ability_boss_storm_spirit_teleport"							"Greased Lightning"
 "DOTA_Tooltip_ability_boss_storm_spirit_teleport_Description"				"Storm Spirit channels for %delay% seconds then rapidly moves to the target location, creating an explosion at the target point. <br><br>Enemies can be damaged by both Storm Spirit's movement and the explosion. Will not be cast until the storm spirit's health drops to 50%."
 "DOTA_Tooltip_ability_boss_storm_spirit_teleport_damage"					"DAMAGE:"
