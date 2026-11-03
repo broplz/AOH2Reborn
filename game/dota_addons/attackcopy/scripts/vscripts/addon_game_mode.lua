@@ -22,6 +22,9 @@ function Precache(context)
 
 	-- Particles Lua/KV create outside particles/custom (vanilla, plus ours at other paths);
 	-- suspected cause of "Attempting to use invalid particle definition" in playtest-6 logs.
+	-- Heroes are not precached (32767-resource limit), so this also lists the particles of vanilla
+	-- hero abilities on our units: zuus_lightning_bolt (Storm boss), tidehunter_kraken_shell and
+	-- ravage, rubick_spell_steal (Goon) and telekinesis (Invoker boss), sandking_caustic_finale.
 	local particles = {
 		"particles/base_attacks/ranged_tower_bad_explosion.vpcf",
 		"particles/bloodbath_ribbon_bigger.vpcf",
@@ -276,7 +279,11 @@ function Precache(context)
 		"particles/units/heroes/hero_rubick/rubick_nullfield_defensive.vpcf",
 		"particles/units/heroes/hero_rubick/rubick_nullfield_offensive.vpcf",
 		"particles/units/heroes/hero_rubick/rubick_spell_steal.vpcf",
+		"particles/units/heroes/hero_rubick/rubick_telekinesis.vpcf",
+		"particles/units/heroes/hero_rubick/rubick_telekinesis_land.vpcf",
+		"particles/units/heroes/hero_rubick/rubick_telekinesis_marker.vpcf",
 		"particles/units/heroes/hero_sandking/sandking_caustic_finale_debuff.vpcf",
+		"particles/units/heroes/hero_sandking/sandking_caustic_finale_explode.vpcf",
 		"particles/units/heroes/hero_sandking/sandking_epicenter.vpcf",
 		"particles/units/heroes/hero_shadow_demon/shadow_demon_base_attack.vpcf",
 		"particles/units/heroes/hero_shadow_demon/shadow_demon_soul_catcher_debuff.vpcf",
@@ -302,6 +309,9 @@ function Precache(context)
 		"particles/units/heroes/hero_terrorblade/terrorblade_metamorphosis.vpcf",
 		"particles/units/heroes/hero_terrorblade/terrorblade_reflection_cast.vpcf",
 		"particles/units/heroes/hero_terrorblade/terrorblade_reflection_slow.vpcf",
+		"particles/units/heroes/hero_tidehunter/tidehunter_krakenshell_purge.vpcf",
+		"particles/units/heroes/hero_tidehunter/tidehunter_spell_ravage.vpcf",
+		"particles/units/heroes/hero_tidehunter/tidehunter_spell_ravage_hit.vpcf",
 		"particles/units/heroes/hero_tinker/tinker_missile_dud.vpcf",
 		"particles/units/heroes/hero_tinker/tinker_missile.vpcf",
 		"particles/units/heroes/hero_tinker/tinker_missle_explosion.vpcf",
@@ -332,6 +342,10 @@ function Precache(context)
 		"particles/units/heroes/hero_witchdoctor/witchdoctor_base_attack.vpcf",
 		"particles/units/heroes/hero_witchdoctor/witchdoctor_ward_attack.vpcf",
 		"particles/units/heroes/hero_zuus/zuus_arc_lightning_.vpcf",
+		"particles/units/heroes/hero_zuus/zuus_lightning_bolt.vpcf",
+		"particles/units/heroes/hero_zuus/zuus_lightning_bolt_aoe.vpcf",
+		"particles/units/heroes/hero_zuus/zuus_lightning_bolt_castfx.vpcf",
+		"particles/units/heroes/hero_zuus/zuus_lightning_bolt_start.vpcf",
 		"particles/units/heroes/heroes_underlord/abyssal_underlord_darkrift_target.vpcf",
 		"particles/units/heroes/heroes_underlord/abyssal_underlord_pitofmalice_stun.vpcf",
 		"particles/units/heroes/heroes_underlord/underlord_pitofmalice.vpcf",
@@ -584,16 +598,8 @@ function Precache(context)
 		"npc_dota_neutral_black_dragon",
 		"npc_dota_observer_wards",
 	}
-	-- Plus our heroes players can pick (npc_heroes_custom.txt entries enabled with "1" in
-	-- herolist.txt), and the two custom heroes herolist does not list.
-	local herolist = LoadKeyValues("scripts/npc/herolist.txt")
-	for hero in pairs(LoadKeyValues("scripts/npc/npc_heroes_custom.txt")) do
-		if tostring(herolist[hero]) == "1" then
-			units[#units + 1] = hero
-		end
-	end
-	units[#units + 1] = "npc_dota_vengefulspirit_new"
-	units[#units + 1] = "npc_dota_hero_clinkz_frostivus2018"
+	-- No heroes here: precaching all of them overflowed the engine's 32767 loading resources
+	-- (playtest-8 FATAL CUtlBlockVector GrowCount); the engine precaches a hero when it is picked.
 
 	do_precache(items, function(e)
 		PrecacheItemByNameSync(e, context)
