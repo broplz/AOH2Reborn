@@ -90,6 +90,11 @@ function on_created(keys)
 	end)
 end
 
+-- playtest diag: the solo helper (npc_playerhelp) spawns in InitVariables right after the courier,
+-- and this RunScript is the only unwrapped engine call between "protect applied: courier_spell"
+-- and "protect applied: GoldIncome", where "error in error handling" shows up.
+require("lib/safe_call").protect_scope(getfenv(1), { "on_created" })
+
 LinkLuaModifier("modifier_builtin_blink", "abilities/other/hero_attribute_fix.lua", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_goon_increase_stats", "abilities/other/goon_increase_stats.lua", LUA_MODIFIER_MOTION_NONE)
 modifier_goon_increase_stats = class({})

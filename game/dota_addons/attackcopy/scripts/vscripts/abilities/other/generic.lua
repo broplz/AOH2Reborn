@@ -1003,8 +1003,7 @@ end
 -- playtest diag (0058): RunScript errors bypass lib/timers' xpcall and show up only as "error in
 -- error handling". Every Function the KV names in this file is rewrapped in the scope that
 -- defines it (RunScript runs the file in a private scope, so getfenv(1), not _G).
-local safe_call = require("lib/safe_call")
-local RUNSCRIPT_FUNCTIONS = {
+require("lib/safe_call").protect_scope(getfenv(1), {
 	"generate_warning_aoe_noanim",
 	"generic_aoe_noanim",
 	"generic_aoe_noincrement",
@@ -1013,8 +1012,4 @@ local RUNSCRIPT_FUNCTIONS = {
 	"generic_target",
 	"generic_target_aoe",
 	"generic_target_random",
-}
-local scope = getfenv(1)
-for _, name in ipairs(RUNSCRIPT_FUNCTIONS) do
-	scope[name] = safe_call.protect(name, scope[name])
-end
+})

@@ -56,6 +56,14 @@ function M.protect(name, fn, on_error)
 	return wrap(name, fn, on_error)
 end
 
+-- RunScript runs a ScriptFile in a private scope, so its functions are rewrapped there:
+-- pass getfenv(1) from that file, not _G.
+function M.protect_scope(scope, names)
+	for _, name in ipairs(names) do
+		scope[name] = M.protect(name, scope[name])
+	end
+end
+
 -- A failing GetModifier* getter reads as 0, the engine's "no bonus"; any other method as nil.
 local function class_method_on_error(key)
 	if key:match("^GetModifier") then
