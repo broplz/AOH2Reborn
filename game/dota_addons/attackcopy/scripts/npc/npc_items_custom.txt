@@ -4872,7 +4872,7 @@
 		"duration"		"50"
 		"heal_percent"		"30"
 		"armor_bonus"		"4"
-		"hp_regen"		"12"
+		"hp_regen"		"1000" // playtest: вернуть 12
 	}
 }
 "item_recipe_royal_jelly"
