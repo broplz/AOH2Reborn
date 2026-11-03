@@ -68,6 +68,16 @@ local spells_target = {
 	"custom_sunray", -- index 24
 }
 
+-- True once the boss or its spell is gone (death, round end): the cast timer must stop.
+-- Timers are global, so without this they outlive the unit and hit "Invalid object".
+local function cast_gone(caster, spell, lock)
+	local gone = caster:IsNull() or spell:IsNull() or not caster:IsAlive()
+	if gone and lock and not lock:IsNull() then
+		lock:Destroy()
+	end
+	return gone
+end
+
 --Fires a warning aoe to a point and casts the spell immediately
 function generate_warning_aoe_noanim(keys)
 	local caster = keys.caster
@@ -78,7 +88,7 @@ function generate_warning_aoe_noanim(keys)
 	caster:SetCursorPosition(point)
 	spell:OnSpellStart()
 	local signifier =
-		ParticlzeManager:CreateParticle("particles/custom/boss_block.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster)
+		ParticleManager:CreateParticle("particles/custom/boss_block.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster)
 	ParticleManager:ReleaseParticleIndex(signifier)
 	if keys.is_line and keys.is_line == 1 then
 		local start_radius = keys.initial_radius or keys.radius
@@ -210,6 +220,9 @@ function generic_aoe_noincrement(keys)
 			spell:EndCooldown()
 			caster:CastAbilityOnPosition(point, spell, caster:GetPlayerOwnerID())
 			Timers:CreateTimer(spell:GetCastPoint() + 0.1, function()
+				if cast_gone(caster, spell, lock) then
+					return nil
+				end
 				if not spell:IsCooldownReady() then
 					lock:Destroy()
 				elseif caster:GetCurrentActiveAbility() == nil then
@@ -326,7 +339,10 @@ function generic_aoe(keys)
 			spell:EndCooldown()
 			caster:CastAbilityOnPosition(point, spell, caster:GetPlayerOwnerID())
 			Timers:CreateTimer(spell:GetCastPoint() + 0.1, function()
-				if spell and not spell:IsCooldownReady() then
+				if cast_gone(caster, spell, lock) then
+					return nil
+				end
+				if not spell:IsCooldownReady() then
 					lock:Destroy()
 					if count_temp == total - 1 then
 						caster:AddNewModifier(caster, ability, "modifier_weak", { duration = 0.5 })
@@ -392,7 +408,10 @@ function generic_aoe_notarget(keys)
 			local lock = caster:AddNewModifier(caster, ability, "modifier_casting_locked", { duration = -1 })
 			caster:CastAbilityNoTarget(spell, -1)
 			Timers:CreateTimer(spell:GetCastPoint() + 0.1, function()
-				if spell and not spell:IsCooldownReady() then
+				if cast_gone(caster, spell, lock) then
+					return nil
+				end
+				if not spell:IsCooldownReady() then
 					lock:Destroy()
 				elseif caster:GetCurrentActiveAbility() == nil then
 					caster:CastAbilityNoTarget(spell, -1)
@@ -472,6 +491,9 @@ function generic_target(keys)
 		StartAnimation(caster, { duration = delay, activity = ACT_DOTA_CAST_ABILITY_1, rate = 1 / delay })
 		caster:AddNewModifier(caster, ability, "modifier_anim", { duration = delay })
 		Timers:CreateTimer(delay - spell:GetCastPoint(), function()
+			if cast_gone(caster, spell) then
+				return nil
+			end
 			if
 				caster:IsChanneling()
 				or caster:GetCurrentActiveAbility() ~= nil
@@ -479,7 +501,7 @@ function generic_target(keys)
 			then
 				return 0.01
 			end
-			if not target then
+			if target:IsNull() then
 				ticket_concession:ReleaseTicket()
 				return nil
 			end
@@ -502,7 +524,10 @@ function generic_target(keys)
 			end
 			caster:CastAbilityOnTarget(temp_target, spell, -1)
 			Timers:CreateTimer(function()
-				if spell and not spell:IsCooldownReady() then
+				if cast_gone(caster, spell, lock) then
+					return nil
+				end
+				if not spell:IsCooldownReady() then
 					lock:Destroy()
 					if modifier then
 						modifier:SetDuration(1, true)
