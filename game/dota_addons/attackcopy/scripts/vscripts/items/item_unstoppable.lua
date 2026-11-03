@@ -142,3 +142,16 @@ end
 function modifier_item_unstoppable_slow:GetModifierMoveSpeedBonus_Percentage()
 	return -self:GetStackCount()
 end
+
+-- playtest diag (playtest-7): "error in error handling" x10 right after the boss Treant's
+-- Hero_Treant.NaturesGuise.On stops, i.e. when the tree_walking modifier this item adds goes away.
+local safe_call = require("lib/safe_call")
+local scope = getfenv(1)
+for _, name in ipairs({
+	"item_unstoppable",
+	"modifier_item_unstoppable",
+	"modifier_item_player_unstoppable",
+	"modifier_item_unstoppable_slow",
+}) do
+	safe_call.protect_class(scope[name], name)
+end
