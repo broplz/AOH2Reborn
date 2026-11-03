@@ -34,11 +34,7 @@
 }
 "item_recipe_aeon_disk"
 {
-	"ItemResult"					""
-	"ItemRequirements"
-	{
-		"01"						""
-	}
+	"ItemPurchasable"				"0"
 }
 "item_aeon_disk"
 {
@@ -508,10 +504,7 @@
 	}
 "item_recipe_ultimate_scepter_2"
 {
-	"ItemRequirements"
-	{
-		"01"						""
-	}
+	"ItemPurchasable"				"0"
 }
 "item_ultimate_scepter_2"
 {
@@ -519,10 +512,7 @@
 }
 "item_recipe_hand_of_midas"
 {
-	"ItemRequirements"
-	{
-		"01"						""
-	}
+	"ItemPurchasable"				"0"
 }
 "item_hand_of_midas"
 {
@@ -822,10 +812,7 @@
 }
 "item_recipe_rapier"
 {
-	"ItemRequirements"
-	{
-		"01"						""
-	}
+	"ItemPurchasable"				"0"
 }
 "item_rapier"
 {
@@ -833,10 +820,7 @@
 }
 "item_recipe_refresher"
 {
-	"ItemRequirements"
-	{
-		"01"						""
-	}
+	"ItemPurchasable"				"0"
 }
 "item_refresher"
 {
